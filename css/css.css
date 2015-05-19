@@ -12,6 +12,16 @@ table {
 	border: 1px solid #000;
 }
 
+table.characters {
+	border: 1px solid #fff;
+}
+
+td.characters {
+	text-align: left;
+	vertical-align: center;
+	border: 1px sold #fff;
+}
+
 td.controls {
 	border: 0px solid #fff;
 }

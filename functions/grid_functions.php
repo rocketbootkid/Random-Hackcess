@@ -397,6 +397,7 @@
 					}
 				} else { // Off grid, so must not have a path
 					$north = 9000;
+					addToDebugLog("checkDirection(): We're at the northernmost edge of the map");
 				}
 				
 				$return_value = $north;
@@ -425,6 +426,7 @@
 					}
 				} else {
 					$east = 900;
+					addToDebugLog("checkDirection(): We're at the easternmost edge of the map");
 				}
 				$return_value = $east;
 				break;
@@ -451,6 +453,7 @@
 					}					
 				} else {
 					$west = 9;
+					addToDebugLog("checkDirection(): We're at the westernmost edge of the map");
 				}
 				$return_value = $west;
 				break;
@@ -477,6 +480,7 @@
 					}					
 				} else {
 					$south = 90;
+					addToDebugLog("checkDirection(): We're at the southernmost edge of the map");
 				}
 				$return_value = $south;
 				break;

@@ -51,6 +51,8 @@
 	$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
 	
 	drawControls($grid_id, $journey_id, $character_id);
+	
+	echo "<p><a href='start.php'>Back to Start</a>";
 
 	outputDebugLog();
 	

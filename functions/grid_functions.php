@@ -49,16 +49,16 @@
 				addToDebugLog("drawGrid(): Current Grid Coordinates: " . $current_x . "," . $current_y);
 				if ($current_x > 0 && $current_x <= 50 && $current_y <= 50 && $current_y > 0) {
 					if ($grid_x == $current_x && $grid_y == $current_y) {
-						$color = "#6f6";
+						$class = "current";
 					} else {
-						$color = "#fff";
+						$class = "normal";
 					}
 					
 					// Determine which tile image to show
 					$directions = getGridDirectionsByCoordinates($current_x, $current_y, $journey_id);
 					addToDebugLog("drawGrid(): Directions: " . $directions);
 					
-					echo "<td height='25' width=25px bgcolor='" . $color . "' title='" . $current_x . "," . $current_y . "'><img src='images/" . $directions . ".png' border=0>";
+					echo "<td class='" . $class . "' height='25' width=25px bgcolor='" . $color . "' title='" . $current_x . "," . $current_y . "'><img src='images/" . $directions . ".png' border=0>";
 				} else {
 					addToDebugLog("drawGrid(): Coordinates not on grid; skipping...");
 				}	
@@ -127,26 +127,26 @@
 		$west = substr($available_directions,-1);
 		addToDebugLog("drawControls(): North: " . $north . ", South: " . $south . ", East: " . $east . ", West: " . $west);
 		
-		echo "<table>";
-		echo "<tr><td><img src='images/110.png'><td>";
+		echo "<table cellpadding=0 cellspacing=0>";
+		echo "<tr><td class='controls'><img src='images/110.png'><td class='controls'>";
 		if ($north == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=north'>North</a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=north'><img src='images/north.png' alt='North' border=0></a>";
 		}
-		echo "<td><img src='images/11.png'></tr>";
-		echo "<tr><td>";
+		echo "<td class='controls'><img src='images/11.png'></tr>";
+		echo "<tr><td class='controls'>";
 		if ($west == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=west'>West</a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=west'><img src='images/west.png' alt='West' border=0></a>";
 		}
-		echo "<td><td>";
+		echo "<td class='controls'><img src='images/center.png' alt='Rose'><td class='controls'>";
 		if ($east == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=east'>East</a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=east'><img src='images/east.png' alt='East' border=0></a>";
 		}
 		echo "</tr>";
-		echo "<tr><td><img src='images/1100.png'><td>";
+		echo "<tr><td class='controls'><img src='images/1100.png'><td class='controls'>";
 		if ($south == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=south'>South</a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=south'><img src='images/south.png' alt='South' border=0></a>";
 		}
-		echo "<td><img src='images/1001.png'></tr>";
+		echo "<td class='controls'><img src='images/1001.png'></tr>";
 		echo "</table>";
 		
 	}

@@ -128,9 +128,6 @@
 		$available_directions = getGridDirectionsByID($grid_id);
 		addToDebugLog("drawControls(): Available directions: " . $available_directions);
 		
-		$available_directions = str_pad($available_directions, 4, "0", STR_PAD_LEFT);
-		addToDebugLog("drawControls(): Left padded: " . $available_directions);
-		
 		$north = substr($available_directions,-4,1);
 		$east = substr($available_directions,-3,1);
 		$south = substr($available_directions,-2,1);
@@ -138,33 +135,33 @@
 		addToDebugLog("drawControls(): North: " . $north . ", South: " . $south . ", East: " . $east . ", West: " . $west);
 		
 		echo "<table cellpadding=0 cellspacing=0>";
-		echo "<tr><td class='controls'><img src='images/110.png'><td class='controls'>";
+		echo "<tr><td class='controls'><img src='images/9119.png'><td class='controls'>";
 		if ($north == 1) {
 			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=north'><img src='images/north.png' alt='North' title='Go North' border=0></a>";
 		} else {
-			echo "<img src='images/101.png' border=0>";
+			echo "<img src='images/9191.png' border=0>";
 		}
-		echo "<td class='controls'><img src='images/11.png'></tr>";
+		echo "<td class='controls'><img src='images/9911.png'></tr>";
 		echo "<tr><td class='controls'>";
 		if ($west == 1) {
 			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=west'><img src='images/west.png' alt='West' title='Go West' border=0></a>";
 		} else {
-			echo "<img src='images/1010.png' border=0>";
+			echo "<img src='images/1919.png' border=0>";
 		}
 		echo "<td class='controls'><img src='images/center.png' alt='Rose'><td class='controls'>";
 		if ($east == 1) {
 			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=east'><img src='images/east.png' alt='East' title='Go East' border=0></a>";
 		} else {
-			echo "<img src='images/1010.png' border=0>";
+			echo "<img src='images/1919.png' border=0>";
 		}
 		echo "</tr>";
-		echo "<tr><td class='controls'><img src='images/1100.png'><td class='controls'>";
+		echo "<tr><td class='controls'><img src='images/1199.png'><td class='controls'>";
 		if ($south == 1) {
 			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=south'><img src='images/south.png' alt='South' title='Go South' border=0></a>";
 		} else {
-			echo "<img src='images/101.png' border=0>";
+			echo "<img src='images/9191.png' border=0>";
 		}
-		echo "<td class='controls'><img src='images/1001.png'></tr>";
+		echo "<td class='controls'><img src='images/1991.png'></tr>";
 		echo "</table>";
 		
 	}
@@ -200,13 +197,6 @@
 		$y = $current_location[0][1];
 		addToDebugLog("move(): Current Coordinates: " . $x . "," . $y);
 		
-		// Generate available directions at new grid
-		$north = 1000 * rand(0,1);
-		$east = 100 * rand(0,1);
-		$south = 10 * rand(0,1);
-		$west = 1 * rand(0,1);
-		addToDebugLog("move(): Available Directions: North: " . $north . ", East: " . $east . ", South: " . $south . ", West: " . $west);
-		
 		// Generate new grid coordinates and ensure reciprocal direction available.
 		// e.g. if direction is North, South must be available on the new square.		
 		// Also, determine if the grids around the new grid already exist
@@ -216,61 +206,39 @@
 			case "north": // Going North
 				$y = $y + 1; // Update Y coord
 				$south = 10; // Ensure reciprocal direction available.
-				
-				// Check surrounding grids
-				// Since we're going North, we need to check North, East, and West (not South because we came from there)
-				
-				// North
-				$neighbour_y = $y + 1;
-				$neighbour_x = $x;
-				$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
-				addToDebugLog("move(): Available neighbour directions: " . $neighbour_directions);
-				// Need to know if the northern grid has a southward path
-				$is_path = substr(str_pad($neighbour_directions, 4, "0", STR_PAD_LEFT), 2, 1);
-				addToDebugLog("move(): Neighbour has path?: " . $is_path);
-				if ($is_path == 1) {
-					$north = 1000;
-				}
-
-				// East
-				$neighbour_y = $y;
-				$neighbour_x = $x + 1;
-				$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
-				addToDebugLog("move(): Available neighbour directions: " . $neighbour_directions);
-				// Need to know if the eastern grid has a westward path
-				$is_path = substr(str_pad($neighbour_directions, 4, "0", STR_PAD_LEFT), 3, 1);
-				addToDebugLog("move(): Neighbour has path?: " . $is_path);
-				if ($is_path == 1) {
-					$east = 100;
-				}
-				
-				// West
-				$neighbour_y = $y;
-				$neighbour_x = $x - 1;
-				$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
-				addToDebugLog("move(): Available neighbour directions: " . $neighbour_directions);
-				// Need to know if the western grid has a eastward path
-				$is_path = substr(str_pad($neighbour_directions, 4, "0", STR_PAD_LEFT), 1, 1);
-				addToDebugLog("move(): Neighbour has path?: " . $is_path);
-				if ($is_path == 1) {
-					$west = 1;
-				}				
-				
+				// Check if adjacent grids have path leading to this one, and ensure path is created.
+				$north = checkDirection("north", $x, $y, $journey_id); // North
+				$east = checkDirection("east", $x, $y, $journey_id); // East
+				$west = checkDirection("west", $x, $y, $journey_id); // West
+				addToDebugLog("move(): NORTH: After comparing neighbouring grids, final directions are: North: " . $north . ", East: " . $east . ", South: " . $south . ", West: " . $west);
 				break;
 			case "east":
 				$x = $x + 1;
 				$west = 1;
+				// Check if adjacent grids have path leading to this one, and ensure path is created.
+				$north = checkDirection("north", $x, $y, $journey_id); // North
+				$east = checkDirection("east", $x, $y, $journey_id); // East
+				$south = checkDirection("south", $x, $y, $journey_id); // South
+				addToDebugLog("move(): EAST: After comparing neighbouring grids, final directions are: North: " . $north . ", East: " . $east . ", South: " . $south . ", West: " . $west);
 				break;
 			case "south":
 				$y = $y - 1;
 				$north = 1000;
+				// Check if adjacent grids have path leading to this one, and ensure path is created.
+				$south = checkDirection("south", $x, $y, $journey_id); // South
+				$east = checkDirection("east", $x, $y, $journey_id); // East
+				$west = checkDirection("west", $x, $y, $journey_id); // West
+				addToDebugLog("move(): SOUTH: After comparing neighbouring grids, final directions are: North: " . $north . ", East: " . $east . ", South: " . $south . ", West: " . $west);
 				break;
 			case "west":
 				$x = $x - 1;
 				$east = 100;
-				break;
-			case "click";
-				
+				// Check if adjacent grids have path leading to this one, and ensure path is created.
+				$north = checkDirection("north", $x, $y, $journey_id); // North
+				$south = checkDirection("south", $x, $y, $journey_id); // South
+				$west = checkDirection("west", $x, $y, $journey_id); // West
+				addToDebugLog("move(): WEST: After comparing neighbouring grids, final directions are: North: " . $north . ", East: " . $east . ", South: " . $south . ", West: " . $west);
+				break;	
 		}
 		
 		// Determine if the grid already exists / has already been visited.
@@ -391,6 +359,133 @@
 
 		return $result;	
 	
+	}
+	
+	function checkDirection($direction, $x, $y, $journey_id) {
+		
+		// Returns the coordinates for the supplied grid id
+	
+		addToDebugLog("checkDirection(): Function Entry - supplied parameters: Direction: " . $direction . ", Grid X: " . $x . ", Grid Y: " . $y);	
+		
+		// $direction	is the direction from which we entered the grid
+		// $x			is the X coordinate of the grid
+		// $y			is the Y coordinate of the grid
+		// $journey_id	is the id of the current journey
+		
+		switch($direction) {
+			case "north": 
+				if ($y < 50) {
+					// Generate coords of northern neighbour
+					$neighbour_y = $y + 1;
+					$neighbour_x = $x;
+					$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
+					addToDebugLog("checkDirection(): Available neighbour directions: " . $neighbour_directions);
+					
+					if ($neighbour_directions == 9999) {
+						addToDebugLog("checkDirection(): Northern neighbour is empty");
+						$north = rand(0, 1) * 1000; // // Determine whether to draw path or not
+						if ($north == 0) { $north = 9000;}
+					} else {
+						// Need to know if the northern grid has a southward path
+						$is_path = substr($neighbour_directions, 2, 1); // extract southern component
+						addToDebugLog("checkDirection(): " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes, 9 = no): " . $is_path);
+						if ($is_path == 1) {
+							$north = 1000; // Must have path to join with northern neighbour
+						} else {
+							$north = 9000; // Must not have path
+						}
+					}
+				} else { // Off grid, so must not have a path
+					$north = 9000;
+				}
+				
+				$return_value = $north;
+				break;
+			case "east":
+				if ($x < 50) {
+					// Generate coords of eastern neighbour
+					$neighbour_y = $y;
+					$neighbour_x = $x + 1;
+					$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
+					addToDebugLog("checkDirection(): Available neighbour directions: " . $neighbour_directions);
+					
+					if ($neighbour_directions == 9999) {
+						addToDebugLog("checkDirection(): Eastern neighbour is empty");
+						$east = rand(0, 1) * 100; // // Determine whether to draw path or not
+						if ($east == 0) { $east = 900;}
+					} else {
+						// Need to know if the eastern grid has a westward path
+						$is_path = substr($neighbour_directions, 3, 1); // extract western component
+						addToDebugLog("checkDirection(): " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes, 9 = no): " . $is_path);
+						if ($is_path == 1) {
+							$east = 100;
+						} else {
+							$east = 900;
+						}
+					}
+				} else {
+					$east = 900;
+				}
+				$return_value = $east;
+				break;
+			case "west":
+				if ($x > 1) {
+					$neighbour_y = $y;
+					$neighbour_x = $x - 1;
+					$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
+					addToDebugLog("checkDirection(): Available neighbour directions: " . $neighbour_directions);
+					
+					if ($neighbour_directions == 9999) {
+						addToDebugLog("checkDirection(): Western neighbour is empty");
+						$west = rand(0, 1) * 1; // // Determine whether to draw path or not
+						if ($west == 0) { $west = 9;}
+					} else {					
+						// Need to know if the western grid has a eastward path
+						$is_path = substr($neighbour_directions, 1, 1);
+						addToDebugLog("checkDirection(): " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes, 9 = no): " . $is_path);
+						if ($is_path == 1) {
+							$west = 1;
+						} else {
+							$west = 9;
+						}	
+					}					
+				} else {
+					$west = 9;
+				}
+				$return_value = $west;
+				break;
+			case "south":
+				if ($y > 1) {
+					$neighbour_y = $y - 1;
+					$neighbour_x = $x;
+					$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
+					addToDebugLog("checkDirection(): Available neighbour directions: " . $neighbour_directions);
+					
+					if ($neighbour_directions == 9999) {
+						addToDebugLog("checkDirection(): Eastern neighbour is empty");
+						$south = rand(0, 1) * 10; // // Determine whether to draw path or not
+						if ($south == 0) { $south = 90;}
+					} else {
+						// Need to know if the southern grid has a northward path
+						$is_path = substr($neighbour_directions, 0, 1);
+						addToDebugLog("checkDirection(): " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes, 9 = no): " . $is_path);
+						if ($is_path == 1) {
+							$south = 10;
+						} else {
+							$south = 90;
+						}	
+					}					
+				} else {
+					$south = 90;
+				}
+				$return_value = $south;
+				break;
+		}
+	
+		addToDebugLog("checkDirection(): " . ucfirst($direction) . " neighbour path allowed? (1xxx = yes, 9xxx = no): " . $return_value);
+	
+		return $return_value;		
+		
 	}
 	
 ?>

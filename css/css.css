@@ -9,17 +9,21 @@ td {
 table {
 	margin-left: auto;
 	margin-right: auto;
-	border: 0px solid white;
+	border: 1px solid #000;
 }
 
 td.controls {
-	border: 0px solid white;
+	border: 0px solid #fff;
 }
 
 td.current {
-	border: 1px solid red;
+	border: 1px dashed #f00;
 }
 
 td.normal {
 	border: 1px dotted #eee;
+}
+
+td.start {
+	border: 1px dashed #0c0;
 }

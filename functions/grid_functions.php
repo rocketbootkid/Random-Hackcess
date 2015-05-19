@@ -21,22 +21,23 @@
 		
 	}
 
-	function drawGrid($grid_x, $grid_y, $radius, $journey_id) {
+	function drawGrid($grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id) {
 
 		// Draws the adventure grid
 	
-		addToDebugLog("drawGrid(): Function Entry - supplied parameters: Grid X: " . $grid_x . ", Grid Y: " . $grid_y . ", Radius: " . $radius . ", Journey ID: " . $journey_id);	
+		addToDebugLog("drawGrid(): Function Entry - supplied parameters: Grid X: " . $grid_x . ", Grid Y: " . $grid_y . ", Radius X: " . $radius_x . ", Radius Y: " . $radius_y . ", Journey ID: " . $journey_id . ", Character ID: " . $character_id);	
 		
 		// Draw grid for 5 square radius around current position
-		$start_x = $grid_x - $radius;
-		$start_y = $grid_y + $radius;
+		$start_x = $grid_x - $radius_x;
+		$start_y = $grid_y + $radius_y;
 		addToDebugLog("drawGrid(): Grid Start Coordinates: " . $start_x . "," . $start_y);
 		
-		$rows_cols = (2 * $radius) + 1;
+		$rows = (2 * $radius_y) + 1;
+		$cols = (2 * $radius_x) + 1;
 		
 		echo "<table cellpadding=0 cellspacing=0 border=1>";
 		
-		for ($y = 0; $y < $rows_cols; $y++) {
+		for ($y = 0; $y < $rows; $y++) {
 		
 			$current_y = $start_y - $y;
 			addToDebugLog("drawGrid(): Current Y: " . $current_y);
@@ -44,12 +45,14 @@
 				echo "<tr height=25px>";
 			}
 
-			for ($x = 0; $x < $rows_cols; $x++) {	
+			for ($x = 0; $x < $cols; $x++) {	
 				$current_x = $start_x + $x;
 				addToDebugLog("drawGrid(): Current Grid Coordinates: " . $current_x . "," . $current_y);
 				if ($current_x > 0 && $current_x <= 50 && $current_y <= 50 && $current_y > 0) {
 					if ($grid_x == $current_x && $grid_y == $current_y) {
 						$class = "current";
+					} elseif ($current_x == 25 && $current_y == 1) {
+						$class = "start";
 					} else {
 						$class = "normal";
 					}
@@ -57,8 +60,15 @@
 					// Determine which tile image to show
 					$directions = getGridDirectionsByCoordinates($current_x, $current_y, $journey_id);
 					addToDebugLog("drawGrid(): Directions: " . $directions);
+					$grid_id = getGridIDByCoordinates($current_x, $current_y, $journey_id);
+					addToDebugLog("drawGrid(): Grid ID: " . $grid_id);
 					
-					echo "<td class='" . $class . "' height='25' width=25px bgcolor='" . $color . "' title='" . $current_x . "," . $current_y . "'><img src='images/" . $directions . ".png' border=0>";
+					echo "<td class='" . $class . "' height='25' width=25px bgcolor='" . $color . "' title='" . $current_x . "," . $current_y . " " . $grid_id . "'>";
+					if ($directions != '9999') {
+						echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&jump=true'>";
+					}
+					echo "<img src='images/" . $directions . ".png' border=0>";
+					echo "</a>";
 				} else {
 					addToDebugLog("drawGrid(): Coordinates not on grid; skipping...");
 				}	
@@ -130,21 +140,29 @@
 		echo "<table cellpadding=0 cellspacing=0>";
 		echo "<tr><td class='controls'><img src='images/110.png'><td class='controls'>";
 		if ($north == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=north'><img src='images/north.png' alt='North' border=0></a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=north'><img src='images/north.png' alt='North' title='Go North' border=0></a>";
+		} else {
+			echo "<img src='images/101.png' border=0>";
 		}
 		echo "<td class='controls'><img src='images/11.png'></tr>";
 		echo "<tr><td class='controls'>";
 		if ($west == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=west'><img src='images/west.png' alt='West' border=0></a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=west'><img src='images/west.png' alt='West' title='Go West' border=0></a>";
+		} else {
+			echo "<img src='images/1010.png' border=0>";
 		}
 		echo "<td class='controls'><img src='images/center.png' alt='Rose'><td class='controls'>";
 		if ($east == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=east'><img src='images/east.png' alt='East' border=0></a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=east'><img src='images/east.png' alt='East' title='Go East' border=0></a>";
+		} else {
+			echo "<img src='images/1010.png' border=0>";
 		}
 		echo "</tr>";
 		echo "<tr><td class='controls'><img src='images/1100.png'><td class='controls'>";
 		if ($south == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=south'><img src='images/south.png' alt='South' border=0></a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=south'><img src='images/south.png' alt='South' title='Go South' border=0></a>";
+		} else {
+			echo "<img src='images/101.png' border=0>";
 		}
 		echo "<td class='controls'><img src='images/1001.png'></tr>";
 		echo "</table>";
@@ -167,8 +185,7 @@
 		
 	}
 	
-	function move($journey_id, $character_id, $direction) {
-		
+	function move($journey_id, $character_id, $direction) {		
 
 		// Moves the player to a new grid
 	
@@ -192,10 +209,53 @@
 		
 		// Generate new grid coordinates and ensure reciprocal direction available.
 		// e.g. if direction is North, South must be available on the new square.		
+		// Also, determine if the grids around the new grid already exist
+		// If so, check if they have a path leading to the new grid, and ensure a path is created to join it.
+
 		switch ($direction) {
-			case "north":
-				$y = $y + 1;
-				$south = 10;
+			case "north": // Going North
+				$y = $y + 1; // Update Y coord
+				$south = 10; // Ensure reciprocal direction available.
+				
+				// Check surrounding grids
+				// Since we're going North, we need to check North, East, and West (not South because we came from there)
+				
+				// North
+				$neighbour_y = $y + 1;
+				$neighbour_x = $x;
+				$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
+				addToDebugLog("move(): Available neighbour directions: " . $neighbour_directions);
+				// Need to know if the northern grid has a southward path
+				$is_path = substr(str_pad($neighbour_directions, 4, "0", STR_PAD_LEFT), 2, 1);
+				addToDebugLog("move(): Neighbour has path?: " . $is_path);
+				if ($is_path == 1) {
+					$north = 1000;
+				}
+
+				// East
+				$neighbour_y = $y;
+				$neighbour_x = $x + 1;
+				$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
+				addToDebugLog("move(): Available neighbour directions: " . $neighbour_directions);
+				// Need to know if the eastern grid has a westward path
+				$is_path = substr(str_pad($neighbour_directions, 4, "0", STR_PAD_LEFT), 3, 1);
+				addToDebugLog("move(): Neighbour has path?: " . $is_path);
+				if ($is_path == 1) {
+					$east = 100;
+				}
+				
+				// West
+				$neighbour_y = $y;
+				$neighbour_x = $x - 1;
+				$neighbour_directions = getGridDirectionsByCoordinates($neighbour_x, $neighbour_y, $journey_id);
+				addToDebugLog("move(): Available neighbour directions: " . $neighbour_directions);
+				// Need to know if the western grid has a eastward path
+				$is_path = substr(str_pad($neighbour_directions, 4, "0", STR_PAD_LEFT), 1, 1);
+				addToDebugLog("move(): Neighbour has path?: " . $is_path);
+				if ($is_path == 1) {
+					$west = 1;
+				}				
+				
 				break;
 			case "east":
 				$x = $x + 1;
@@ -209,30 +269,46 @@
 				$x = $x - 1;
 				$east = 100;
 				break;
+			case "click";
+				
 		}
 		
 		// Determine if the grid already exists / has already been visited.
+		$directions = getGridDirectionsByCoordinates($x, $y, $journey_id);
+		addToDebugLog("move(): Directions available at new grid: " . $directions);
 		
-		
-		$available_directions = $north + $south + $east + $west;
-		$display = str_pad($available_directions, 4, "0", STR_PAD_LEFT);
-		addToDebugLog("move(): Directions available at new grid: " . $available_directions);
-		
-		// Create new grid record
-		$dml = "INSERT INTO hackcess.grid (grid_x, grid_y, directions, journey_id) VALUES (" . $x . ", " . $y . ", " . $available_directions . ", " . $journey_id . ");";
-		$result = insert($dml);
-		if ($result == TRUE) {
-			addToDebugLog("move(): New grid generated");
+		if ($directions == "9999") { // We've not visited the grid, so need to generate a new one
+			addToDebugLog("move(): We've not visited the new grid");
+
+			// Construct the available directions
+			$available_directions = $north + $south + $east + $west;
+			$display = str_pad($available_directions, 4, "0", STR_PAD_LEFT);
+			addToDebugLog("move(): Directions available at new grid: " . $available_directions);
+			
+			// Create new grid record
+			$dml = "INSERT INTO hackcess.grid (grid_x, grid_y, directions, journey_id) VALUES (" . $x . ", " . $y . ", " . $available_directions . ", " . $journey_id . ");";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("move(): New grid generated");
+			} else {
+				addToDebugLog("move(): ERROR: New grid not generated");
+			}
+			
+			// Get new grid ID
+			$sql = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $journey_id . " ORDER BY grid_id DESC LIMIT 1;";
+			addToDebugLog("move(): Constructed query: " . $sql);
+			$result = search($sql);
+			$grid_id = $result[0][0];
+			addToDebugLog("move(): New grid ID (Newly created grid): " . $grid_id);
+			
 		} else {
-			addToDebugLog("move(): ERROR: New grid not generated");
+			addToDebugLog("move(): We've visited the next grid before");
+			
+			// Get grid id for the existing grid
+			$grid_id = getGridIDByCoordinates($x, $y, $journey_id);
+			addToDebugLog("move(): New grid ID (previously visited grid): " . $grid_id);
+			
 		}
-		
-		// Get new grid ID
-		$sql = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $journey_id . " ORDER BY grid_id DESC LIMIT 1;";
-		addToDebugLog("move(): Constructed query: " . $sql);
-		$result = search($sql);
-		$grid_id = $result[0][0];
-		addToDebugLog("move(): New grid ID: " . $grid_id);
 		
 		// Add new entry to journal
 		$details = "Travelled " . ucfirst($direction) . " to " . $x . "," . $y;
@@ -255,6 +331,66 @@
 		
 	}
 	
-	//echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "';</script>";
+	function jump($journey_id, $character_id, $grid_id) {
+
+		// Fast-travels the player to a new grid
+	
+		addToDebugLog("move(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Journey ID: " . $journey_id . ", New Grid ID: " . $grid_id);
+		
+		// Get coordinates for Grid ID
+		$coordinates = getCoordinatesByGridID($grid_id, $journey_id);
+		$x = $coordinates[0][0];
+		$y = $coordinates[0][1];
+	
+		// Add new entry to journal
+		$details = "Fast-travelled to Grid " . $grid_id . " (" . $x . "," . $y . ")";
+		$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", '" . $details . "');";
+		$result_m = insert($dml);
+		if ($result_m == TRUE) {
+			addToDebugLog("move(): ERROR: Grid added to journey");
+		} else {
+			addToDebugLog("move(): ERROR: Grid not added to journey");
+		}
+		
+		// Move player location to new grid square, but no XP increase
+		$dml = "UPDATE hackcess.character SET character_grid_id = " . $grid_id . " WHERE character_id = " . $character_id . ";";
+		$resultdml = insert($dml);
+		if ($resultdml == TRUE) {
+			addToDebugLog("move(): Character record updated");
+		} else {
+			addToDebugLog("move(): Character record not updated");
+		}			
+
+	}
+	
+	
+	function getGridIDByCoordinates($grid_x, $grid_y, $journey_id) {
+
+		// Returns the grid id for the supplied grid coordinates
+	
+		addToDebugLog("getGridDirectionsByCoordinates(): Function Entry - supplied parameters: Grid X: " . $grid_x . ", Grid Y: " . $grid_y . ", Journey ID: " . $journey_id);	
+ 	
+		$sql = "SELECT grid_id FROM hackcess.grid WHERE grid_x = " . $grid_x . " AND grid_y = " . $grid_y . " AND journey_id = " . $journey_id . ";";
+		addToDebugLog("getGridDirectionsByCoordinates(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		
+		return $result[0][0];	
+	
+	}
+
+	function getCoordinatesByGridID($grid_id, $journey_id) {
+
+		// Returns the coordinates for the supplied grid id
+	
+		addToDebugLog("getCoordinatesByGridID(): Function Entry - supplied parameters: Grid ID: " . $grid_id . ", Journey ID: " . $journey_id);	
+ 	
+		$sql = "SELECT grid_x, grid_y FROM hackcess.grid WHERE grid_id = " . $grid_id . " AND journey_id = " . $journey_id . ";";
+		addToDebugLog("getGridDirectionsByCoordinates(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		return $result;	
+	
+	}
 	
 ?>

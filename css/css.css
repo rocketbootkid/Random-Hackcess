@@ -3,7 +3,7 @@ td {
 	width: 50px;
 	text-align: center;
 	vertical-align: center;
-	border: 0px solid white;
+	border: 1px dotted black;
 }
 
 table {

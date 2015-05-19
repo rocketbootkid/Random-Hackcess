@@ -24,7 +24,7 @@ CREATE TABLE `features` (
 
 CREATE TABLE `journal` (
   `journal_id` int(11) NOT NULL auto_increment,
-  `player_id` int(11) default NULL,
+  `character_id` int(11) default NULL,
   `journey_id` int(11) default NULL,
   `grid_id` int(11) default NULL,
   `journal_details` varchar(300) default NULL,

@@ -1,4 +1,4 @@
-td {
+td.normal {
 	height: 50px;
 	width: 50px;
 	text-align: center;
@@ -28,10 +28,6 @@ td.controls {
 
 td.current {
 	border: 1px dashed #f00;
-}
-
-td.normal {
-	border: 1px dotted #eee;
 }
 
 td.start {

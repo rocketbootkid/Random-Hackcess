@@ -492,4 +492,47 @@
 		
 	}
 	
+	function displayJournal($journey_id) {
+		
+		// Displays the latest journal entries for this journey
+	
+		addToDebugLog("displayJournal(): Function Entry - supplied parameters: Journey ID: " . $journey_id);
+		
+		// Get Journey Name
+		$journey_name = getJourneyDetails($journey_id, "journey_name");
+		
+		echo "<table cellpadding=2 cellspacing=0 border=0 width=500px>";
+		echo "<tr><td colspan=3 align=center><b>" . $journey_name . "</tr>";
+		echo "<tr><td align=center>Entry No.<td align=center>Grid ID<td>Entry</tr>";
+		
+		// Display the 5 latest journal entries for this journey
+		$sql = "SELECT journal_id, grid_id, journal_details FROM hackcess.journal WHERE journey_id = " . $journey_id . " ORDER BY journal_id DESC LIMIT 5;";
+		addToDebugLog("getJourneyDetails(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		for ($j = 0; $j < 5; $j++) {
+			echo "<tr><td align=center>" . $result[$j][0] . "<td align=center>" . $result[$j][1] . "<td>" . $result[$j][2] . "</tr>";
+
+		}
+		
+		echo "</table>";
+		
+		
+		
+	}
+	
+	function getJourneyDetails($journey_id, $attribute) {
+		
+		// Returns the request detail for this journey
+	
+		addToDebugLog("getJourneyDetails(): Function Entry - supplied parameters: Journey ID: " . $journey_id . ", Attribute: " . $attribute);		
+
+		$sql = "SELECT " . $attribute . " FROM hackcess.journey WHERE journey_id = " . $journey_id . " LIMIT 1;";
+		addToDebugLog("getJourneyDetails(): Constructed query: " . $sql);
+		$result = search($sql);
+		$attribute = $result[0][0];
+		
+		return $attribute;
+		
+	}
 ?>

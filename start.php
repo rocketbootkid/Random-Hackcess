@@ -18,8 +18,12 @@
 		changeJourney($_GET['journey_id'], $_GET['character_id']);
 	}
 	
-	if ($_GET['create']) {
-		newJourney();
+	if ($_GET['create'] == "journey") {
+		newJourney($_GET['player_id'], $_GET['character_id']);
+	}
+	
+	if ($_GET['create'] == "character") {
+		createCharacter($_GET['player_id'], "");
 	}
 	
 	displayPlayers();

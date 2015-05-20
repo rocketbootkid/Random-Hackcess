@@ -50,7 +50,20 @@
 	// Get players current grid id
 	$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
 	
+	echo "<table width=1000px><tr>";
+	
+	echo "<td width=300px align=right>";
+	// Display Journey Name, Journal entries
+	displayJournal($journey_id);
+	
+	echo "<td width=100px>";
+	// Draw Navigation controls
 	drawControls($grid_id, $journey_id, $character_id);
+	
+	echo "<td>";
+	// Show character details
+	
+	echo "</tr></table>";
 	
 	echo "<p><a href='start.php'>Back to Start</a>";
 

@@ -288,14 +288,8 @@
 			addToDebugLog("move(): ERROR: Grid not added to journey");
 		}
 		
-		// Move player location to new grid square
-		$dml = "UPDATE hackcess.character SET character_grid_id = " . $grid_id . ", character_xp = character_xp + 10 WHERE character_id = " . $character_id . ";";
-		$resultdml = insert($dml);
-		if ($resultdml == TRUE) {
-			addToDebugLog("move(): Character record updated");
-		} else {
-			addToDebugLog("move(): Character record not updated");
-		}		
+		// Update player position / xp / manage levelling up
+		updatePlayerOnMove($character_id, $grid_id, $journey_id);
 		
 	}
 	
@@ -498,6 +492,8 @@
 	
 		addToDebugLog("displayJournal(): Function Entry - supplied parameters: Journey ID: " . $journey_id);
 		
+		$entries = 6;
+		
 		// Get Journey Name
 		$journey_name = getJourneyDetails($journey_id, "journey_name");
 		
@@ -505,8 +501,8 @@
 		echo "<tr><td colspan=3 align=center><b>" . $journey_name . "</tr>";
 		echo "<tr><td align=center>Entry No.<td align=center>Grid ID<td>Entry</tr>";
 		
-		// Display the 5 latest journal entries for this journey
-		$sql = "SELECT journal_id, grid_id, journal_details FROM hackcess.journal WHERE journey_id = " . $journey_id . " ORDER BY journal_id DESC LIMIT 5;";
+		// Display the N latest journal entries for this journey
+		$sql = "SELECT journal_id, grid_id, journal_details FROM hackcess.journal WHERE journey_id = " . $journey_id . " ORDER BY journal_id DESC LIMIT " . $entries . ";";
 		addToDebugLog("getJourneyDetails(): Constructed query: " . $sql);
 		$result = search($sql);
 
@@ -535,4 +531,5 @@
 		return $attribute;
 		
 	}
+	
 ?>

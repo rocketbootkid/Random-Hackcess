@@ -12,6 +12,7 @@
 	include 'functions/debug_functions.php';
 	include 'functions/mysql_functions.php';
 	include 'functions/grid_functions.php';
+	include 'functions/player_functions.php';
 	
 	// ************************************************************************************
 	// Move to new Grid
@@ -62,6 +63,7 @@
 	
 	echo "<td>";
 	// Show character details
+	displayPlayerInformation($character_id);
 	
 	echo "</tr></table>";
 	

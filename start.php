@@ -23,7 +23,7 @@
 	}
 	
 	if ($_GET['create'] == "character") {
-		createCharacter($_GET['player_id'], "");
+		createCharacter($_GET['player_id'], 0);
 	}
 	
 	displayPlayers();

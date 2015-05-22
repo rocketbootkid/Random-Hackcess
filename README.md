@@ -1,2 +1,2 @@
 # Random-Hackcess
-Text-based dungeon crawler through procedurally-generated environment
+Rogue-like tile-based dungeon crawler through procedurally-generated environment.

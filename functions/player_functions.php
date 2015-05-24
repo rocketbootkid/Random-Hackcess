@@ -1,5 +1,163 @@
 <?php
 
+	function playerSelect() {
+		
+		// Displays details for all players
+	
+		addToDebugLog("playerSelect(): Function Entry");	
+		
+		$sql = "SELECT * FROM hackcess.user;";
+		addToDebugLog("playerSelect(): Constructed query: " . $sql);
+		$result = search($sql);
+		$rows = count($result); 
+
+		echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
+		echo "<tr bgcolor=#ddd><td class='characters'>Player ID<td class='characters'>Name</tr>";
+		
+		for ($u = 0; $u < $rows; $u++) {
+			echo "<tr><td align=center>" . $result[$u][0] . "<td><a href='character.php?player_id=" . $result[$u][0] . "'>" . ucfirst($result[$u][1]) . "</a></tr>";
+		}		
+		echo "</table>";
+	}
+	
+	function characterSelect($player_id) {
+
+		// Lists characters for the selected Player
+	
+		addToDebugLog("characterSelect(): Function Entry - supplied parameters: Player ID: " . $player_id);			
+	
+		// Get Player Name
+		$name = getPlayerDetails($player_id, "username");
+		echo "<h1>" . ucfirst($name) . "'s Characters</h1>";
+		
+		// Get List of Live Characters for this Player
+		characterList($player_id, "alive");
+	
+		// Get list of dead / retired character for this player
+		characterList($player_id, "dead");		
+		
+	}
+
+	function getPlayerDetails($player_id, $attribute) {
+		
+		// Returns selected player attribute
+	
+		addToDebugLog("getPlayerDetails(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Attribute: " . $attribute);	
+		
+		$sql = "SELECT " . $attribute . " FROM hackcess.user WHERE user_id = " . $player_id . ";";
+		addToDebugLog("playerSelect(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		return $result[0][0];
+		
+	}
+	
+	function characterList($player_id, $status) {
+		
+		// Lists characters with the right status for the selected Player
+	
+		addToDebugLog("characterList(): Function Entry - supplied parameters: Player ID: " . $player_id);			
+		
+		// Display Characters
+		if ($status == "alive") {
+			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status = 'Alive';";	
+		} elseif ($status == "dead") {
+			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status != 'Alive';";
+		}
+		
+		addToDebugLog("characterList(): Constructed query: " . $sqlc);
+		$resultc = search($sqlc);
+		$rowsc = count($resultc);
+		
+		if ($rowsc != 0) {
+			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
+			echo "<tr bgcolor=#ddd><td class='characters'>Name<td class='characters'>Class<td class='characters'>Level</tr>";
+			for ($c = 0; $c < $rowsc; $c++) {
+				echo "<tr><td class='characters'><a href='journey.php?player_id=" . $player_id . "&character_id=" . $resultc[$c][0] . "'>" . $resultc[$c][2] . "</a>";
+				echo "<td class='characters'>" . $resultc[$c][3];
+				echo "<td class='characters' align=center>" . $resultc[$c][4];
+				echo "</tr>";
+			}
+			
+			echo "<tr><td colspan=3><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
+			echo "</table><p>";
+		} else {
+			echo "There are no dead / retired characters";
+		}
+		
+	}
+	
+	function getCharacterDetails($character_id, $attribute) {
+		
+		// Returns selected player attribute
+	
+		addToDebugLog("getCharacterDetails(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Attribute: " . $attribute);	
+		
+		$sql = "SELECT " . $attribute . " FROM hackcess.character WHERE character_id = " . $character_id . ";";
+		addToDebugLog("getCharacterDetails(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		return $result[0][0];
+		
+	}
+
+	function getCharacterDetailsInfo($character_id, $attribute) {
+		
+		// Returns selected player attribute
+	
+		addToDebugLog("getCharacterDetailsInfo(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Attribute: " . $attribute);	
+		
+		$sql = "SELECT " . $attribute . " FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
+		addToDebugLog("getCharacterDetailsInfo(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		return $result[0][0];
+		
+	}
+	
+	function journeySelect($player_id, $character_id) {
+		
+		// Returns current journey id for supplied player
+	
+		addToDebugLog("journeySelect(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Character ID: " . $character_id);			
+
+		// List of Journeys
+		$sqlj = "SELECT * FROM hackcess.journey WHERE player_id = " . $player_id . " AND character_id = " . $character_id . ";";
+		addToDebugLog("journeySelect(): Constructed query: " . $sqlj);
+		$resultj = search($sqlj);
+		$rowsj = count($resultj);
+		
+		echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
+		echo "<tr bgcolor=#ddd><td>Journey<td>Grids<td>Action</tr>";
+		for ($j = 0; $j < $rowsj; $j++) {
+
+			echo "<tr><td>" . $resultj[$j][0] . ": " . $resultj[$j][3];
+		
+			// Determine current journey
+			$journey_id = playerCurrentJourney($player_id, $character_id);
+			addToDebugLog("journeySelect(): Current Journey ID: " . $journey_id);
+			
+			// Determine how many grids exist for the journey
+			$sqlg = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $resultj[$j][0] . ";";
+			addToDebugLog("displayPlayers(): Constructed query: " . $sqlg);
+			$resultg = search($sqlg);
+			$rowsg = count($resultg);				
+			echo "<td align=center>" . $rowsg . "/2500";
+			
+			addToDebugLog("journeySelect(): Journey ID: " . $resultj[$j][0]);
+			
+			// Either set current journey, or embark on it
+			if ($journey_id == $resultj[$j][0]) {  // current journey
+				echo "<td><a href='adventure.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Embark on Journey</a></tr>";	
+			} else { // Not current journey					
+				echo "<td><a href='journey.php?player_id=" . $player_id . "&character_id=" . $resultj[$j][2] . "&journey_id=" . $resultj[$j][0] . "'>Switch to this journey</a></tr>";		
+			}
+		}
+		echo "<td colspan=3 class='characters'><a href='journey.php?create=journey&player_id=" . $player_id . "&character_id=" . $character_id . "'>Create new journey</a></a>";
+		echo "</table><p>";		
+		
+	}
+	
 	function displayPlayers() {
 		
 		// Displays details for all players
@@ -9,7 +167,7 @@
 		$sql = "SELECT * FROM hackcess.user;";
 		addToDebugLog("getPlayerCurrentGridCoordinates(): Constructed query: " . $sql);
 		$result = search($sql);
-		$rows = count($result);
+		$rows = count($result); 
 
 		for ($u = 0; $u < $rows; $u++) {		
 			echo "<h2>" . ucfirst($result[$u][1]) . "</h2>";
@@ -70,13 +228,13 @@
 		
 	}
 
-	function playerCurrentJourney($player_id) {
+	function playerCurrentJourney($player_id, $character_id) {
 		
 		// Returns current journey id for supplied player
 	
 		addToDebugLog("playerCurrentJourney(): Function Entry - supplied parameters: Player ID: " . $player_id);	
 		
-		$sql = "SELECT current_journey_id FROM hackcess.character WHERE player_id = " . $player_id . ";";
+		$sql = "SELECT current_journey_id FROM hackcess.character WHERE player_id = " . $player_id . " AND character_id = " . $character_id . ";";
 		addToDebugLog("getPlayerCurrentGridCoordinates(): Constructed query: " . $sql);
 		$result = search($sql);
 		
@@ -84,7 +242,7 @@
 		
 	}
 
-	function changeJourney($journey_id, $character_id) {
+	function changeJourney($player_id, $character_id, $journey_id) {
 		
 		// Changes journey for supplied character
 	
@@ -97,10 +255,13 @@
 		$dml = "UPDATE hackcess.character SET character_grid_id = " . $grid_id . ", current_journey_id = " . $journey_id . " WHERE character_id = " . $character_id . ";";
 		$resultdml = insert($dml);
 		if ($resultdml == TRUE) {
-			addToDebugLog("move(): Character record updated");
+			addToDebugLog("changeJourney(): Character record updated");
 		} else {
-			addToDebugLog("move(): Character record not updated");
-		}	
+			addToDebugLog("changeJourney(): Character record not updated");
+		}
+
+		// Navigate to page
+		echo "<script>window.location.href = 'journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'</script>";		
 		
 	}
 	
@@ -174,6 +335,9 @@
 		} else {
 			addToDebugLog("newJourney(): ERROR: New journal entry not added");
 		}		
+
+		// Navigate to page
+		echo "<script>window.location.href = 'journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'</script>";
 		
 	}
 	
@@ -199,10 +363,12 @@
 		}
 		$name = ucfirst($name);
 		
-		$locations = array("Forest", "Mountains", "Swamps", "Castle", "Dungeons", "Catacombs", "Wasteland", "Desert", "Frozen wastes", "Caverns", "Hills", "Fortress", "Wilderness", "Jungle");
-		$length = count($locations);
-		$location = $locations[rand(0, $length)];
-		
+		while ($location == "") {
+			$locations = array("Forest", "Mountains", "Swamps", "Castle", "Dungeons", "Catacombs", "Wasteland", "Desert", "Frozen wastes", "Caverns", "Hills", "Fortress", "Wilderness", "Jungle");
+			$length = count($locations);
+			$location = $locations[rand(0, $length)];
+		}
+			
 		$final_name = "The " . $location . " of " . $name;
 		addToDebugLog("- createJourneyName(): Generated journey name: " . $final_name);
 		
@@ -225,7 +391,7 @@
 		$level = $result[0][2];
 		
 		echo "<table cellpadding=2 cellspacing=0 border=0 width=500px>";
-		echo "<tr><td colspan=3 align=center><b>" . $name . ", Level " . $level . " " . $role . "</tr>";
+		echo "<tr><td colspan=4 align=center><b>" . $name . ", Level " . $level . " " . $role . "</tr>";
 		echo "<tr><td align=center>Stats<td align=center>Value<td>Slot<td>Item</tr>";
 		
 		// Get Character Details
@@ -233,15 +399,14 @@
 		addToDebugLog("displayPlayerInformation(): Constructed query: " . $sql);
 		$result = search($sql);
 
-		echo "<tr><td>HP<td align=center>" . $result[0][2] . "<td>Head<td>" . $result[0][8] . "</tr>";
-		echo "<tr><td>ATK<td align=center>" . $result[0][3] . "<td>Chest<td>" . $result[0][9] . "</tr>";
-		echo "<tr><td>AC<td align=center>" . $result[0][4] . "<td>Legs<td>" . $result[0][10] . "</tr>";
-		echo "<tr><td>Gold<td align=center>" . $result[0][5] . "<td>Shield<td>" . $result[0][11] . "</tr>";
-		echo "<tr><td>XP<td align=center>" . $result[0][6] . "<td>Weapon<td>" . $result[0][12] . "</tr>";
-		echo "<tr><td>STR<td align=center>" . $result[0][7] . "<td colspan=2></tr>";
+		echo "<tr><td>HP<td align=center>" . $result[0][2] . "<td>Head<td>" . getItemNameById($result[0][8]) . "</tr>";
+		echo "<tr><td>ATK<td align=center>" . $result[0][3] . "<td>Chest<td>" . getItemNameById($result[0][9]) . "</tr>";
+		echo "<tr><td>AC<td align=center>" . $result[0][4] . "<td>Legs<td>" . getItemNameById($result[0][10]) . "</tr>";
+		echo "<tr><td>Gold<td align=center>" . $result[0][5] . "<td>Shield<td>" . getItemNameById($result[0][11]) . "</tr>";
+		echo "<tr><td>STR<td align=center>" . $result[0][7] . "<td>Weapon<td>" . getItemNameById($result[0][12]) . "</tr>";
+		//echo "<tr><td>XP<td align=center>" . $result[0][6] . "<td colspan=2></tr>";
 		
 		echo "</table>";
-		
 		
 	}		
 
@@ -356,6 +521,9 @@
 		// Create Journey
 		newJourney($player_id, $character_id);	
 		
+		// Navigate to page
+		echo "<script>window.location.href = 'character.php?player_id=" . $player_id . "'</script>";
+		
 	}
 	
 	function generateCharacterName() {
@@ -376,6 +544,7 @@
 		while ($name == "") {
 			srand(make_seed());
 			$name = $names[rand(0, $names_length)];
+			$name = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $name); // Removes CRLF
 		}
 		
 		// Choose the title based on the consonant
@@ -504,4 +673,105 @@
 		
 	}
 	
+	function getItemNameById($item_id) {
+		
+		// Returns the item name
+	
+		addToDebugLog("getItemNameById(): Function Entry - supplied parameters: Item ID: " . $item_id);		
+
+		$sql = "SELECT name, ac_boost, attack_boost FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
+		addToDebugLog("getItemNameById(): Constructed query: " . $sql);
+		$result = search($sql);
+		$item_name = $result[0][0];
+		$ac_boost = $result[0][1];
+		$attack_boost = $result[0][2];
+		
+		// Add relevant modifier
+		if ($ac_boost == 0) {
+			$name = $item_name . " (+" . $attack_boost . ")";
+		} else {
+			$name = $item_name . " (+" . $ac_boost . ")";
+		}
+		
+		return $name;
+		
+	}
+	
+	function createEnemy($journey_id, $character_id, $grid_id) {
+		
+		// Creates a new enemy
+	
+		addToDebugLog("createEnemy(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Grid ID: " . $grid_id);		
+		
+		// Create Character Name
+		$name = generateEnemyName();
+		
+		// Generate enemy stats based on character's stats
+		$character_hp = getCharacterDetailsInfo($character_id, "hp");
+		$character_ac = getCharacterDetailsInfo($character_id, "armor_class");
+		$character_atk = getCharacterDetailsInfo($character_id, "attack");
+		addToDebugLog("createEnemy(): Character Stats: HP: " . $character_hp . ", Character AC: " . $character_ac . ", Character ATK: " . $character_atk);	
+		
+		$enemy_hp = $character_hp - rand(0, 5);
+		$enemy_ac = $character_hp - rand(0, 5);
+		$enemy_atk = $character_atk - rand(0, 5);		
+		addToDebugLog("createEnemy(): Enemy Stats: HP: " . $enemy_hp . ", Character AC: " . $enemy_ac . ", Character ATK: " . $enemy_atk);	
+		
+		// Create enemy record
+		$dml = "INSERT INTO hackcess.enemy (enemy_name, player_id, character_id, grid_id, atk, ac, hp, status) VALUES ('" . $name . "', " . $player_id . ", " . $character_id . ", " . $grid_id . ", " . $enemy_atk . ", " . $enemy_ac . ", " . $enemy_hp . ", 'Alive');";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("createEnemy(): New enemy generated");
+		} else {
+			addToDebugLog("createEnemy(): ERROR: New enemy not generated");
+		}
+		
+		// Get new enemy id
+		$sql = "SELECT enemy_id FROM hackcess.enemy WHERE grid_id = " . $grid_id . " LIMIT 1;";
+		addToDebugLog("createEnemy(): Constructed query: " . $sql);
+		$result = search($sql);
+		$enemy_id = $result[0][0];
+		
+		return $enemy_id;
+	
+	}
+	
+	function generateEnemyName() {
+		
+		// Creates and returns a enemy name
+	
+		addToDebugLog("generateEnemyName(): Function Entry - no parameters");
+		
+		// Choose the Creature
+		$filepath = "lists/creatures.txt";
+		$creatures = file($filepath); // reads contents of select file into the array
+		$creatures_length = count($creatures);
+		$creature = "";
+		while ($creature == "") {
+			srand(make_seed());
+			$creature = $creatures[rand(0, $creatures_length)];
+			$creature = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $creature); // Removes CRLF
+		}
+		
+		// Generate the name
+		$syllables = rand(2, 4);
+		$name = "";		
+		for ($a = 0; $a < $syllables; $a++) {
+
+			$consonants = array("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"); 
+			$consonant = $consonants[rand(0, 20)];
+			
+			$vowels = array("a", "e", "i", "o", "u");
+			$vowel = $vowels[rand(0, 4)];
+			
+			$name = $name . $consonant . $vowel;
+
+		}
+		$name = ucfirst($name);
+		
+		$final_name = ucfirst($name) . " the " . ucfirst($creature);
+		
+		return $final_name;
+		
+	}
 ?>

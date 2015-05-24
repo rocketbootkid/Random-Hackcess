@@ -1,7 +1,8 @@
 <html>
 
 <head>
-	<title>Random Hackcess - Name Generation Test</title>
+	<title>Random Hackcess | Select Player</title>
+	<!--<link rel="stylesheet" type="text/css" href="css/css.css">-->
 </head>
 
 <body>
@@ -13,9 +14,9 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 
-	echo generateCharacterName();
-	
-	echo generateEnemyName();
+	playerSelect();
+
+	//outputDebugLog();
 	
 ?>
 

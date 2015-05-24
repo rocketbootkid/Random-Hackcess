@@ -21,7 +21,7 @@
 		
 	}
 
-	function drawGrid($grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id) {
+	function drawGrid($grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id) {
 
 		// Draws the adventure grid
 	
@@ -65,7 +65,7 @@
 					
 					echo "<td class='" . $class . "' height='25' width=25px bgcolor='" . $color . "' title='" . $current_x . "," . $current_y . " " . $grid_id . "'>";
 					if ($directions != '9999') {
-						echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&jump=true'>";
+						echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&jump=true&player_id=" . $player_id . "'>";
 					}
 					echo "<img src='images/" . $directions . ".png' border=0>";
 					echo "</a>";
@@ -119,11 +119,11 @@
 	
 	}
 	
-	function drawControls($grid_id, $journey_id, $character_id) {
+	function drawControls($grid_id, $journey_id, $character_id, $player_id) {
 
 		// Draws the controls grid
 	
-		addToDebugLog("drawControls(): Function Entry - supplied parameters: Grid ID: " . $grid_id);
+		addToDebugLog("drawControls(): Function Entry - supplied parameters: Grid ID: " . $grid_id . ", Journey ID: " . $journey_id . ", Character ID: " . $character_id . ", Player ID: " . $player_id);
 
 		$available_directions = getGridDirectionsByID($grid_id);
 		addToDebugLog("drawControls(): Available directions: " . $available_directions);
@@ -137,27 +137,27 @@
 		echo "<table cellpadding=0 cellspacing=0>";
 		echo "<tr><td class='controls'><img src='images/9119.png'><td class='controls'>";
 		if ($north == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=north'><img src='images/north.png' alt='North' title='Go North' border=0></a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=north&player_id=" . $player_id . "'><img src='images/north.png' alt='North' title='Go North' border=0></a>";
 		} else {
 			echo "<img src='images/9191.png' border=0>";
 		}
 		echo "<td class='controls'><img src='images/9911.png'></tr>";
 		echo "<tr><td class='controls'>";
 		if ($west == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=west'><img src='images/west.png' alt='West' title='Go West' border=0></a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=west&player_id=" . $player_id . "'><img src='images/west.png' alt='West' title='Go West' border=0></a>";
 		} else {
 			echo "<img src='images/1919.png' border=0>";
 		}
 		echo "<td class='controls'><img src='images/center.png' alt='Rose'><td class='controls'>";
 		if ($east == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=east'><img src='images/east.png' alt='East' title='Go East' border=0></a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=east&player_id=" . $player_id . "'><img src='images/east.png' alt='East' title='Go East' border=0></a>";
 		} else {
 			echo "<img src='images/1919.png' border=0>";
 		}
 		echo "</tr>";
 		echo "<tr><td class='controls'><img src='images/1199.png'><td class='controls'>";
 		if ($south == 1) {
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=south'><img src='images/south.png' alt='South' title='Go South' border=0></a>";
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&direction=south&player_id=" . $player_id . "'><img src='images/south.png' alt='South' title='Go South' border=0></a>";
 		} else {
 			echo "<img src='images/9191.png' border=0>";
 		}
@@ -182,7 +182,7 @@
 		
 	}
 	
-	function move($journey_id, $character_id, $direction) {		
+	function move($journey_id, $character_id, $direction, $player_id) {		
 
 		// Moves the player to a new grid
 	
@@ -250,24 +250,12 @@
 
 			// Construct the available directions
 			$available_directions = $north + $south + $east + $west;
-			$display = str_pad($available_directions, 4, "0", STR_PAD_LEFT);
+			//$display = str_pad($available_directions, 4, "0", STR_PAD_LEFT);
 			addToDebugLog("move(): Directions available at new grid: " . $available_directions);
 			
 			// Create new grid record
-			$dml = "INSERT INTO hackcess.grid (grid_x, grid_y, directions, journey_id) VALUES (" . $x . ", " . $y . ", " . $available_directions . ", " . $journey_id . ");";
-			$result = insert($dml);
-			if ($result == TRUE) {
-				addToDebugLog("move(): New grid generated");
-			} else {
-				addToDebugLog("move(): ERROR: New grid not generated");
-			}
-			
-			// Get new grid ID
-			$sql = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $journey_id . " ORDER BY grid_id DESC LIMIT 1;";
-			addToDebugLog("move(): Constructed query: " . $sql);
-			$result = search($sql);
-			$grid_id = $result[0][0];
-			addToDebugLog("move(): New grid ID (Newly created grid): " . $grid_id);
+			$grid_id = writeGrid($x, $y, $available_directions, $journey_id);
+			addToDebugLog("move(): New Grid ID: " . $grid_id);
 			
 		} else {
 			addToDebugLog("move(): We've visited the next grid before");
@@ -291,9 +279,12 @@
 		// Update player position / xp / manage levelling up
 		updatePlayerOnMove($character_id, $grid_id, $journey_id);
 		
+		// Reload page
+		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
+		
 	}
 	
-	function jump($journey_id, $character_id, $grid_id) {
+	function jump($journey_id, $character_id, $grid_id, $player_id) {
 
 		// Fast-travels the player to a new grid
 	
@@ -321,7 +312,10 @@
 			addToDebugLog("move(): Character record updated");
 		} else {
 			addToDebugLog("move(): Character record not updated");
-		}			
+		}
+
+		// Reload page
+		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";		
 
 	}
 	
@@ -335,9 +329,13 @@
 		$sql = "SELECT grid_id FROM hackcess.grid WHERE grid_x = " . $grid_x . " AND grid_y = " . $grid_y . " AND journey_id = " . $journey_id . ";";
 		addToDebugLog("getGridDirectionsByCoordinates(): Constructed query: " . $sql);
 		$result = search($sql);
+		$rows = count($result);
 
-		
-		return $result[0][0];	
+		if ($rows > 0) {
+			return $result[0][0];	
+		} else {
+			return 0;
+		}
 	
 	}
 
@@ -508,13 +506,10 @@
 
 		for ($j = 0; $j < 5; $j++) {
 			echo "<tr><td align=center>" . $result[$j][0] . "<td align=center>" . $result[$j][1] . "<td>" . $result[$j][2] . "</tr>";
-
 		}
 		
 		echo "</table>";
-		
-		
-		
+
 	}
 	
 	function getJourneyDetails($journey_id, $attribute) {
@@ -529,6 +524,175 @@
 		$attribute = $result[0][0];
 		
 		return $attribute;
+		
+	}
+	
+	function chooseFeature($journey_id, $character_id, $grid_id) {
+
+		// Decide feature for supplied grid
+	
+		addToDebugLog("chooseFeature(): Function Entry - supplied parameters: Grid ID: " . $grid_id);	
+		
+		srand(make_seed());
+		$feature_choice = rand(1, 4);
+		switch ($feature_choice) {
+			case 1: // Fight
+				addToDebugLog("chooseFeature(): Feature Choice: Fight");
+				srand(make_seed());
+				$fight = rand(1, 5);
+				if ($fight == 5) {
+					echo "<script>window.location.href = 'battle.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&grid_id=" . $grid_id . "'</script>";
+				}
+				break;
+			case 2: // Store
+				addToDebugLog("chooseFeature(): Feature Choice: Store");
+				srand(make_seed());
+				$store = rand(1, 20);
+				if ($fight == 20) {
+					$feature_id = generateFeature($grid_id, "store");
+				}
+				break;			
+			case 3: // Stranger
+				addToDebugLog("chooseFeature(): Feature Choice: Stranger");
+				srand(make_seed());
+				$stranger = rand(1, 30);
+				if ($stranger == 30) {
+					$feature_id = generateFeature($grid_id, "stranger");
+				}
+				break;
+			case 4: // Teleport
+				addToDebugLog("chooseFeature(): Feature Choice: Teleport");
+				srand(make_seed());
+				$teleport = rand(1, 30);
+				if ($teleport == 30) {
+					
+					// Choose which grid to teleport to
+					$radius = 7;
+					$teleport_to_grid_id = generateRandomGrid($grid_id, $radius, $journey_id);
+					addToDebugLog("chooseFeature(): New Grid ID: " . $teleport_to_grid_id);
+
+					// Create Feature
+					$feature_id = generateFeature($grid_id, "Teleport");
+					addToDebugLog("chooseFeature(): Feature ID: " . $feature_id);
+					
+					// Teleport Player
+					jump($journey_id, $character_id, $teleport_to_grid_id);
+					
+					// 
+				}
+				break;	
+		}
+		
+	}
+	
+	function generateFeature($grid_id, $feature) {
+		
+		// Generates features for supplied grid
+	
+		addToDebugLog("generateFeature(): Function Entry - supplied parameters: Grid ID: " . $grid_id . ", Feature Type: " . $feature);
+
+		// Create Feature record
+		$dml = "INSERT INTO hackcess.features (grid_id, feature_details) VALUES (" . $grid_id . ", '" . $feature . "');";
+		addToDebugLog("generateFeature(): Constructed query: " . $dml);
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("generateFeature(): Feature generated");
+		} else {
+			addToDebugLog("generateFeature(): ERROR: Feature not generated");
+		}
+		
+		// Return Feature ID
+		$sql = "SELECT feature_id FROM hackcess.features WHERE grid_id = " . $grid_id . " ORDER BY feature_id DESC LIMIT 1;";
+		addToDebugLog("generateFeature(): Constructed query: " . $sql);
+		$result = search($sql);
+		$feature_id = $result[0][0];
+		
+		return $feature_id;
+		
+	}
+	
+	function generateRandomGrid($grid_id, $radius, $journey_id) {
+		
+		// Creates a random new grid with radius of provided grid
+	
+		addToDebugLog("generateRandomGrid(): Function Entry - supplied parameters: Grid ID: " . $grid_id . ", Radius: " . $radius);
+		
+		// Get coordinates of provided grid id
+		$coordinates = getCoordinatesByGridID($grid_id);
+		$grid_x = $coordinates[0][0];
+		$grid_y = $coordinates[0][1];
+		addToDebugLog("generateRandomGrid(): Grid ID " . $grid_id . "'s coordinates: " . $grid_x . "," . $grid_y);
+
+		$exists = 1;
+		
+		while ($exists > 0) {
+			
+			// Generate new coordinates
+			srand(make_seed());		
+			$random_grid_x = rand($grid_x - $radius, $grid_x + $radius);
+			$random_grid_y = rand($grid_y - $radius, $grid_y + $radius);
+			
+			// Check if there is already a grid with these coordinates
+			$exists = getGridIDByCoordinates();
+			
+		}
+		
+		// Determine available directions at new grid
+		$directions = 9999;
+		while ($directions > 9000) {
+			$north = random9or1() * 1000;
+			$east = random9or1() * 100;
+			$south = random9or1() * 10;
+			$west = random9or1();
+			$directions = $north + $east + $south + $west;
+		}
+		addToDebugLog("generateRandomGrid(): Available directions at the new grid: " . $directions);
+				
+		// Create new grid with new coordinates
+		$new_grid_id = writeGrid($random_grid_x, $random_grid_y, $directions, $journey_id);
+		addToDebugLog("generateRandomGrid(): New Grid ID: " . $new_grid_id);
+		
+		return $new_grid_id;
+		
+	}
+	
+	function random9or1() {
+		
+		// Randomly returns 9 or 1 (for the purposes of generating map directions
+		
+		srand(make_seed());
+		$value = 9 * rand(0, 1);
+		if ($value == 0) {
+			$value = 1000;
+		}
+		
+		return $value;
+		
+	}
+
+	function writeGrid($x, $y, $directions, $journey_id) {
+		
+		// Writes a new grid record, and returns the grid id
+	
+		addToDebugLog("writeGrid(): Function Entry - supplied parameters: Grid X: " . $x . ", Grid Y: " . $y . ", Directions: " . $directions . ", Journey ID: " . $journey_id);		
+		
+		// Create new grid record
+		$dml = "INSERT INTO hackcess.grid (grid_x, grid_y, directions, journey_id) VALUES (" . $x . ", " . $y . ", " . $directions . ", " . $journey_id . ");";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("writeGrid(): New grid generated");
+		} else {
+			addToDebugLog("writeGrid(): ERROR: New grid not generated");
+		}
+		
+		// Get new grid ID
+		$sql = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $journey_id . " ORDER BY grid_id DESC LIMIT 1;";
+		addToDebugLog("writeGrid(): Constructed query: " . $sql);
+		$result = search($sql);
+		$grid_id = $result[0][0];
+		addToDebugLog("writeGrid(): New grid ID (Newly created grid): " . $grid_id);
+		
+		return $grid_id;
 		
 	}
 	

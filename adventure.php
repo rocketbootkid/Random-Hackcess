@@ -19,57 +19,60 @@
 	// ************************************************************************************
 	
 	if ($_GET['direction'] && $_GET['direction'] <> "") {
-			move($_GET['journey_id'], $_GET['character_id'], $_GET['direction']);
-	}
-	if ($_GET['jump'] && $_GET['jump'] == 'true') {
-			jump($_GET['journey_id'], $_GET['character_id'], $_GET['grid_id']);
-	}
+			move($_GET['journey_id'], $_GET['character_id'], $_GET['direction'], $_GET['player_id']);
+	} elseif ($_GET['jump'] && $_GET['jump'] == 'true') {
+			jump($_GET['journey_id'], $_GET['character_id'], $_GET['grid_id'], $_GET['player_id']);
+	} else { // Only draw everything if not using page to move / jump, since those functions will reload the page
 	
-	// ************************************************************************************
-	// Draw Grid
-	// ************************************************************************************
-	
-	$journey_id = $_GET['journey_id'];
-	$character_id = $_GET['character_id'];
-	
-	// Determine what grid square the current character / journey is on
-	$coordinates = getPlayerCurrentGridCoordinates($character_id, $journey_id);
-	$grid_x = $coordinates[0][0];
-	$grid_y = $coordinates[0][1];
-	$radius_x = 15;
-	$radius_y = 6;
-	
-	// Draws the grid for defined radius around the current location
-	drawGrid($grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id);
-	
-	echo "<p>";
-	
-	// ************************************************************************************
-	// Draw Controls
-	// ************************************************************************************
-	
-	// Get players current grid id
-	$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
-	
-	echo "<table width=1000px><tr>";
-	
-	echo "<td width=300px align=right>";
-	// Display Journey Name, Journal entries
-	displayJournal($journey_id);
-	
-	echo "<td width=100px>";
-	// Draw Navigation controls
-	drawControls($grid_id, $journey_id, $character_id);
-	
-	echo "<td>";
-	// Show character details
-	displayPlayerInformation($character_id);
-	
-	echo "</tr></table>";
-	
-	echo "<p><a href='start.php'>Back to Start</a>";
+		// ************************************************************************************
+		// Draw Grid
+		// ************************************************************************************
+		
+		$player_id = $_GET['player_id'];
+		$character_id = $_GET['character_id'];
+		$journey_id = $_GET['journey_id'];
+		
+		
+		// Determine what grid square the current character / journey is on
+		$coordinates = getPlayerCurrentGridCoordinates($character_id, $journey_id);
+		$grid_x = $coordinates[0][0];
+		$grid_y = $coordinates[0][1];
+		$radius_x = 15;
+		$radius_y = 6;
+		
+		// Draws the grid for defined radius around the current location
+		drawGrid($grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id);
+		
+		echo "<p>";
+		
+		// ************************************************************************************
+		// Draw Controls
+		// ************************************************************************************
+		
+		// Get players current grid id
+		$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
+		
+		echo "<table width=1000px><tr>";
+		
+		echo "<td width=300px align=right>";
+		// Display Journey Name, Journal entries
+		displayJournal($journey_id);
+		
+		echo "<td width=100px>";
+		// Draw Navigation controls
+		drawControls($grid_id, $journey_id, $character_id, $player_id);
+		
+		echo "<td>";
+		// Show character details
+		displayPlayerInformation($character_id);
+		
+		echo "</tr></table>";
+		
+		echo "<p><a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Back to Journey Select</a>";
 
-	outputDebugLog();
+	}
+		
+	//outputDebugLog();
 	
 ?>
 

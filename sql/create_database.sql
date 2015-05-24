@@ -76,3 +76,17 @@ CREATE TABLE `character_equipment` (
   `character_id` int(11) default NULL,
   PRIMARY KEY  (`equipment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `enemy` (
+  `enemy_id` int(11) NOT NULL auto_increment,
+  `enemy_name` varchar(100) default NULL,
+  `player_id` int(11) default NULL,
+  `character_id` int(11) default NULL,
+  `grid_id` int(11) default NULL,
+  `atk` int(11) default NULL,
+  `ac` int(11) default NULL,
+  `hp` int(11) default NULL,
+  `status` varchar(45) default NULL,
+  `killed_by` int(11) default NULL,
+  PRIMARY KEY  (`enemy_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

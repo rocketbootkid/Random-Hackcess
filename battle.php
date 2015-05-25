@@ -7,6 +7,8 @@
 
 <body>
 
+<h1>Battle</h1>
+
 <?php
 
 	include 'functions/debug_functions.php';
@@ -18,19 +20,39 @@
 	$character_id = $_GET['character_id'];
 	$journey_id = $_GET['journey_id'];
 	$grid_id = $_GET['grid_id'];
+	$enemy_id = $_GET['enemy_id'];
 
-	// Create feature record
-	$feature_id = generateFeature($grid_id, "fight");
+	if ($_GET['action'] == "create") {
 	
-	// Create Enemy
-	$enemy_id = createEnemy($journey_id, $character_id, $grid_id);
-	
-	// Display Character Stats
-	
-	// Display Enemy Stats
+		// Create feature record
+		$feature_id = generateFeature($grid_id, "fight");
+		addToDebugLog("battle.php: Feature ID: " . $feature_id);
+		
+		// Create Enemy
+		$enemy_id = createEnemy($player_id, $journey_id, $character_id, $grid_id);
+		addToDebugLog("battle.php: Enemy ID: " . $enemy_id);
+		
+		echo "<script>window.location.href = 'battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "'</script>";
 
+	}
+		
+	// Get Character Stats
+	$character_basic_info = getAllCharacterMainInfo($character_id);
+	$character_detailed_info = getAllCharacterDetailedInfo($character_id);
+	
+	// Get Enemy Stats
+	$enemy_info = getEnemyInfo($enemy_id);
+
+	// Display Stats
+	displayBattleStats($character_basic_info, $character_detailed_info, $enemy_info);
+	
 	// Show option: Fight or Run
+	echo "<table cellpadding=3 cellspacing=0 border=0 style='margin-left: auto; margin-right: auto; margin-top: 20px;'>";
+	echo "<tr><td width=200px align=center><h2>Fight!</h2><td><h2>  OR  </h2><td width=200px align=center><h2>Run!</h2></tr>";
+	echo "</table>";
 	
+	// Temporary "Back" option.
+	echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Journey</a>";
 	outputDebugLog();
 	
 ?>

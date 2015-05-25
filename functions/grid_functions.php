@@ -279,8 +279,14 @@
 		// Update player position / xp / manage levelling up
 		updatePlayerOnMove($character_id, $grid_id, $journey_id);
 		
+		// If grid is a dead end, redirect to the battle page
+		if ($available_directions == "1999" || $available_directions == "9199" || $available_directions == "9919" || $available_directions == "9991") {
+			echo "<script>window.location.href = 'battle.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&grid_id=" . $grid_id . "&action=create'</script>";
+		}
+		
 		// Reload page
 		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
+		
 		
 	}
 	
@@ -541,7 +547,8 @@
 				srand(make_seed());
 				$fight = rand(1, 5);
 				if ($fight == 5) {
-					echo "<script>window.location.href = 'battle.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&grid_id=" . $grid_id . "'</script>";
+					// Redirect to the battle page
+					echo "<script>window.location.href = 'battle.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&grid_id=" . $grid_id . "&action=create'</script>";
 				}
 				break;
 			case 2: // Store
@@ -550,6 +557,7 @@
 				$store = rand(1, 20);
 				if ($fight == 20) {
 					$feature_id = generateFeature($grid_id, "store");
+					addToDebugLog("chooseFeature(): Created feature, ID: " . $feature_id);
 				}
 				break;			
 			case 3: // Stranger

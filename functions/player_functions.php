@@ -101,6 +101,34 @@
 		
 	}
 
+	function getAllCharacterMainInfo($character_id) {
+		
+		// Returns all main information for the selected player
+	
+		addToDebugLog("getAllCharacterDetails(): Function Entry - supplied parameters: Character ID: " . $character_id);	
+		
+		$sql = "SELECT * FROM hackcess.character WHERE character_id = " . $character_id . ";";
+		addToDebugLog("getAllCharacterDetails(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		return $result;
+		
+	}
+	
+	function getAllCharacterDetailedInfo($character_id) {
+		
+		// Returns all detailed information for the selected player
+	
+		addToDebugLog("getAllCharacterDetailedDetails(): Function Entry - supplied parameters: Character ID: " . $character_id);	
+		
+		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
+		addToDebugLog("getAllCharacterDetailedDetails(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		return $result;
+		
+	}
+	
 	function getCharacterDetailsInfo($character_id, $attribute) {
 		
 		// Returns selected player attribute
@@ -111,6 +139,8 @@
 		addToDebugLog("getCharacterDetailsInfo(): Constructed query: " . $sql);
 		$result = search($sql);
 
+		addToDebugLog("getCharacterDetailsInfo(): Attribute '" . $attribute . "' value: " . $result[0][0]);
+		
 		return $result[0][0];
 		
 	}
@@ -697,24 +727,34 @@
 		
 	}
 	
-	function createEnemy($journey_id, $character_id, $grid_id) {
+	function createEnemy($player_id, $journey_id, $character_id, $grid_id) {
 		
 		// Creates a new enemy
 	
-		addToDebugLog("createEnemy(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Grid ID: " . $grid_id);		
+		addToDebugLog("createEnemy(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Character ID: " . $charcter_id . ", Grid ID: " . $grid_id);		
 		
 		// Create Character Name
 		$name = generateEnemyName();
 		
-		// Generate enemy stats based on character's stats
+		// Get character base stats
 		$character_hp = getCharacterDetailsInfo($character_id, "hp");
 		$character_ac = getCharacterDetailsInfo($character_id, "armor_class");
 		$character_atk = getCharacterDetailsInfo($character_id, "attack");
 		addToDebugLog("createEnemy(): Character Stats: HP: " . $character_hp . ", Character AC: " . $character_ac . ", Character ATK: " . $character_atk);	
 		
+		// Get character boosts from armour / weapons
+		$boost_list = getCharacterBoosts($character_id);
+		$boosts = explode(",", $boost_list);
+		$total_ac_boost = $boosts[0];
+		$total_attack_boost = $boosts[1];
+		
+		// Generate enemy stats based on character's stats
 		$enemy_hp = $character_hp - rand(0, 5);
-		$enemy_ac = $character_hp - rand(0, 5);
-		$enemy_atk = $character_atk - rand(0, 5);		
+		if ($enemy_hp <= 0) { $enemy_hp = 1;}
+		$enemy_ac = $character_ac + $total_ac_boost - rand(0, 5);
+		if ($enemy_ac <= 0) { $enemy_ac = 1;}
+		$enemy_atk = $character_atk + $total_attack_boost - rand(0, 5);
+		if ($enemy_atk <= 0) { $enemy_atk = 1;}
 		addToDebugLog("createEnemy(): Enemy Stats: HP: " . $enemy_hp . ", Character AC: " . $enemy_ac . ", Character ATK: " . $enemy_atk);	
 		
 		// Create enemy record
@@ -736,6 +776,20 @@
 	
 	}
 	
+	function getEnemyInfo($enemy_id) {
+
+		// Returns information about the supplied enemy
+	
+		addToDebugLog("getEnemyInfo(): Function Entry - supplied parameters: Enemy ID: " . $enemy_id);	
+		
+		$sql = "SELECT enemy_name, atk, ac, hp FROM hackcess.enemy WHERE enemy_id = " . $enemy_id . ";";
+		addToDebugLog("getEnemyInfo(): Constructed query: " . $sql);
+		$result = search($sql);
+		
+		return $result;		
+		
+	}
+	
 	function generateEnemyName() {
 		
 		// Creates and returns a enemy name
@@ -752,6 +806,7 @@
 			$creature = $creatures[rand(0, $creatures_length)];
 			$creature = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $creature); // Removes CRLF
 		}
+		addToDebugLog("generateEnemyName(): Selected creature: " . $creature);
 		
 		// Generate the name
 		$syllables = rand(2, 4);
@@ -768,10 +823,98 @@
 
 		}
 		$name = ucfirst($name);
+		addToDebugLog("generateEnemyName(): Name: " . $name);
 		
 		$final_name = ucfirst($name) . " the " . ucfirst($creature);
+		addToDebugLog("generateEnemyName(): Final name: " . $final_name);
 		
 		return $final_name;
 		
 	}
+	
+	function displayBattleStats($character_basic_info, $character_detailed_info, $enemy_info) {
+		
+		// Displays table of character and enemy_details
+		
+		addToDebugLog("displayBattleStats(): Function Entry - 3 parameters (arrays)");
+		
+		// Heading: $character_basic_info; 0: id, 1: player id, 2: name, 3: role, 4: level
+		// Column 1: $character_detailed_info; 2: hp, 3: attack, 4: ac, 5: gold, 6: xp, 7: strength, 8: head, 9: chest, 10: legs, 11: shield, 12: weapon.
+		// Column 2: Character Equipment
+		// Column 3: $enemy_info; 0: enemy_name, 1: atk, 2: ac, 3: hp 
+		
+		// Get character AC / ATK boosts from equipment
+		$boost_list = getCharacterBoosts($character_basic_info[0][0]);
+		$boosts = explode(",", $boost_list);
+		$total_ac_boost = $boosts[0];
+		$total_attack_boost = $boosts[1];
+		addToDebugLog("displayBattleStats(): Boosts: AC: " . $total_ac_boost . ", ATK: " . $total_attack_boost);
+		
+		// Get equipment names
+		$head = getItemNameById($character_detailed_info[0][8]);
+		$chest = getItemNameById($character_detailed_info[0][9]);
+		$legs = getItemNameById($character_detailed_info[0][10]);
+		$shield = getItemNameById($character_detailed_info[0][11]);
+		$weapon = getItemNameById($character_detailed_info[0][12]);
+		
+		echo "<table cellpadding=3 cellspacing=0 border=1 style='margin-left: auto; margin-right: auto;'>";
+		echo "\n<tr>\n\t<td colspan=4 align=center width=600px><h2>" . trim($character_basic_info[0][2]) . "</h2>Level " . $character_basic_info[0][4] . " " . trim($character_basic_info[0][3]) . "\n\t<td valign=center align=center><h2>VS</h2>\n\t<td colspan=2 align=center valign=top width=300px><h2>" . $enemy_info[0][0] . "</h2>\n</tr>"; // Display character / enemy names
+		echo "\n<tr>\n\t<td align=right width=50px>Head\n\t<td width=150px>" . $head . "\n\t<td align=center width=50px>" . $character_detailed_info[0][2] . "\n\t<td width=250px align=right>" . barGraph($character_detailed_info[0][2], 'char') . "\n\t<td align=center>HP\n\t<td>" . barGraph($enemy_info[0][3], 'enemy') . "<td align=center>" . $enemy_info[0][3] . "\n</tr>";
+		echo "\n<tr>\n\t<td align=right>Chest\n\t<td>" . $chest . "\n\t<td align=center>" . $character_detailed_info[0][4] . " (+" . $total_ac_boost . ")\n\t<td align=right>" . barGraph($character_detailed_info[0][4] + $total_ac_boost, 'char') . "\n\t<td align=center>AC\n\t<td>" . barGraph($enemy_info[0][2], 'enemy') . "\n\t<td align=center>" . $enemy_info[0][2] . "\n</tr>";
+		echo "\n<tr>\n\t<td align=right>Legs\n\t<td>" . $legs . "\n\t<td align=center>" . $character_detailed_info[0][3] . " (+" . $total_attack_boost . ")\n\t<td align=right>" . barGraph($character_detailed_info[0][3] + $total_attack_boost, 'char') . "\n\t<td align=center>ATK\n\t<td>" . barGraph($enemy_info[0][1], 'enemy') . "\n\t<td align=center>" . $enemy_info[0][1] . "\n</tr>";
+		echo "\n<tr>\n\t<td align=right>Shield\n\t<td>" . $shield . "\n\t<td align=right colspan=2>" . $character_detailed_info[0][7] . "\n\t<td align=center>STR\n\t<td colspan=2>\n</tr>";
+		echo "\n<tr>\n\t<td align=right>Weapon\n\t<td>" . $weapon . "\n\t<td align=right colspan=2>" . $character_detailed_info[0][6] . "\n\t<td align=center>XP\n\t<td colspan=2>\n</tr>";
+		echo "</table>";
+		
+	}
+	
+	function barGraph($value, $who) {
+		
+		// Produces bar graph for the versus table
+		
+		$width = $value * 5;
+		if ($value < 50) {
+			$width = $value;
+		}
+		if ($value < 50) {
+			$width = $value * 5;
+		}
+		if ($value < 20) {
+			$width = $value * 10;
+		}
+		
+		if ($who == "char") {
+			return "<table><tr><td>" . $value . "<td bgcolor='#0f0' height=20px width='" . $width . "px'></tr></table>";
+		} else {
+			return "<table><tr><td bgcolor='#f00' height=20px width='" . $width . "px'><td>" . $value . "</tr></table>";
+		}
+	
+	}
+	
+	function getCharacterBoosts($character_id) {
+		
+		// Get character boosts from armour / weapons
+		
+		addToDebugLog("getCharacterBoosts(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		
+		$sql = "SELECT ac_boost, attack_boost FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		addToDebugLog("getCharacterBoosts(): Constructed query: " . $sql);
+		$result = search($sql);
+		$rows = count($result);
+		$total_attack_boost = 0;
+		$total_ac_boost = 0;
+		for ($e = 0; $e < $rows; $e++) {
+			if ($result[$e][0] > 0) { // AC boost
+				$total_ac_boost = $total_ac_boost + $result[$e][0];
+			}
+			if ($result[$e][1] > 0) { // Attack boost
+				$total_attack_boost = $total_attack_boost + $result[$e][1];
+			}			
+		}
+		addToDebugLog("getCharacterBoosts(): AC Boost: " . $total_ac_boost . ", Attack Boost: " . $total_attack_boost);
+		
+		return $total_ac_boost . "," . $total_attack_boost;
+		
+	}
+	
 ?>

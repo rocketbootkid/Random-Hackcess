@@ -63,6 +63,7 @@ CREATE TABLE `character_details` (
   `legs_slot` int(11) default NULL,
   `shield_slot` int(11) default NULL,
   `weapon_slot` int(11) default NULL,
+  `current_hp` int(11) default NULL,
   PRIMARY KEY  (`details_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

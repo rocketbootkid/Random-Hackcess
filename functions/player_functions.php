@@ -429,7 +429,7 @@
 		addToDebugLog("displayPlayerInformation(): Constructed query: " . $sql);
 		$result = search($sql);
 
-		echo "<tr><td>HP<td align=center>" . $result[0][2] . "<td>Head<td>" . getItemNameById($result[0][8]) . "</tr>";
+		echo "<tr><td>HP<td align=center>" . $result[0][13] . "<td>Head<td>" . getItemNameById($result[0][8]) . "</tr>";
 		echo "<tr><td>ATK<td align=center>" . $result[0][3] . "<td>Chest<td>" . getItemNameById($result[0][9]) . "</tr>";
 		echo "<tr><td>AC<td align=center>" . $result[0][4] . "<td>Legs<td>" . getItemNameById($result[0][10]) . "</tr>";
 		echo "<tr><td>Gold<td align=center>" . $result[0][5] . "<td>Shield<td>" . getItemNameById($result[0][11]) . "</tr>";
@@ -455,8 +455,17 @@
 			addToDebugLog("updatePlayerOnMove(): Character record not updated");
 		}		
 
-		// Update player XP
-		$dml = "UPDATE hackcess.character_details SET xp = xp + 10 WHERE character_id = " . $character_id . ";";
+		// Determine if player needs to recover HP
+		$hp_alteration = "";
+		$max_hp = getCharacterDetailsInfo($character_id, "hp");
+		$current_hp = getCharacterDetailsInfo($character_id, "current_hp");
+		if ($current_hp < $max_hp) {
+			addToDebugLog("updatePlayerOnMove(): Healing by 1HP");
+			$hp_alteration = ", current_hp = current_hp + 1 ";
+		}
+		
+		// Update player XP (/ HP)
+		$dml = "UPDATE hackcess.character_details SET xp = xp + 10 " . $hp_alteration . "WHERE character_id = " . $character_id . ";";
 		$resultdml = insert($dml);
 		if ($resultdml == TRUE) {
 			addToDebugLog("updatePlayerOnMove(): Character details updated");
@@ -479,7 +488,7 @@
 		$new_level = $xp / $level;
 		if ($new_level >= 1000) {
 			// Increase stats
-			$dml = "UPDATE hackcess.character_details SET hp = hp + 1, armor_class = armor_class + 1, attack = attack + 1, strength = strength + 2 WHERE character_id = " . $character_id . ";";
+			$dml = "UPDATE hackcess.character_details SET hp = hp + 1, current_hp = current_hp + 1, armor_class = armor_class + 1, attack = attack + 1, strength = strength + 2 WHERE character_id = " . $character_id . ";";
 			$resultdml = insert($dml);
 			if ($resultdml == TRUE) {
 				addToDebugLog("updatePlayerOnMove(): Character details updated");
@@ -669,7 +678,7 @@
 		}	
 
 		// Create character items - Sword
-		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('Sword', 0, 1, 1, 'sword', " . $character_id . ");";
+		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('Sword', 0, 1, 1, 'weapon', " . $character_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("move(): Shield generated");
@@ -693,7 +702,7 @@
 		}
 			
 		// Create character details
-		$dml = "INSERT INTO hackcess.character_details (character_id, hp, attack, armor_class, gold, xp, strength, head_slot, chest_slot, legs_slot, shield_slot, weapon_slot) VALUES (" . $character_id . ", 10, 5, 1, 0, 0, 20, " . $head . ", " . $chest . ", " . $legs . ", " . $shield . ", " . $sword . ");";
+		$dml = "INSERT INTO hackcess.character_details (character_id, hp, attack, armor_class, gold, xp, strength, head_slot, chest_slot, legs_slot, shield_slot, weapon_slot, current_hp) VALUES (" . $character_id . ", 10, 5, 1, 0, 0, 20, " . $head . ", " . $chest . ", " . $legs . ", " . $shield . ", " . $sword . ", 10);";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("move(): Character details stored");
@@ -839,7 +848,7 @@
 		addToDebugLog("displayBattleStats(): Function Entry - 3 parameters (arrays)");
 		
 		// Heading: $character_basic_info; 0: id, 1: player id, 2: name, 3: role, 4: level
-		// Column 1: $character_detailed_info; 2: hp, 3: attack, 4: ac, 5: gold, 6: xp, 7: strength, 8: head, 9: chest, 10: legs, 11: shield, 12: weapon.
+		// Column 1: $character_detailed_info; 2: hp, 3: attack, 4: ac, 5: gold, 6: xp, 7: strength, 8: head, 9: chest, 10: legs, 11: shield, 12: weapon, 13: current_hp.
 		// Column 2: Character Equipment
 		// Column 3: $enemy_info; 0: enemy_name, 1: atk, 2: ac, 3: hp 
 		
@@ -859,7 +868,7 @@
 		
 		echo "<table cellpadding=3 cellspacing=0 border=1 style='margin-left: auto; margin-right: auto;'>";
 		echo "\n<tr>\n\t<td colspan=4 align=center width=600px><h2>" . trim($character_basic_info[0][2]) . "</h2>Level " . $character_basic_info[0][4] . " " . trim($character_basic_info[0][3]) . "\n\t<td valign=center align=center><h2>VS</h2>\n\t<td colspan=2 align=center valign=top width=300px><h2>" . $enemy_info[0][0] . "</h2>\n</tr>"; // Display character / enemy names
-		echo "\n<tr>\n\t<td align=right width=50px>Head\n\t<td width=150px>" . $head . "\n\t<td align=center width=50px>" . $character_detailed_info[0][2] . "\n\t<td width=250px align=right>" . barGraph($character_detailed_info[0][2], 'char') . "\n\t<td align=center>HP\n\t<td>" . barGraph($enemy_info[0][3], 'enemy') . "<td align=center>" . $enemy_info[0][3] . "\n</tr>";
+		echo "\n<tr>\n\t<td align=right width=50px>Head\n\t<td width=150px>" . $head . "\n\t<td align=center width=50px>" . $character_detailed_info[0][2] . "\n\t<td width=250px align=right>" . barGraph($character_detailed_info[0][13], 'char') . "\n\t<td align=center>HP\n\t<td>" . barGraph($enemy_info[0][3], 'enemy') . "<td align=center>" . $enemy_info[0][3] . "\n</tr>";
 		echo "\n<tr>\n\t<td align=right>Chest\n\t<td>" . $chest . "\n\t<td align=center>" . $character_detailed_info[0][4] . " (+" . $total_ac_boost . ")\n\t<td align=right>" . barGraph($character_detailed_info[0][4] + $total_ac_boost, 'char') . "\n\t<td align=center>AC\n\t<td>" . barGraph($enemy_info[0][2], 'enemy') . "\n\t<td align=center>" . $enemy_info[0][2] . "\n</tr>";
 		echo "\n<tr>\n\t<td align=right>Legs\n\t<td>" . $legs . "\n\t<td align=center>" . $character_detailed_info[0][3] . " (+" . $total_attack_boost . ")\n\t<td align=right>" . barGraph($character_detailed_info[0][3] + $total_attack_boost, 'char') . "\n\t<td align=center>ATK\n\t<td>" . barGraph($enemy_info[0][1], 'enemy') . "\n\t<td align=center>" . $enemy_info[0][1] . "\n</tr>";
 		echo "\n<tr>\n\t<td align=right>Shield\n\t<td>" . $shield . "\n\t<td align=right colspan=2>" . $character_detailed_info[0][7] . "\n\t<td align=center>STR\n\t<td colspan=2>\n</tr>";
@@ -914,6 +923,119 @@
 		addToDebugLog("getCharacterBoosts(): AC Boost: " . $total_ac_boost . ", Attack Boost: " . $total_attack_boost);
 		
 		return $total_ac_boost . "," . $total_attack_boost;
+		
+	}
+	
+	function flee($character_id, $journey_id, $grid_id, $enemy_id) {
+		
+		// This function handles where the character runs away from a fight
+		
+		addToDebugLog("getCharacterBoosts(): Function Entry - supplied parameters: Character ID: " . $character_id);	
+
+		// Reduce character HP
+		$hp = rand(1, 5);
+		$dml = "UPDATE hackcess.character_details SET current_hp = current_hp - " . $hp . " WHERE character_id = " . $character_id . ";";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("flee(): Character record updated");
+		} else {
+			addToDebugLog("flee(): Character record not updated");
+		}		
+		
+		// Get enemy name
+		$enemy_info = getEnemyInfo($enemy_id);
+		$name = $enemy_info[0][0];
+		
+		// Record entry in Journal
+		$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", 'Ran from a fight with " . $name . ", losing " . $hp . "HP in the process!');";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("flee(): New journal entry added");
+		} else {
+			addToDebugLog("flee(): ERROR: New journal entry not added");
+		}			
+
+	}
+	
+	function manageEquipment($player_id, $character_id, $journey_id) {
+		
+		// This function lists the equipment held by each player
+		
+		addToDebugLog("manageEquipment(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Character ID: " . $charcter_id);
+		
+		echo "<table cellpadding=3 cellspacing=0 border=1>";
+		echo "<tr bgcolor=#ddd><td>Item<td>Slot<td align=center>Weight<td align=center>Action</tr>";
+
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		addToDebugLog("manageEquipment(): Constructed query: " . $sql);
+		$result = search($sql);
+		$rows = count($result);
+
+		// 0: ID
+		// 1: Name
+		// 2: AC Boost
+		// 3: ATK Boost
+		// 4: Weight
+		// 5: Slot
+		
+		$weight_total = 0;
+		for ($e = 0; $e < $rows; $e++) {		
+		
+			$bonus = $result[$e][2] + $result[$e][3];
+			echo "<tr><td>+" . $bonus . " " . $result[$e][1]; // Bonus + Item
+			echo "<td>" . ucfirst($result[$e][5]); // Slot
+			echo "<td align=center>" . $result[$e][4]; // Weight
+
+			// Determine if the item of equipment is equipped or not
+			$is_equipped = isEquipped($result[$e][5], $result[$e][0], $character_id);
+			if ($is_equipped == 1) {
+				echo "<td align=center>-";
+				$weight_total = $weight_total + $result[$e][4];				
+			} else {
+				echo "<td align=center><a href='equipment.php?slot=" . $result[$e][5] . "&item_id=" . $result[$e][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&action=equip'>Equip</a>"; // $slot, $item_id, $character_id
+			}
+			
+			echo "</tr>";
+			
+		}
+		
+		echo "<tr><td colspan=2 align=right>Total Weight<td align=center>" . $weight_total . "<td></tr>";
+		echo "</table>";
+		
+	}
+	
+	function isEquipped($slot, $item_id, $character_id) {
+
+		// This function lists the equipment held by each player
+		
+		addToDebugLog("isEquipped(): Function Entry - supplied parameters: Slot Name: " . $slot . ", Item ID: " . $item_id . ", Character ID: " . $character_id);
+		
+		$sql = "SELECT " . $slot . "_slot FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
+		addToDebugLog("isEquipped(): Constructed query: " . $sql);
+		$result = search($sql);
+
+		if ($result[0][0] == $item_id) {
+			return 1;
+		} else {
+			return 0;
+		}
+		
+	}
+	
+	function equip($slot, $item_id, $character_id) {
+		
+		// This function equips the item selected
+		
+		addToDebugLog("equip(): Function Entry - supplied parameters: Slot Name: " . $slot . ", Item ID: " . $item_id . ", Character ID: " . $character_id);	
+
+		// Equip item
+		$dml = "UPDATE hackcess.character_details SET " . $slot . "_slot = " . $item_id . " WHERE character_id = " . $character_id . ";";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("flee(): Item equipped");
+		} else {
+			addToDebugLog("flee(): Item not equipped");
+		}
 		
 	}
 	

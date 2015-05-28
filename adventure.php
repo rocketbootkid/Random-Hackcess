@@ -69,10 +69,10 @@
 		echo "</tr></table>";
 		
 		echo "<p><a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Back to Journey Select</a>";
+		
+		//outputDebugLog();
 
 	}
-		
-	//outputDebugLog();
 	
 ?>
 

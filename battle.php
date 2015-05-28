@@ -32,8 +32,22 @@
 		$enemy_id = createEnemy($player_id, $journey_id, $character_id, $grid_id);
 		addToDebugLog("battle.php: Enemy ID: " . $enemy_id);
 		
+		// Redirect to this page
 		echo "<script>window.location.href = 'battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "'</script>";
 
+	}
+	
+	if ($_GET['action'] == "flee") {
+		
+		// Get current grid id
+		$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
+		
+		// Handle the running away
+		flee($character_id, $journey_id, $grid_id, $enemy_id);
+		
+		// Redirect back to the Adventure page
+		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
+		
 	}
 		
 	// Get Character Stats
@@ -48,7 +62,9 @@
 	
 	// Show option: Fight or Run
 	echo "<table cellpadding=3 cellspacing=0 border=0 style='margin-left: auto; margin-right: auto; margin-top: 20px;'>";
-	echo "<tr><td width=200px align=center><h2>Fight!</h2><td><h2>  OR  </h2><td width=200px align=center><h2>Run!</h2></tr>";
+	echo "<tr><td width=200px align=center><h2><a href=''>Fight!</a></h2>";
+	echo "<td><h2>  OR  </h2>";
+	echo "<td width=200px align=center><h2><a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&action=flee'>Run!</a></h2></tr>";
 	echo "</table>";
 	
 	// Temporary "Back" option.

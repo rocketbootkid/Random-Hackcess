@@ -32,7 +32,7 @@
 
 		echo "<p><a href='character.php?player_id=" . $_GET['player_id'] . "'>Back to Character Select</a>";
 		
-		outputDebugLog();
+		//outputDebugLog();
 	}
 	
 ?>

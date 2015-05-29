@@ -52,23 +52,29 @@
 		// Get players current grid id
 		$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
 		
-		echo "<table width=1000px><tr>";
+		echo "<table width=1400px><tr>";
 		
+		// First column: hyperlinks
+		echo "<td width=300px align=left valign=top>";
+		echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a><br/>";
+		echo "<a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Back to Journey Select</a>";
+		
+		// Second column: Journal entries
 		echo "<td width=300px align=right>";
 		// Display Journey Name, Journal entries
 		displayJournal($journey_id);
 		
+		// Third column: navigation controls
 		echo "<td width=100px>";
 		// Draw Navigation controls
 		drawControls($grid_id, $journey_id, $character_id, $player_id);
 		
+		// Fourth column: Player details
 		echo "<td>";
 		// Show character details
 		displayPlayerInformation($character_id);
 		
 		echo "</tr></table>";
-		
-		echo "<p><a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Back to Journey Select</a>";
 		
 		//outputDebugLog();
 

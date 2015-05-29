@@ -33,3 +33,7 @@ td.current {
 td.start {
 	border: 1px dashed #0c0;
 }
+
+td.enemy {
+	border: 1px solid #f00;
+}

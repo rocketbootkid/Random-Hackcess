@@ -29,11 +29,17 @@
 		echo "<script>window.location.href = 'equipment.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
 
 	} else {
-	
-		// Display List of character equipment
-		manageEquipment($player_id, $character_id, $journey_id);
-		
-		outputDebugLog();
+
+		if ($character_id > 0 && $player_id > 0 && $journey_id > 0) {
+			// Display List of character equipment
+			manageEquipment($player_id, $character_id, $journey_id);
+			
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
+			
+			outputDebugLog();
+		} else {
+			echo "You fumble with the straps on your pack, but cannot open it. Guess the contents will have to remain a mystery.";
+		}
 	}
 	
 ?>

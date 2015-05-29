@@ -422,7 +422,7 @@
 		
 		echo "<table cellpadding=2 cellspacing=0 border=0 width=500px>";
 		echo "<tr><td colspan=4 align=center><b>" . $name . ", Level " . $level . " " . $role . "</tr>";
-		echo "<tr><td align=center>Stats<td align=center>Value<td>Slot<td>Item</tr>";
+		echo "<tr bgcolor=#ddd><td align=center>Stats<td align=center>Value<td>Slot<td>Item</tr>";
 		
 		// Get Character Details
 		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
@@ -947,7 +947,7 @@
 		$name = $enemy_info[0][0];
 		
 		// Record entry in Journal
-		$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", 'Ran from a fight with " . $name . ", losing " . $hp . "HP in the process!');";
+		$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", 'Ran from a fight with " . $name . ", lost " . $hp . "HP.');";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("flee(): New journal entry added");

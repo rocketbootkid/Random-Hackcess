@@ -48,11 +48,24 @@
 			for ($x = 0; $x < $cols; $x++) {	
 				$current_x = $start_x + $x;
 				addToDebugLog("drawGrid(): Current Grid Coordinates: " . $current_x . "," . $current_y);
+				
+				// Get grid_id
+				$grid_id = getGridIDByCoordinates($current_x, $current_y, $journey_id);
+				$is_enemy_here = 0;
+				if ($grid_id > 0) {
+					// Determine if this grid has a live enemy at it
+					$is_enemy_here = isEnemyHere($grid_id, $character_id);
+				} else {
+					$is_enemy_here == 0;
+				}
+				
 				if ($current_x > 0 && $current_x <= 50 && $current_y <= 50 && $current_y > 0) {
 					if ($grid_x == $current_x && $grid_y == $current_y) {
 						$class = "current";
 					} elseif ($current_x == 25 && $current_y == 1) {
 						$class = "start";
+					} elseif ($is_enemy_here == 1) {
+						$class = "enemy";
 					} else {
 						$class = "normal";
 					}
@@ -63,7 +76,7 @@
 					$grid_id = getGridIDByCoordinates($current_x, $current_y, $journey_id);
 					addToDebugLog("drawGrid(): Grid ID: " . $grid_id);
 					
-					echo "<td class='" . $class . "' height='25' width=25px bgcolor='" . $color . "' title='" . $current_x . "," . $current_y . " " . $grid_id . "'>";
+					echo "<td class='" . $class . "' height='25' width=25px bgcolor='" . $color . "' title='(" . $current_x . "," . $current_y . ") ID: " . $grid_id . "'>";
 					if ($directions != '9999') {
 						echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&jump=true&player_id=" . $player_id . "'>";
 					}
@@ -503,7 +516,7 @@
 		
 		echo "<table cellpadding=2 cellspacing=0 border=0 width=500px>";
 		echo "<tr><td colspan=3 align=center><b>" . $journey_name . "</tr>";
-		echo "<tr><td align=center>Entry No.<td align=center>Grid ID<td>Entry</tr>";
+		echo "<tr bgcolor=#ddd><td align=center>Entry No.<td align=center>Grid ID<td>Entry</tr>";
 		
 		// Display the N latest journal entries for this journey
 		$sql = "SELECT journal_id, grid_id, journal_details FROM hackcess.journal WHERE journey_id = " . $journey_id . " ORDER BY journal_id DESC LIMIT " . $entries . ";";
@@ -701,6 +714,26 @@
 		addToDebugLog("writeGrid(): New grid ID (Newly created grid): " . $grid_id);
 		
 		return $grid_id;
+		
+	}
+	
+	function isEnemyHere($grid_id, $character_id) {
+		
+		// REturns boolean if there is a live enemy at supplied grid
+	
+		addToDebugLog("isEnemyHere(): Function Entry - supplied parameters: Grid ID: " . $grid_id . ", Character ID: " . $character_id);			
+		
+		$sql = "SELECT enemy_id FROM hackcess.enemy WHERE grid_id = " . $grid_id . " AND character_id = " . $character_id . " AND status = 'Alive';";
+		addToDebugLog("isEnemyHere(): Constructed query: " . $sql);
+		$result = search($sql);
+		$rows = count($result);
+		if ($rows > 0) {
+			return 1; // Enemy present
+			addToDebugLog("isEnemyHere(): Enemy found");
+		} else {
+			return 0; // Enemy not present
+			addToDebugLog("isEnemyHere(): Enemy not found");
+		}
 		
 	}
 	

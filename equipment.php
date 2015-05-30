@@ -28,15 +28,29 @@
 		// Redirect to this page
 		echo "<script>window.location.href = 'equipment.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
 
+	} elseif ($_GET['action'] == "drop") {
+		
+		// Drop the item		
+		drop($_GET['item_id']);
+		
+		// Redirect to this page
+		echo "<script>window.location.href = 'equipment.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
+		
+		//outputDebugLog();
+		
 	} else {
 
 		if ($character_id > 0 && $player_id > 0 && $journey_id > 0) {
 			// Display List of character equipment
-			manageEquipment($player_id, $character_id, $journey_id);
+			$value = manageEquipment($player_id, $character_id, $journey_id);
 			
-			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
+			if ($value == "ok") {
+				echo "<p><a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
+			} else {
+				echo "<p>You are carrying too much equipment. Please drop some item(s) to continue.";
+			}
 			
-			outputDebugLog();
+			//outputDebugLog();
 		} else {
 			echo "You fumble with the straps on your pack, but cannot open it. Guess the contents will have to remain a mystery.";
 		}

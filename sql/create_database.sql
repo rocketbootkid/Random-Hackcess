@@ -91,3 +91,12 @@ CREATE TABLE `enemy` (
   `killed_by` int(11) default NULL,
   PRIMARY KEY  (`enemy_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `fight` (
+  `fight_id` int(11) NOT NULL auto_increment,
+  `character_id` int(11) default NULL,
+  `enemy_id` int(11) default NULL,
+  `grid_id` int(11) default NULL,
+  `rounds` int(11) default NULL,
+  PRIMARY KEY  (`fight_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

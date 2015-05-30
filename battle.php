@@ -33,7 +33,7 @@
 		addToDebugLog("battle.php: Enemy ID: " . $enemy_id);
 		
 		// Redirect to this page
-		echo "<script>window.location.href = 'battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "'</script>";
+		echo "<script>window.location.href = 'battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&grid_id=" . $grid_id . "'</script>";
 
 	}
 	
@@ -62,7 +62,7 @@
 	
 	// Show option: Fight or Run
 	echo "<table cellpadding=3 cellspacing=0 border=0 style='margin-left: auto; margin-right: auto; margin-top: 20px;'>";
-	echo "<tr><td width=200px align=center><h2><a href='fight.php?character_id=" . $character_id . "&enemy_id=" . $enemy_id . "'>Fight!</a></h2>";
+	echo "<tr><td width=200px align=center><h2><a href='fight.php?character_id=" . $character_id . "&enemy_id=" . $enemy_id . "&grid_id=" . $grid_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "'>Fight!</a></h2>";
 	echo "<td><h2>  OR  </h2>";
 	echo "<td width=200px align=center><h2><a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&action=flee'>Run!</a></h2></tr>";
 	echo "</table>";

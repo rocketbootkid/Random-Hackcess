@@ -50,6 +50,7 @@
 				addToDebugLog("drawGrid(): Current Grid Coordinates: " . $current_x . "," . $current_y);
 				
 				// Get grid_id
+				/*
 				$grid_id = getGridIDByCoordinates($current_x, $current_y, $journey_id);
 				$is_enemy_here = 0;
 				if ($grid_id > 0) {
@@ -58,14 +59,16 @@
 				} else {
 					$is_enemy_here == 0;
 				}
+				*/
+				
 				
 				if ($current_x > 0 && $current_x <= 50 && $current_y <= 50 && $current_y > 0) {
 					if ($grid_x == $current_x && $grid_y == $current_y) {
 						$class = "current";
 					} elseif ($current_x == 25 && $current_y == 1) {
 						$class = "start";
-					} elseif ($is_enemy_here == 1) {
-						$class = "enemy";
+					//} elseif ($is_enemy_here == 1) {
+					//	$class = "enemy";
 					} else {
 						$class = "normal";
 					}
@@ -733,6 +736,175 @@
 		} else {
 			return 0; // Enemy not present
 			addToDebugLog("isEnemyHere(): Enemy not found");
+		}
+		
+	}
+
+	function doFight($character_id, $enemy_id, $grid_id, $player_id, $journey_id) {
+		
+		// Handles combat
+	
+		addToDebugLog("doFight(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Enemy ID: " . $enemy_id . ", Grid ID: " . $grid_id . ", Player ID: " . $player_id . ", Journey ID: " . $journey_id);			
+		
+		// Load Character Details
+		$character_basic_info = getAllCharacterMainInfo($character_id);
+		$character_name = trim($character_basic_info[0][2]); 		// 2	Name
+		$character_role = $character_basic_info[0][3]; 		// 3	Role
+		$character_level = $character_basic_info[0][4]; 	// 4	Level
+		$character_status = $character_basic_info[0][7]; 	// 7	Status
+		$character_detailed_info = getAllCharacterDetailedInfo($character_id);
+		$character_hp = $character_detailed_info[0][2]; 	// 2	HP
+		$character_atk = $character_detailed_info[0][3];	// 3	ATK
+		$character_ac = $character_detailed_info[0][4];		// 4	AC
+		$character_boosts = getCharacterBoosts($character_id);
+		$character_ac_boost = $character_boosts[0];			// 0	AC Boost
+		$character_atk_boost = $character_boosts[2];		// 1	ATK Boost
+		
+		// Load Enemy Details
+		$enemy_info = getEnemyInfo($enemy_id);
+		$enemy_name = $enemy_info[0][0];	// 0	Name
+		$enemy_atk = $enemy_info[0][1];// 1	ATK
+		$enemy_ac = $enemy_info[0][2];// 2	AC
+		$enemy_hp = $enemy_info[0][3];// 3	HP
+		$enemy_gold = ($enemy_atk + $enemy_ac + $enemy_hp) * 3;
+		$enemy_xp = ($enemy_atk + $enemy_ac + $enemy_hp) * 2;
+
+		echo "<table cellpadding=3 cellspacing=0 border=1 width=1200px>";
+		echo "<tr><td>";
+		echo "<td align=center><h2>" . $character_name . ", Level " . $character_level . " " . $character_role . "</h2>";
+		echo "(HP: " . $character_hp . ", ATK: " . $character_atk . " + " . $character_atk_boost . ", AC: " . $character_ac . " + " . $character_ac_boost . ")";
+		echo "<td align=center><h2>" . $enemy_name . "</h2>";
+		echo "(HP: " . $enemy_hp . ", ATK: " . $enemy_atk . ", AC: " . $enemy_ac . ")</tr>";
+		
+		// Run fight
+			// For each round, Character rand(0,ATK)+Boosts vs Enemy rand(0,AC)
+				// if hit, damage = rand(0, ATK/4)
+				// repeat for enemy
+		$round = 0;
+		while ($character_hp > 0 && $enemy_hp > 0) { // start round if both combatants still stand
+
+			$round++;
+			addToDebugLog("Fight.php: Round: " . $round);
+
+			// Character attacks first
+			$character_attack = rand(0, $character_atk) + $character_atk_boost;
+			addToDebugLog("Fight.php: - Character Attack: " . $character_attack);
+			$enemy_defend = rand(0, $enemy_ac);
+			addToDebugLog("Fight.php: - Enemy Defend: " . $enemy_defend);
+			
+			echo "<tr><td>Round " . $round . "<td>" . $character_name . " attacks " . $enemy_name;
+			
+			if ($character_attack > $enemy_defend) { // Hit
+				addToDebugLog("Fight.php: - Character hits Enemy");
+				$enemy_damage = rand(1, ($character_atk + $character_atk_boost)/3);
+				addToDebugLog("Fight.php: - Enemy takes damage: " . $enemy_damage);
+				$enemy_hp = $enemy_hp - $enemy_damage;
+				addToDebugLog("Fight.php: - Enemy HP reduced to: " . $enemy_hp);
+				echo ", and hits for " . $enemy_damage . " points of damage!<br/>" . $enemy_name . " now has " . $enemy_hp . "HP";
+			} else {
+				echo ", and misses!<br/>" . $enemy_name . " still has " . $enemy_hp . "HP";
+				addToDebugLog("Fight.php: - Enemy HP remains at: " . $enemy_hp);
+			}
+			
+			// Check if enemy still standing
+			if ($enemy_hp > 0) {
+				
+				$enemy_attack = rand(0, $enemy_atk);
+				addToDebugLog("Fight.php: - Enemy Attack: " . $enemy_attack);
+				$character_defend = rand(0, $character_ac + $character_ac_boost) ;
+				addToDebugLog("Fight.php: - Character Defend: " . $character_defend);
+				
+				echo "<td>" . $enemy_name . " attacks " . $character_name;
+				
+				if ($enemy_attack > $character_defend) { // Hit
+					addToDebugLog("Fight.php: - Enemy hits Character");
+					$character_damage = rand(ceil($enemy_attack/4), $enemy_attack/2);
+					addToDebugLog("Fight.php: - Character takes damage: " . $character_damage);
+					$character_hp = $character_hp - $character_damage;
+					addToDebugLog("Fight.php: - Character HP reduced to: " . $character_hp);
+					echo ", and hits for " . $character_damage . " points of damage!<br/>" . $character_name . " now has " . $character_hp . "HP";
+				} else {
+					echo ", and misses!<br/>" . $character_name . " still has " . $character_hp . "HP";
+					addToDebugLog("Fight.php: - Character HP remains at: " . $character_hp);
+				}	
+				echo "</tr>";
+
+			} else {
+				echo "<td>" . $enemy_name . " is defeated!</tr>";
+			}
+			
+		}
+		
+		echo "<tr><td colspan=3 align=center><h2>";
+		if ($character_hp <= 0) { // character died
+			echo $character_name . " has been defeated! May his legend never die.";
+			$winner = "enemy";
+			echo "</h2></tr></table>";	
+			//return "enemy," . $round;
+		} else { // enemy died
+			echo $enemy_name . " has been defeated, and good riddance to that scum!";
+			$winner = "character";
+			echo "</h2></tr></table>";	
+			//return "character," . $round;
+		}
+
+		// Record fight (new table)
+		$dml = "INSERT INTO hackcess.fight (character_id, enemy_id, grid_id, rounds) VALUES (" . $character_id . ", " . $enemy_id . ", " . $grid_id . ", " . $round . ");";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("doFight(): Fight entry added");
+		} else {
+			addToDebugLog("doFight(): ERROR: Fight entry not added");
+		}	
+		
+		if ($winner == "enemy") { // Enemy wins
+			// Player dead
+			$dml = "UPDATE hackcess.character SET status = 'Dead' WHERE character_id = " . $character_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("doFight(): Character record updated");
+			} else {
+				addToDebugLog("doFight(): Character record not updated");
+			}	
+			
+			// Create Descendant
+			
+			
+			// Assign descendent some gold and best piece of equipment
+			
+			
+			// Back to Character Select
+			echo "<p><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a>";
+			
+		} else { // Character wins
+			// Kill enemy
+			$dml = "UPDATE hackcess.enemy SET status = 'Dead' WHERE enemy_id = " . $enemy_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("doFight(): Enemy record updated");
+			} else {
+				addToDebugLog("doFight(): Enemy record not updated");
+			}				
+			
+			// Give Gold / XP
+			$dml = "UPDATE hackcess.character_details SET gold = gold + " . $enemy_gold . ", xp = xp + " . $enemy_xp . " WHERE character_id = " . $character_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("doFight(): Character record updated");
+			} else {
+				addToDebugLog("doFight(): Character record not updated");
+			}			
+			
+			// Give random item
+			$details = createRandomItem($character_id, $character_ac_boost, $character_atk_boost);
+			
+			// Output details
+			
+			echo "<p>" . $enemy_name . " drops " . $enemy_gold . " gold and a " . $details . ", which " . $character_name . " picks up.<br/>";
+			echo $character_name . " also gains " . $enemy_xp . "XP.<p>";
+			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Show Equipment</a><br/>"; // Show Equipment screen
+			echo "<a href='adventure.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Back to Adventure</a>"; // Back to Adventure
+		
 		}
 		
 	}

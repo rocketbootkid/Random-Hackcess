@@ -73,13 +73,18 @@
 			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
 			echo "<tr bgcolor=#ddd><td class='characters'>Name<td class='characters'>Class<td class='characters'>Level</tr>";
 			for ($c = 0; $c < $rowsc; $c++) {
-				echo "<tr><td class='characters'><a href='journey.php?player_id=" . $player_id . "&character_id=" . $resultc[$c][0] . "'>" . $resultc[$c][2] . "</a>";
+				if ($status == 'alive') {
+					echo "<tr><td class='characters'><a href='journey.php?player_id=" . $player_id . "&character_id=" . $resultc[$c][0] . "'>" . $resultc[$c][2] . "</a>";
+				} else {
+					echo "<tr><td class='characters'>" . $resultc[$c][2];
+				}
 				echo "<td class='characters'>" . $resultc[$c][3];
 				echo "<td class='characters' align=center>" . $resultc[$c][4];
 				echo "</tr>";
 			}
-			
-			echo "<tr><td colspan=3><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
+			if ($status == 'alive') {
+				echo "<tr><td colspan=3><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
+			}
 			echo "</table><p>";
 		} else {
 			echo "There are no dead / retired characters";
@@ -760,9 +765,9 @@
 		// Generate enemy stats based on character's stats
 		$enemy_hp = $character_hp - rand(0, 5);
 		if ($enemy_hp <= 0) { $enemy_hp = 1;}
-		$enemy_ac = $character_ac + $total_ac_boost - rand(0, 5);
+		$enemy_ac = $character_ac + $total_ac_boost - rand(3, 6);
 		if ($enemy_ac <= 0) { $enemy_ac = 1;}
-		$enemy_atk = $character_atk + $total_attack_boost - rand(0, 5);
+		$enemy_atk = $character_atk - rand(0, 5);
 		if ($enemy_atk <= 0) { $enemy_atk = 1;}
 		addToDebugLog("createEnemy(): Enemy Stats: HP: " . $enemy_hp . ", Character AC: " . $enemy_ac . ", Character ATK: " . $enemy_atk);	
 		
@@ -906,19 +911,25 @@
 		
 		addToDebugLog("getCharacterBoosts(): Function Entry - supplied parameters: Character ID: " . $character_id);
 		
-		$sql = "SELECT ac_boost, attack_boost FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		$sql = "SELECT ac_boost, attack_boost, slot, equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
 		addToDebugLog("getCharacterBoosts(): Constructed query: " . $sql);
 		$result = search($sql);
 		$rows = count($result);
 		$total_attack_boost = 0;
 		$total_ac_boost = 0;
 		for ($e = 0; $e < $rows; $e++) {
-			if ($result[$e][0] > 0) { // AC boost
-				$total_ac_boost = $total_ac_boost + $result[$e][0];
+			
+			// Check if item actually equipped
+			$is_equipped = isEquipped($result[$e][2], $result[$e][3], $character_id);
+			
+			if ($is_equipped == 1) {
+				if ($result[$e][0] > 0) { // AC boost
+					$total_ac_boost = $total_ac_boost + $result[$e][0];
+				}
+				if ($result[$e][1] > 0) { // Attack boost
+					$total_attack_boost = $total_attack_boost + $result[$e][1];
+				}			
 			}
-			if ($result[$e][1] > 0) { // Attack boost
-				$total_attack_boost = $total_attack_boost + $result[$e][1];
-			}			
 		}
 		addToDebugLog("getCharacterBoosts(): AC Boost: " . $total_ac_boost . ", Attack Boost: " . $total_attack_boost);
 		
@@ -964,9 +975,9 @@
 		addToDebugLog("manageEquipment(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Character ID: " . $charcter_id);
 		
 		echo "<table cellpadding=3 cellspacing=0 border=1>";
-		echo "<tr bgcolor=#ddd><td>Item<td>Slot<td align=center>Weight<td align=center>Action</tr>";
+		echo "<tr bgcolor=#ddd><td>Item<td>Slot<td align=center>Weight<td align=center>Actions</tr>";
 
-		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC;";
 		addToDebugLog("manageEquipment(): Constructed query: " . $sql);
 		$result = search($sql);
 		$rows = count($result);
@@ -988,11 +999,14 @@
 
 			// Determine if the item of equipment is equipped or not
 			$is_equipped = isEquipped($result[$e][5], $result[$e][0], $character_id);
+			$weight_total = $weight_total + $result[$e][4];
 			if ($is_equipped == 1) {
 				echo "<td align=center>-";
-				$weight_total = $weight_total + $result[$e][4];				
+							
 			} else {
-				echo "<td align=center><a href='equipment.php?slot=" . $result[$e][5] . "&item_id=" . $result[$e][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&action=equip'>Equip</a>"; // $slot, $item_id, $character_id
+				echo "<td align=center>";
+				echo "<a href='equipment.php?slot=" . $result[$e][5] . "&item_id=" . $result[$e][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&action=equip'>Equip</a>"; // $slot, $item_id, $character_id
+				echo " | <a href='equipment.php?slot=" . $result[$e][5] . "&item_id=" . $result[$e][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&action=drop'>Drop</a>"; // $slot, $item_id, $character_id
 			}
 			
 			echo "</tr>";
@@ -1000,7 +1014,18 @@
 		}
 		
 		echo "<tr><td colspan=2 align=right>Total Weight<td align=center>" . $weight_total . "<td></tr>";
+		
+		// Get character strength
+		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
+		echo "<tr><td colspan=2 align=right>Character Strength<td align=center>" . $character_strength . "<td></tr>";
+		
 		echo "</table>";
+		
+		if ($weight_total >= $character_strength) {
+			return "overweight";
+		} else {
+			return "ok";
+		}
 		
 	}
 	
@@ -1035,6 +1060,90 @@
 			addToDebugLog("flee(): Item equipped");
 		} else {
 			addToDebugLog("flee(): Item not equipped");
+		}
+		
+	}
+	
+	function createRandomItem($character_id, $character_ac_boost, $character_atk_boost) {
+		
+		// This function equips the item selected
+		
+		addToDebugLog("createRandomItem(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Character AC Boost: " . $character_ac_boost . ", Character Attack Boost: " . $character_atk_boost);
+
+		$item_choice = rand(0, 4);
+		
+		switch ($item_choice) {
+			case 0: // Head
+				$slot = "head";
+				$name = "Helm";
+				$ac_start = round($character_ac_boost/4, 0);
+				$ac_boost = rand($ac_start, $ac_start+2);
+				$weight = round($ac_boost/2);
+				$attack_boost = 0;
+				$details = "+" . $ac_boost . " " . $name;
+				break;
+			case 1: // Chest
+				$slot = "chest";
+				$name = "Chestplate";
+				$ac_start = round($character_ac_boost/4, 0);
+				$ac_boost = rand($ac_start, $ac_start+2);
+				$weight = round($ac_boost/2);
+				$attack_boost = 0;
+				$details = "+" . $ac_boost . " " . $name;
+				break;
+			case 2: // Legs
+				$slot = "legs";
+				$name = "Trousers";
+				$ac_start = round($character_ac_boost/4, 0);
+				$ac_boost = rand($ac_start, $ac_start+2);
+				$weight = round($ac_boost/2);
+				$attack_boost = 0;
+				$details = "+" . $ac_boost . " " . $name;
+				break;
+			case 3: // Shield
+				$slot = "shield";
+				$name = "Shield";
+				$ac_start = round($character_ac_boost/4, 0);
+				$ac_boost = rand($ac_start, $ac_start+2);
+				$weight = round($ac_boost/2);
+				$attack_boost = 0;
+				$details = "+" . $ac_boost . " " . $name;
+				break;
+			case 4: // Weapon
+				$slot = "weapon";
+				$name = "Sword";
+				$attack_boost = rand(intval($character_atk_boost), intval($character_atk_boost)+2);
+				$weight = round($attack_boost/2);
+				$ac_boost = 0;
+				$details = "+" . $attack_boost . " " . $name;
+				break;
+		}
+		
+		// Add weapon to character
+		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $name . "', " . $ac_boost . ", " . $attack_boost . ", " . $weight . ", '" . $slot . "', " . $character_id  .");";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("createRandomItem(): New item added");
+		} else {
+			addToDebugLog("createRandomItem(): ERROR: New item not added");
+		}
+		
+		return $details;
+		
+	}
+
+	function drop($equipment_id) {
+		
+		// This function equips the item selected
+		
+		addToDebugLog("drop(): Function Entry - supplied parameters: Equipment ID: " . $equipment_id);	
+		
+		$dml = "DELETE FROM hackcess.character_equipment WHERE equipment_id = " . $equipment_id . ";";
+		$result = delete($dml);
+		if ($result == TRUE) {
+			addToDebugLog("drop(): Item deleted");
+		} else {
+			addToDebugLog("drop(): ERROR: Item not deleted");
 		}
 		
 	}

@@ -1154,7 +1154,7 @@
 		
 		addToDebugLog("createPlayer(): Function Entry - supplied parameters: Name: " . $name);
 		
-		$dml = "INSERT INTO hackcess.user (name) VALUES ('" . $name . "')";
+		$dml = "INSERT INTO hackcess.user (username) VALUES ('" . $name . "')";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("createPlayer(): Player created");

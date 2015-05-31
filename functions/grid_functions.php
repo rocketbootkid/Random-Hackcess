@@ -302,7 +302,9 @@
 		
 		// Reload page
 		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
+		//echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back</a>";
 		
+		//outputDebugLog();
 		
 	}
 	
@@ -868,10 +870,35 @@
 			}	
 			
 			// Create Descendant
-			
+			$new_character_id = createCharacter($player_id, $character_id);
 			
 			// Assign descendent some gold and best piece of equipment
+			// Get predecessor gold
+			$gold = getCharacterDetailsInfo($new_character_id, "gold");
+			// Get predecessor best item
+			$best_item_id = getBestItem($character_id);
 			
+			// Update new character with predecessor gold
+			$dml = "UPDATE hackcess.character_details SET gold = " . round($gold/4, 0) . " WHERE character_id = " . $character_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("doFight(): Character record updated");
+			} else {
+				addToDebugLog("doFight(): Character record not updated");
+			}			
+
+			// Update new character with predecessor item
+			$dml = "UPDATE hackcess.character_equipment SET character_id = " . $character_id . " WHERE equipment_id = " . $best_item_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("doFight(): Character record updated");
+			} else {
+				addToDebugLog("doFight(): Character record not updated");
+			}
+			
+			// Display details of new Character
+			$new_character_name = getCharacterDetails($character_id, "character_name");
+			echo $character_name . " might feast with the gods, but their child, " . $new_character_name . ", shall continue the fight!";
 			
 			// Back to Character Select
 			echo "<p><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a>";
@@ -895,12 +922,20 @@
 				addToDebugLog("doFight(): Character record not updated");
 			}			
 			
-			// Give random item
-			$details = createRandomItem($character_id, $character_ac_boost, $character_atk_boost);
+			// Give random item if player has enough strength left
+			$character_strength = getCharacterDetailsInfo($character_id, 'strength');
+			$equipment_weight = equipmentWeight($character_id);
+
+			if ($equipment_weight < $character_strength) {
+				$details = createRandomItem($character_id, $character_ac_boost, $character_atk_boost);
+				$details = $details . ", which " . $character_name . " picks up.";
+			} else {
+				$details = "piece of equipment which " . $character_name . " can't pick up as  they're carrying too much equipment.";
+			}
 			
 			// Output details
 			
-			echo "<p>" . $enemy_name . " drops " . $enemy_gold . " gold and a " . $details . ", which " . $character_name . " picks up.<br/>";
+			echo "<p>" . $enemy_name . " drops " . $enemy_gold . " gold and a " . $details . "<br/>";
 			echo $character_name . " also gains " . $enemy_xp . "XP.<p>";
 			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Show Equipment</a><br/>"; // Show Equipment screen
 			echo "<a href='adventure.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Back to Adventure</a>"; // Back to Adventure

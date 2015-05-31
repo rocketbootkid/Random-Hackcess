@@ -60,9 +60,9 @@
 		
 		// Display Characters
 		if ($status == "alive") {
-			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status = 'Alive';";	
+			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status = 'Alive' ORDER BY character_level DESC;";	
 		} elseif ($status == "dead") {
-			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status != 'Alive';";
+			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status != 'Alive' ORDER BY character_level DESC LIMIT 10;";
 		}
 		
 		addToDebugLog("characterList(): Constructed query: " . $sqlc);
@@ -70,8 +70,8 @@
 		$rowsc = count($resultc);
 		
 		if ($rowsc != 0) {
-			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
-			echo "<tr bgcolor=#ddd><td class='characters'>Name<td class='characters'>Class<td class='characters'>Level</tr>";
+			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1 width=500px>";
+			echo "<tr bgcolor=#ddd><td class='characters'>Name<td class='characters'>Class<td class='characters' align=center>Level</tr>";
 			for ($c = 0; $c < $rowsc; $c++) {
 				if ($status == 'alive') {
 					echo "<tr><td class='characters'><a href='journey.php?player_id=" . $player_id . "&character_id=" . $resultc[$c][0] . "'>" . $resultc[$c][2] . "</a>";
@@ -87,7 +87,14 @@
 			}
 			echo "</table><p>";
 		} else {
-			echo "There are no dead / retired characters";
+			if ($status == "alive") {
+				echo "<table class='characters' cellpadding=3 cellspacing=0 border=1 width=500px>";
+				echo "<tr><td>There are no live characters</tr>";
+				echo "<tr><td><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
+				echo "</table><p>";
+			} else {
+				echo "There are no dead / retired characters";
+			}
 		}
 		
 	}
@@ -314,7 +321,7 @@
 		
 	}
 	
-	function newJourney($player_id, $character_id) {
+	function newJourney($player_id, $character_id, $parent_character_id) {
 
 		// Creates a new journey for the supplied player / character
 	
@@ -372,7 +379,11 @@
 		}		
 
 		// Navigate to page
-		echo "<script>window.location.href = 'journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'</script>";
+		if ($parent_character_id > 0) {
+			// Do nothing
+		} else {
+			echo "<script>window.location.href = 'journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'</script>";
+		}
 		
 	}
 	
@@ -563,10 +574,16 @@
 		generateCharacterStatsItems($character_id);
 		
 		// Create Journey
-		newJourney($player_id, $character_id);	
+		newJourney($player_id, $character_id, $parent_character_id);
 		
 		// Navigate to page
-		echo "<script>window.location.href = 'character.php?player_id=" . $player_id . "'</script>";
+		if ($parent_character_id == 0) {
+			echo "<script>window.location.href = 'character.php?player_id=" . $player_id . "'</script>";
+		}
+		
+		return $character_id;
+		
+		//outputDebugLog();
 		
 	}
 	
@@ -707,7 +724,7 @@
 		}
 			
 		// Create character details
-		$dml = "INSERT INTO hackcess.character_details (character_id, hp, attack, armor_class, gold, xp, strength, head_slot, chest_slot, legs_slot, shield_slot, weapon_slot, current_hp) VALUES (" . $character_id . ", 10, 5, 1, 0, 0, 20, " . $head . ", " . $chest . ", " . $legs . ", " . $shield . ", " . $sword . ", 10);";
+		$dml = "INSERT INTO hackcess.character_details (character_id, hp, attack, armor_class, gold, xp, strength, head_slot, chest_slot, legs_slot, shield_slot, weapon_slot, current_hp) VALUES (" . $character_id . ", 20, 5, 1, 0, 0, 20, " . $head . ", " . $chest . ", " . $legs . ", " . $shield . ", " . $sword . ", 10);";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("move(): Character details stored");
@@ -763,9 +780,9 @@
 		$total_attack_boost = $boosts[1];
 		
 		// Generate enemy stats based on character's stats
-		$enemy_hp = $character_hp - rand(0, 5);
+		$enemy_hp = ($character_hp/2) + 5;
 		if ($enemy_hp <= 0) { $enemy_hp = 1;}
-		$enemy_ac = $character_ac + $total_ac_boost - rand(3, 6);
+		$enemy_ac = $character_ac + $total_ac_boost - rand(5, 10);
 		if ($enemy_ac <= 0) { $enemy_ac = 1;}
 		$enemy_atk = $character_atk - rand(0, 5);
 		if ($enemy_atk <= 0) { $enemy_atk = 1;}
@@ -977,7 +994,7 @@
 		echo "<table cellpadding=3 cellspacing=0 border=1>";
 		echo "<tr bgcolor=#ddd><td>Item<td>Slot<td align=center>Weight<td align=center>Actions</tr>";
 
-		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC;";
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC, ac_boost, attack_boost DESC;";
 		addToDebugLog("manageEquipment(): Constructed query: " . $sql);
 		$result = search($sql);
 		$rows = count($result);
@@ -990,7 +1007,13 @@
 		// 5: Slot
 		
 		$weight_total = 0;
+		$current_slot = "";
 		for ($e = 0; $e < $rows; $e++) {		
+		
+			if ($result[$e][5] != $current_slot) {
+				echo "<tr><td colspan=4 bgcolor=#eee align=center>" . ucfirst($result[$e][5]) . "</tr>";
+				$current_slot = $result[$e][5];
+			}
 		
 			$bonus = $result[$e][2] + $result[$e][3];
 			echo "<tr><td>+" . $bonus . " " . $result[$e][1]; // Bonus + Item
@@ -1001,7 +1024,7 @@
 			$is_equipped = isEquipped($result[$e][5], $result[$e][0], $character_id);
 			$weight_total = $weight_total + $result[$e][4];
 			if ($is_equipped == 1) {
-				echo "<td align=center>-";
+				echo "<td align=center bgcolor=#6f3>Equipped";
 							
 			} else {
 				echo "<td align=center>";
@@ -1161,6 +1184,41 @@
 		} else {
 			addToDebugLog("drop(): ERROR: Item not deleted");
 		}
+		
+	}
+	
+	function equipmentWeight($character_id) {
+		
+		// This function equips the item selected
+		
+		addToDebugLog("equipmentWeight(): Function Entry - supplied parameters: Character ID: " . $character_id);		
+
+		$sql = "SELECT weight FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		addToDebugLog("equipmentWeight(): Constructed query: " . $sql);
+		$result = search($sql);
+		$rows = count($result);
+		$weight = 0;
+		
+		for ($r = 0; $r < $rows; $r++) {
+			$weight = $weight + $result[$r][0];
+		}
+
+		return $weight;
+		
+	}
+
+	function getBestItem($character_id) {
+		
+		// This function returns the id of the best item for the supplied character_id
+		
+		addToDebugLog("getBestItem(): Function Entry - supplied parameters: Character ID: " . $character_id);		
+		
+		$sql = "SELECT equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY attack_boost, ac_boost DESC LIMIT 1;";
+		addToDebugLog("getBestItem(): Constructed query: " . $sql);
+		$result = search($sql);
+		$best_item_id = $result[0][0];	
+		
+		return $best_item_id;
 		
 	}
 	

@@ -5,7 +5,6 @@
 	include 'functions/player_functions.php';
   
 	createPlayer($_GET['name']);
-	//echo "<script>window.close();</script>";
 	
 	outputDebugLog();
   

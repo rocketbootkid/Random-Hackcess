@@ -4,7 +4,7 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
   
-	createPlayer($_GET['name']);
+	createPlayer($_GET['username']);
 	
 	outputDebugLog();
   

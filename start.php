@@ -31,6 +31,12 @@
 	outputDebugLog();
 	
 ?>
+Create New Player
+<form action="createplayer.php">
+Player Name:<br>
+<input type="text" name="name">
+<input type="submit" value="Submit">
+</form>
 
 </body>
 

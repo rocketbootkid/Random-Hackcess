@@ -1152,14 +1152,14 @@
 		
 		// This function probably dosen't work
 		
-		("drop(): Function Entry - supplied parameters: Name: " . $name);
+		addToDebugLog("createPlayer(): Function Entry - supplied parameters: Name: " . $name);
 		
-		$dml = "INSERT INTO hackcess.user (name) VALUES ('" . $name . "')";
-		$result = delete($dml);
+		$dml = "INSERT INTO hackcess.user (username) VALUES ('" . $name . "')";
+		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("drop(): Item deleted");
+			addToDebugLog("createPlayer(): Player created");
 		} else {
-			addToDebugLog("drop(): ERROR: Item not deleted");
+			addToDebugLog("createPlayer(): ERROR: Player not created");
 		}
 		
 	}

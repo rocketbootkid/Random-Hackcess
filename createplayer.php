@@ -7,4 +7,4 @@
   createCharacter($_POST['name'])
   echo "<script>window.close</script>"
   
-?php>
+?>

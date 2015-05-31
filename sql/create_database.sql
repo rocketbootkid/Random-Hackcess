@@ -3,6 +3,8 @@ CREATE DATABASE `hackcess` /*!40100 DEFAULT CHARACTER SET latin1 */;
 CREATE TABLE `journey` (
   `journey_id` int(11) NOT NULL auto_increment,
   `player_id` varchar(45) default NULL,
+  `journey_name` varchar(45) default NULL,
+  `character_id` int(11) default NULL,
   PRIMARY KEY  (`journey_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

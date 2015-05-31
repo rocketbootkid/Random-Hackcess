@@ -1148,4 +1148,20 @@
 		
 	}
 	
+	function createPlayer($name) {
+		
+		// This function probably dosen't work
+		
+		("drop(): Function Entry - supplied parameters: Name: " . $name);
+		
+		$dml = "INSERT INTO hackcess.user (name) VALUES ('" . $name . "')";
+		$result = delete($dml);
+		if ($result == TRUE) {
+			addToDebugLog("drop(): Item deleted");
+		} else {
+			addToDebugLog("drop(): ERROR: Item not deleted");
+		}
+		
+	}
+	
 ?>

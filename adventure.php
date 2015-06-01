@@ -72,7 +72,7 @@
 		// Fourth column: Player details
 		echo "<td>";
 		// Show character details
-		displayPlayerInformation($character_id);
+		//displayPlayerInformation($character_id);
 		
 		echo "</tr></table>";
 		

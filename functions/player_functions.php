@@ -569,6 +569,24 @@
 		addToDebugLog("createCharacter(): Constructed query: " . $sql);
 		$result = search($sql);
 		$character_id = $result[0][0];
+		
+		// Update generational information is parent character id present
+		if ($parent_character_id > 0) {
+			
+			// Get parent generation
+			$parent_generation = getCharacterDetails($parent_character_id, "generation");
+			$parent_generation = $parent_generation + 1;
+			
+			// Update new character with generation and parent id
+			$dml = "UPDATE hackcess.character SET parent_id = " . $parent_character_id . ", generation = " . $parent_generation . " WHERE character_id = " . $character_id . ";";
+			$resultdml = insert($dml);
+			if ($resultdml == TRUE) {
+				addToDebugLog("updatePlayerOnMove(): Character level updated");
+			} else {
+				addToDebugLog("updatePlayerOnMove(): Character level not updated");
+			}			
+			
+		}
 
 		// Generate character details / items
 		generateCharacterStatsItems($character_id);
@@ -618,7 +636,7 @@
 			$title = $titles[rand(0, $titles_length)];
 		}
 		
-		$final_name = ucfirst($name) . " the " . ucfirst($title);
+		$final_name = trim(ucfirst($name)) . " the " . trim(ucfirst($title));
 		
 		return $final_name;
 		
@@ -724,7 +742,7 @@
 		}
 			
 		// Create character details
-		$dml = "INSERT INTO hackcess.character_details (character_id, hp, attack, armor_class, gold, xp, strength, head_slot, chest_slot, legs_slot, shield_slot, weapon_slot, current_hp) VALUES (" . $character_id . ", 20, 5, 1, 0, 0, 20, " . $head . ", " . $chest . ", " . $legs . ", " . $shield . ", " . $sword . ", 10);";
+		$dml = "INSERT INTO hackcess.character_details (character_id, hp, attack, armor_class, gold, xp, strength, head_slot, chest_slot, legs_slot, shield_slot, weapon_slot, current_hp) VALUES (" . $character_id . ", 20, 5, 1, 0, 0, 20, " . $head . ", " . $chest . ", " . $legs . ", " . $shield . ", " . $sword . ", 20);";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("move(): Character details stored");
@@ -1221,5 +1239,29 @@
 		return $best_item_id;
 		
 	}
+	
+	function getItemSummary($item_id) {
+		
+		// This function returns the summary for the supplied item_id
+		
+		addToDebugLog("getItemSummary(): Function Entry - supplied parameters: Item ID: " . $item_id);
+		
+		$sql = "SELECT name, ac_boost, attack_boost FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
+		addToDebugLog("getItemSummary(): Constructed query: " . $sql);
+		$result = search($sql);
+		
+		if ($result[0][1] == 0) {
+			$name = "+" . $result[0][2] . " " . $result[0][0];
+		} else {
+			$name = "+" . $result[0][1] . " " . $result[0][0];
+		}
+		addToDebugLog("getItemSummary(): Item Summary: " . $name);
+		
+		return $name;		
+		
+	}
+	
+	
+	
 	
 ?>

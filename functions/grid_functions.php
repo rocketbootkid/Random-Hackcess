@@ -874,12 +874,13 @@
 			
 			// Assign descendent some gold and best piece of equipment
 			// Get predecessor gold
-			$gold = getCharacterDetailsInfo($new_character_id, "gold");
+			$gold = getCharacterDetailsInfo($character_id, "gold");
 			// Get predecessor best item
 			$best_item_id = getBestItem($character_id);
 			
 			// Update new character with predecessor gold
-			$dml = "UPDATE hackcess.character_details SET gold = " . round($gold/4, 0) . " WHERE character_id = " . $character_id . ";";
+			$new_gold = round($gold/4, 0);
+			$dml = "UPDATE hackcess.character_details SET gold = " . $new_gold . " WHERE character_id = " . $new_character_id . ";";
 			$result = insert($dml);
 			if ($result == TRUE) {
 				addToDebugLog("doFight(): Character record updated");
@@ -888,7 +889,7 @@
 			}			
 
 			// Update new character with predecessor item
-			$dml = "UPDATE hackcess.character_equipment SET character_id = " . $character_id . " WHERE equipment_id = " . $best_item_id . ";";
+			$dml = "UPDATE hackcess.character_equipment SET character_id = " . $new_character_id . " WHERE equipment_id = " . $best_item_id . ";";
 			$result = insert($dml);
 			if ($result == TRUE) {
 				addToDebugLog("doFight(): Character record updated");
@@ -896,9 +897,14 @@
 				addToDebugLog("doFight(): Character record not updated");
 			}
 			
+			// Get summary of inherited weapon
+			$item_summary = getItemSummary($best_item_id);
+			
 			// Display details of new Character
-			$new_character_name = getCharacterDetails($character_id, "character_name");
-			echo $character_name . " might feast with the gods, but their child, " . $new_character_name . ", shall continue the fight!";
+			$new_character_name = getCharacterDetails($new_character_id, "character_name");
+			echo "<p>" . $character_name . " might feast with the gods, but their child, " . trim($new_character_name) . ", shall continue the fight!";
+			
+			echo "<p>" . trim($new_character_name) . " inherits " . $new_gold . " gold from their ancestor, as well as " . $character_name . "'s " . $item_summary;
 			
 			// Back to Character Select
 			echo "<p><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a>";

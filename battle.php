@@ -68,8 +68,8 @@
 	echo "</table>";
 	
 	// Temporary "Back" option.
-	echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Journey</a>";
-	outputDebugLog();
+	//echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Journey</a>";
+	//outputDebugLog();
 	
 ?>
 

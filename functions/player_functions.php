@@ -70,20 +70,29 @@
 		$rowsc = count($resultc);
 		
 		if ($rowsc != 0) {
-			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1 width=500px>";
-			echo "<tr bgcolor=#ddd><td class='characters'>Name<td class='characters'>Class<td class='characters' align=center>Level</tr>";
+			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
+			echo "<tr bgcolor=#ddd><td class='characters' width=50px align=center>Gen.<td class='characters' width=200px>Name<td class='characters' width=200px>Parent<td class='characters' width=100px>Class<td class='characters' align=center>Level</tr>";
 			for ($c = 0; $c < $rowsc; $c++) {
-				if ($status == 'alive') {
-					echo "<tr><td class='characters'><a href='journey.php?player_id=" . $player_id . "&character_id=" . $resultc[$c][0] . "'>" . $resultc[$c][2] . "</a>";
+				echo "<tr><td align=center>" . $resultc[$c][8]; // Generation
+				if ($status == 'alive') { // Name
+					echo "<td class='characters'><a href='journey.php?player_id=" . $player_id . "&character_id=" . $resultc[$c][0] . "'>" . $resultc[$c][2] . "</a>";
 				} else {
-					echo "<tr><td class='characters'>" . $resultc[$c][2];
+					echo "<td class='characters'>" . $resultc[$c][2];
 				}
+				// Parent Name
+				if ($resultc[$c][9] > 0) {
+					$parent_name = getCharacterDetails($resultc[$c][9], "character_name");
+					echo "<td class='characters'>" . $parent_name;
+				} else {
+					echo "<td class='characters' align=center>-";
+				}
+				
 				echo "<td class='characters'>" . $resultc[$c][3];
 				echo "<td class='characters' align=center>" . $resultc[$c][4];
 				echo "</tr>";
 			}
 			if ($status == 'alive') {
-				echo "<tr><td colspan=3><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
+				echo "<tr><td colspan=5><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
 			}
 			echo "</table><p>";
 		} else {
@@ -504,7 +513,7 @@
 		$new_level = $xp / $level;
 		if ($new_level >= 1000) {
 			// Increase stats
-			$dml = "UPDATE hackcess.character_details SET hp = hp + 1, current_hp = current_hp + 1, armor_class = armor_class + 1, attack = attack + 1, strength = strength + 2 WHERE character_id = " . $character_id . ";";
+			$dml = "UPDATE hackcess.character_details SET hp = hp + 1, current_hp = current_hp + 1, armor_class = armor_class + 1, attack = attack + 1, strength = strength + 4 WHERE character_id = " . $character_id . ";";
 			$resultdml = insert($dml);
 			if ($resultdml == TRUE) {
 				addToDebugLog("updatePlayerOnMove(): Character details updated");
@@ -792,8 +801,7 @@
 		addToDebugLog("createEnemy(): Character Stats: HP: " . $character_hp . ", Character AC: " . $character_ac . ", Character ATK: " . $character_atk);	
 		
 		// Get character boosts from armour / weapons
-		$boost_list = getCharacterBoosts($character_id);
-		$boosts = explode(",", $boost_list);
+		$boosts = getCharacterBoosts($character_id);
 		$total_ac_boost = $boosts[0];
 		$total_attack_boost = $boosts[1];
 		
@@ -802,7 +810,7 @@
 		if ($enemy_hp <= 0) { $enemy_hp = 1;}
 		$enemy_ac = $character_ac + $total_ac_boost - rand(5, 10);
 		if ($enemy_ac <= 0) { $enemy_ac = 1;}
-		$enemy_atk = $character_atk - rand(0, 5);
+		$enemy_atk = $character_atk + $total_attack_boost - rand(5, 10);
 		if ($enemy_atk <= 0) { $enemy_atk = 1;}
 		addToDebugLog("createEnemy(): Enemy Stats: HP: " . $enemy_hp . ", Character AC: " . $enemy_ac . ", Character ATK: " . $enemy_atk);	
 		
@@ -893,8 +901,7 @@
 		// Column 3: $enemy_info; 0: enemy_name, 1: atk, 2: ac, 3: hp 
 		
 		// Get character AC / ATK boosts from equipment
-		$boost_list = getCharacterBoosts($character_basic_info[0][0]);
-		$boosts = explode(",", $boost_list);
+		$boosts = getCharacterBoosts($character_basic_info[0][0]);
 		$total_ac_boost = $boosts[0];
 		$total_attack_boost = $boosts[1];
 		addToDebugLog("displayBattleStats(): Boosts: AC: " . $total_ac_boost . ", ATK: " . $total_attack_boost);
@@ -967,8 +974,11 @@
 			}
 		}
 		addToDebugLog("getCharacterBoosts(): AC Boost: " . $total_ac_boost . ", Attack Boost: " . $total_attack_boost);
+		$details = array();
+		$details[0] = $total_ac_boost;
+		$details[1] = $total_attack_boost;
 		
-		return $total_ac_boost . "," . $total_attack_boost;
+		return $details;
 		
 	}
 	
@@ -1062,7 +1072,7 @@
 		
 		echo "</table>";
 		
-		if ($weight_total >= $character_strength) {
+		if ($weight_total > $character_strength) {
 			return "overweight";
 		} else {
 			return "ok";
@@ -1111,14 +1121,15 @@
 		
 		addToDebugLog("createRandomItem(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Character AC Boost: " . $character_ac_boost . ", Character Attack Boost: " . $character_atk_boost);
 
+		srand(make_seed());
 		$item_choice = rand(0, 4);
 		
 		switch ($item_choice) {
 			case 0: // Head
 				$slot = "head";
 				$name = "Helm";
-				$ac_start = round($character_ac_boost/4, 0);
-				$ac_boost = rand($ac_start, $ac_start+2);
+				$ac_start = intval(ceil($character_ac_boost/4));
+				$ac_boost = rand($ac_start-2, $ac_start+2);
 				$weight = round($ac_boost/2);
 				$attack_boost = 0;
 				$details = "+" . $ac_boost . " " . $name;
@@ -1126,8 +1137,8 @@
 			case 1: // Chest
 				$slot = "chest";
 				$name = "Chestplate";
-				$ac_start = round($character_ac_boost/4, 0);
-				$ac_boost = rand($ac_start, $ac_start+2);
+				$ac_start = intval(ceil($character_ac_boost/4));
+				$ac_boost = rand($ac_start-2, $ac_start+2);
 				$weight = round($ac_boost/2);
 				$attack_boost = 0;
 				$details = "+" . $ac_boost . " " . $name;
@@ -1135,8 +1146,8 @@
 			case 2: // Legs
 				$slot = "legs";
 				$name = "Trousers";
-				$ac_start = round($character_ac_boost/4, 0);
-				$ac_boost = rand($ac_start, $ac_start+2);
+				$ac_start = intval(ceil($character_ac_boost/4));
+				$ac_boost = rand($ac_start-2, $ac_start+2);
 				$weight = round($ac_boost/2);
 				$attack_boost = 0;
 				$details = "+" . $ac_boost . " " . $name;
@@ -1144,8 +1155,8 @@
 			case 3: // Shield
 				$slot = "shield";
 				$name = "Shield";
-				$ac_start = round($character_ac_boost/4, 0);
-				$ac_boost = rand($ac_start, $ac_start+2);
+				$ac_start = intval(ceil($character_ac_boost/4));
+				$ac_boost = rand($ac_start-2, $ac_start+2);
 				$weight = round($ac_boost/2);
 				$attack_boost = 0;
 				$details = "+" . $ac_boost . " " . $name;
@@ -1153,7 +1164,7 @@
 			case 4: // Weapon
 				$slot = "weapon";
 				$name = "Sword";
-				$attack_boost = rand(intval($character_atk_boost), intval($character_atk_boost)+2);
+				$attack_boost = rand(intval($character_atk_boost)-2, intval($character_atk_boost)+2);
 				$weight = round($attack_boost/2);
 				$ac_boost = 0;
 				$details = "+" . $attack_boost . " " . $name;

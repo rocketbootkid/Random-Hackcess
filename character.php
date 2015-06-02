@@ -28,7 +28,7 @@
 	
 	echo "<p><a href='player.php'>Back to Player Select</a>";
 
-	//outputDebugLog();
+	outputDebugLog();
 	
 ?>
 

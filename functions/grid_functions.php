@@ -751,16 +751,16 @@
 		// Load Character Details
 		$character_basic_info = getAllCharacterMainInfo($character_id);
 		$character_name = trim($character_basic_info[0][2]); 		// 2	Name
-		$character_role = $character_basic_info[0][3]; 		// 3	Role
-		$character_level = $character_basic_info[0][4]; 	// 4	Level
-		$character_status = $character_basic_info[0][7]; 	// 7	Status
+		$character_role = $character_basic_info[0][3]; 				// 3	Role
+		$character_level = $character_basic_info[0][4]; 			// 4	Level
+		$character_status = $character_basic_info[0][7]; 			// 7	Status
 		$character_detailed_info = getAllCharacterDetailedInfo($character_id);
-		$character_hp = $character_detailed_info[0][2]; 	// 2	HP
-		$character_atk = $character_detailed_info[0][3];	// 3	ATK
-		$character_ac = $character_detailed_info[0][4];		// 4	AC
+		$character_hp = $character_detailed_info[0][2]; 			// 2	HP
+		$character_atk = $character_detailed_info[0][3];			// 3	ATK
+		$character_ac = $character_detailed_info[0][4];				// 4	AC
 		$character_boosts = getCharacterBoosts($character_id);
-		$character_ac_boost = $character_boosts[0];			// 0	AC Boost
-		$character_atk_boost = $character_boosts[2];		// 1	ATK Boost
+		$character_ac_boost = $character_boosts[0];					// 0	AC Boost
+		$character_atk_boost = $character_boosts[1];				// 1	ATK Boost
 		
 		// Load Enemy Details
 		$enemy_info = getEnemyInfo($enemy_id);
@@ -771,7 +771,7 @@
 		$enemy_gold = ($enemy_atk + $enemy_ac + $enemy_hp) * 3;
 		$enemy_xp = ($enemy_atk + $enemy_ac + $enemy_hp) * 2;
 
-		echo "<table cellpadding=3 cellspacing=0 border=1 width=1200px>";
+		echo "<table cellpadding=3 cellspacing=0 border=1 width=100%>";
 		echo "<tr><td>";
 		echo "<td align=center><h2>" . $character_name . ", Level " . $character_level . " " . $character_role . "</h2>";
 		echo "(HP: " . $character_hp . ", ATK: " . $character_atk . " + " . $character_atk_boost . ", AC: " . $character_ac . " + " . $character_ac_boost . ")";
@@ -794,7 +794,7 @@
 			$enemy_defend = rand(0, $enemy_ac);
 			addToDebugLog("Fight.php: - Enemy Defend: " . $enemy_defend);
 			
-			echo "<tr><td>Round " . $round . "<td>" . $character_name . " attacks " . $enemy_name;
+			echo "<tr><td width=100px align=center>Round " . $round . "<td width=700px>" . $character_name . " attacks " . $enemy_name;
 			
 			if ($character_attack > $enemy_defend) { // Hit
 				addToDebugLog("Fight.php: - Character hits Enemy");
@@ -816,7 +816,7 @@
 				$character_defend = rand(0, $character_ac + $character_ac_boost) ;
 				addToDebugLog("Fight.php: - Character Defend: " . $character_defend);
 				
-				echo "<td>" . $enemy_name . " attacks " . $character_name;
+				echo "<td width=700px>" . $enemy_name . " attacks " . $character_name;
 				
 				if ($enemy_attack > $character_defend) { // Hit
 					addToDebugLog("Fight.php: - Enemy hits Character");
@@ -839,7 +839,7 @@
 		
 		echo "<tr><td colspan=3 align=center><h2>";
 		if ($character_hp <= 0) { // character died
-			echo $character_name . " has been defeated! May his legend never die.";
+			echo $character_name . " has been defeated! May their legend never die.";
 			$winner = "enemy";
 			echo "</h2></tr></table>";	
 			//return "enemy," . $round;
@@ -875,12 +875,14 @@
 			// Assign descendent some gold and best piece of equipment
 			// Get predecessor gold
 			$gold = getCharacterDetailsInfo($character_id, "gold");
+			$xp = getCharacterDetailsInfo($character_id, "xp");
 			// Get predecessor best item
 			$best_item_id = getBestItem($character_id);
 			
-			// Update new character with predecessor gold
-			$new_gold = round($gold/4, 0);
-			$dml = "UPDATE hackcess.character_details SET gold = " . $new_gold . " WHERE character_id = " . $new_character_id . ";";
+			// Update new character with fraction of predecessor gold and xp
+			$new_gold = round($gold/3, 0);
+			$new_xp = round($xp/3, 0);
+			$dml = "UPDATE hackcess.character_details SET gold = " . $new_gold . ", xp = " . $new_xp . " WHERE character_id = " . $new_character_id . ";";
 			$result = insert($dml);
 			if ($result == TRUE) {
 				addToDebugLog("doFight(): Character record updated");

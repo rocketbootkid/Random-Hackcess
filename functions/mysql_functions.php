@@ -8,6 +8,7 @@
 	$outsystem_fuel_cost = 2;
 	$current_player = 0;
 	$queries = 0;
+	$query_sql = "";
 
 	// ********************************************************************************************************************************************
 	// ************************************************ DATABASE-RELATED FUNCTIONS ****************************************************************
@@ -57,9 +58,11 @@
 
 		global $connection;
 		global $queries;
+		global $query_sql;
 		
 		$result = mysql_query($sql, $connection);
 		$queries = $queries + 1;
+		$query_sql = $query_sql . "<br/>" . $sql;
 		$rows = mysql_num_rows($result);
 		if ($rows == "") {
 			$rows = 0;

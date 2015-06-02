@@ -34,5 +34,12 @@
 	
 	}
 	
+	function outputQueryList() {
+	
+		global $query_sql;
+	
+		echo "<p>Query SQL: " . $query_sql;
+	
+	}
 	
 ?>

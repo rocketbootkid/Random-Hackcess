@@ -37,7 +37,7 @@
 		$coordinates = getPlayerCurrentGridCoordinates($character_id, $journey_id);
 		$grid_x = $coordinates[0][0];
 		$grid_y = $coordinates[0][1];
-		$radius_x = 15;
+		$radius_x = 10;
 		$radius_y = 6;
 		
 		// Draws the grid for defined radius around the current location
@@ -72,10 +72,12 @@
 		// Fourth column: Player details
 		echo "<td>";
 		// Show character details
-		//displayPlayerInformation($character_id);
+		displayPlayerInformation($character_id);
 		
 		echo "</tr></table>";
 		
+		outputQueryCount();
+		outputQueryList();
 		//outputDebugLog();
 
 	}

@@ -104,6 +104,27 @@ CREATE TABLE `fight` (
   PRIMARY KEY  (`fight_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `store` (
+  `store_id` int(11) NOT NULL auto_increment,
+  `store_name` varchar(45) default NULL,
+  `grid_id` int(11) default NULL,
+  `journey_id` int(11) default NULL,
+  `character_id` int(11) default NULL,
+  PRIMARY KEY  (`store_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `store_contents` (
+  `contents_id` int(11) NOT NULL auto_increment,
+  `store_id` int(11) default NULL,
+  `item_name` varchar(45) default NULL,
+  `item_ac_boost` int(11) default NULL,
+  `item_attack_boost` int(11) default NULL,
+  `item_weight` int(11) default NULL,
+  `item_slot` varchar(45) default NULL,
+  `item_cost` int(11) default NULL,
+  PRIMARY KEY  (`contents_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE INDEX idx_gridid ON grid (grid_id);
 CREATE INDEX idx_gridx ON grid (grid_x);
 CREATE INDEX idx_gridy ON grid (grid_y);

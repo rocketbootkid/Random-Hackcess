@@ -76,8 +76,8 @@
 		
 		echo "</tr></table>";
 		
-		outputQueryCount();
-		outputQueryList();
+		//outputQueryCount();
+		//outputQueryList();
 		//outputDebugLog();
 
 	}

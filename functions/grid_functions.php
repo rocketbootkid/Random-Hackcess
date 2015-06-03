@@ -935,7 +935,7 @@
 			$equipment_weight = equipmentWeight($character_id);
 
 			if ($equipment_weight < $character_strength) {
-				$details = createRandomItem($character_id, $character_ac_boost, $character_atk_boost);
+				$details = createRandomItem($character_id, $character_ac, $character_atk);
 				$details = $details . ", which " . $character_name . " picks up.";
 			} else {
 				$details = "piece of equipment which " . $character_name . " can't pick up as  they're carrying too much equipment.";

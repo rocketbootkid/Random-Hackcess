@@ -1130,6 +1130,7 @@
 				$name = "Helm";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
+				if ($ac_boost < 1) { $ac_boost = 1; };
 				$weight = round($ac_boost/2);
 				$attack_boost = 0;
 				$details = "+" . $ac_boost . " " . $name;
@@ -1139,6 +1140,7 @@
 				$name = "Chestplate";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
+				if ($ac_boost < 1) { $ac_boost = 1; };
 				$weight = round($ac_boost/2);
 				$attack_boost = 0;
 				$details = "+" . $ac_boost . " " . $name;
@@ -1148,6 +1150,7 @@
 				$name = "Trousers";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
+				if ($ac_boost < 1) { $ac_boost = 1; };
 				$weight = round($ac_boost/2);
 				$attack_boost = 0;
 				$details = "+" . $ac_boost . " " . $name;
@@ -1157,6 +1160,7 @@
 				$name = "Shield";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
+				if ($ac_boost < 1) { $ac_boost = 1; };
 				$weight = round($ac_boost/2);
 				$attack_boost = 0;
 				$details = "+" . $ac_boost . " " . $name;

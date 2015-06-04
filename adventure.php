@@ -13,6 +13,7 @@
 	include 'functions/mysql_functions.php';
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
+	include 'functions/store_functions.php';
 	
 	// ************************************************************************************
 	// Move to new Grid
@@ -58,6 +59,20 @@
 		echo "<td width=300px align=left valign=top>";
 		echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a><br/>";
 		echo "<a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Back to Journey Select</a>";
+		
+		$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
+
+		// Determine if there is a store here
+		$store_id = isThereAStoreHere($grid_id);
+		if ($store_id > 0) {
+			echo "<p><a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&store_id=" . $store_id . "'>Visit Store</a>"; // character, player, journey, store
+		} 
+		
+		// Determine if there is an enemy here
+		$enemy_id = isEnemyHere($grid_id, $character_id);
+		if ($enemy_id > 0) {
+			echo "<p><a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&grid_id=" . $grid_id . "'>Face Enemy</a>";
+		}
 		
 		// Second column: Journal entries
 		echo "<td width=300px align=right>";

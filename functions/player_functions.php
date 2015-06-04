@@ -71,7 +71,7 @@
 		
 		if ($rowsc != 0) {
 			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
-			echo "<tr bgcolor=#ddd><td class='characters' width=50px align=center>Gen.<td class='characters' width=200px>Name<td class='characters' width=200px>Parent<td class='characters' width=100px>Class<td class='characters' align=center>Level</tr>";
+			echo "<tr bgcolor=#ddd><td class='characters' width=50px align=center>Gen.<td class='characters' width=200px>Name<td class='characters' width=100px>Class<td class='characters' align=center>Level<td class='characters' width=200px>Parent</tr>";
 			for ($c = 0; $c < $rowsc; $c++) {
 				echo "<tr><td align=center>" . $resultc[$c][8]; // Generation
 				if ($status == 'alive') { // Name
@@ -79,16 +79,17 @@
 				} else {
 					echo "<td class='characters'>" . $resultc[$c][2];
 				}
+				echo "<td class='characters'>" . $resultc[$c][3];
+				echo "<td class='characters' align=center>" . $resultc[$c][4];
+				
 				// Parent Name
 				if ($resultc[$c][9] > 0) {
 					$parent_name = getCharacterDetails($resultc[$c][9], "character_name");
 					echo "<td class='characters'>" . $parent_name;
 				} else {
 					echo "<td class='characters' align=center>-";
-				}
-				
-				echo "<td class='characters'>" . $resultc[$c][3];
-				echo "<td class='characters' align=center>" . $resultc[$c][4];
+				}		
+		
 				echo "</tr>";
 			}
 			if ($status == 'alive') {
@@ -565,7 +566,7 @@
 		$role = generateRole();
 		
 		// Create record
-		$dml = "INSERT INTO hackcess.character (player_id, character_name, character_role, character_level, status) VALUES (" . $player_id . ", '" . $name . "', '" . $role . "', 1, 'Alive');";
+		$dml = "INSERT INTO hackcess.character (player_id, character_name, character_role, character_level, status, generation, parent_id) VALUES (" . $player_id . ", '" . $name . "', '" . $role . "', 1, 'Alive', 0, 0);";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("createCharacter(): New character generated");

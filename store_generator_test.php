@@ -14,7 +14,7 @@
 	include 'functions/player_functions.php';
 	include 'functions/store_functions.php';
 
-	generateStore(1, 1, 1);
+	generateStore(1, 51, 32);
 	
 	outputDebugLog();
 	

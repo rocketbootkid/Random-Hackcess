@@ -35,6 +35,8 @@
 		$rows = (2 * $radius_y) + 1;
 		$cols = (2 * $radius_x) + 1;
 		
+		$character_current_grid_id = getCharacterCurrentGrid($character_id, $journey_id);
+		
 		echo "<table cellpadding=0 cellspacing=0 border=1>";
 		
 		for ($y = 0; $y < $rows; $y++) {
@@ -81,7 +83,20 @@
 					
 					echo "<td class='" . $class . "' height='25' width=25px bgcolor='" . $color . "' title='(" . $current_x . "," . $current_y . ") ID: " . $grid_id . "'>";
 					if ($directions != '9999') {
-						echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&jump=true&player_id=" . $player_id . "'>";
+						// Determine if there's an enemy or a store here, but only if this is the characters current grid
+						if ($grid_id == $character_current_grid_id) {
+							
+							// Determine if there is a store here
+							$store_id = isThereAStoreHere($grid_id);
+							if ($store_id > 0) {
+								echo "<a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&jump=true&player_id=" . $player_id . "'>";
+							}
+							
+							
+						} else {						
+							echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&grid_id=" . $grid_id . "&jump=true&player_id=" . $player_id . "'>";
+						}
+						
 					}
 					echo "<img src='images/" . $directions . ".png' border=0>";
 					echo "</a>";
@@ -272,6 +287,14 @@
 			// Create new grid record
 			$grid_id = writeGrid($x, $y, $available_directions, $journey_id);
 			addToDebugLog("move(): New Grid ID: " . $grid_id);
+			
+			// Determine if there's going to be a store here
+			srand(make_seed());
+			$isStore = rand(0, 30);
+			if ($isStore == 15) {
+				addToDebugLog("move(): Generating a store at Grid ID " . $grid_id);
+				generateStore($grid_id, $journey_id, $character_id);
+			}
 			
 		} else {
 			addToDebugLog("move(): We've visited the next grid before");
@@ -733,7 +756,7 @@
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows > 0) {
-			return 1; // Enemy present
+			return $return[0][0]; // Enemy present
 			addToDebugLog("isEnemyHere(): Enemy found");
 		} else {
 			return 0; // Enemy not present

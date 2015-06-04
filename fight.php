@@ -22,7 +22,7 @@
 	
 	doFight($character_id, $enemy_id, $grid_id, $player_id, $journey_id);
 	
-	outputDebugLog();
+	//outputDebugLog();
 	
 ?>
 

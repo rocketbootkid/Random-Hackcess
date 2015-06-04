@@ -12,6 +12,7 @@
 	include 'functions/mysql_functions.php';
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
+	include 'functions/store_functions.php';
 
 	$character_id = $_GET['character_id'];
 	$enemy_id = $_GET['enemy_id'];
@@ -19,30 +20,49 @@
 	$player_id = $_GET['player_id'];
 	$journey_id = $_GET['journey_id'];
 	$action = $_GET['action'];
+	$store_id = $_GET['store_id'];
+	$item_id = $_GET['item_id'];
 	
-	if ($action == "generate") {
-		// Generate new store
-	
-	
-	} elseif ($action == "sell") {
+	if ($action == "sell") {
 		// Sell item
-		
+		sellItem($store_id, $journey_id, $character_id, $player_id, $item_id);
 		
 	} elseif ($action == "buy") {
 		// Buy item
+		buyItem($store_id, $journey_id, $character_id, $player_id, $item_id);
 		
+	} elseif ($action == "equip") {
+	
+		// Equip the item
+		equip($_GET['slot'], $_GET['item_id'], $character_id);
+	
+		// Redirect back to page
+		echo "<script>window.location.href = 'store.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "'</script>";
 		
+	
 	} else { // Display Store and Character items
 		
-		echo "<table cellpadding=1 cellspacing=1 border=0><tr><td>";	
-		characterEquipment();
-		echo "<td>";
-		storeEquipment();
+		echo "<table cellpadding=1 cellspacing=1 border=0><tr><td valign=top>";	
+		characterEquipment($character_id, $player_id, $journey_id, $store_id);
+		echo "<td valign=top>";
+		storeEquipment($store_id, $journey_id, $character_id, $player_id);
 		echo "</tr></table>";
 		
 	}
 	
-	outputDebugLog();
+	// Get weight of character equipment
+	$equipment_total_weight = characterEquipmentWeight($character_id);
+	
+	// Get character strength
+	$character_strength = getCharacterDetailsInfo($character_id, 'strength');
+	
+	if ($character_strength <= $equipment_total_weight) {
+		echo "<p><a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
+	} else {
+		echo "<p>You are overencumbered. You must sell items to continue.";
+	}
+	
+	//outputDebugLog();
 	
 ?>
 

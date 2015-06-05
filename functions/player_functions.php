@@ -71,7 +71,12 @@
 		
 		if ($rowsc != 0) {
 			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
-			echo "<tr bgcolor=#ddd><td class='characters' width=50px align=center>Gen.<td class='characters' width=200px>Name<td class='characters' width=100px>Class<td class='characters' align=center>Level<td class='characters' width=200px>Parent</tr>";
+			echo "<tr bgcolor=#ddd><td class='characters' width=50px align=center>Gen.";
+			echo "<td class='characters' width=200px>Name";
+			echo "<td class='characters' width=100px>Class";
+			echo "<td class='characters' align=center>Level";
+			echo "<td class='characters' width=200px>Parent";
+			echo "<td class='characters' align=center>Fights</tr>";
 			for ($c = 0; $c < $rowsc; $c++) {
 				echo "<tr><td align=center>" . $resultc[$c][8]; // Generation
 				if ($status == 'alive') { // Name
@@ -89,11 +94,13 @@
 				} else {
 					echo "<td class='characters' align=center>-";
 				}		
-		
+				// History
+				$fights = characterFightCount($resultc[$c][0]);
+				echo "<td align=center><a href='history.php?player_id=" . $player_id . "&character_id=" . $resultc[$c][0] . "'>" . $fights . "</a>";
 				echo "</tr>";
 			}
 			if ($status == 'alive') {
-				echo "<tr><td colspan=5><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
+				echo "<tr><td colspan=6><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
 			}
 			echo "</table><p>";
 		} else {
@@ -1277,7 +1284,65 @@
 		
 	}
 	
+	function showCharacterHistory($character_id) {
+		
+		// This function displays the combat history for the selected character
+		
+		addToDebugLog("getItemSummary(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		
+		$sql = "SELECT * FROM hackcess.fight WHERE character_id = " . $character_id . ";";
+		addToDebugLog("showCharacterHistory(): Constructed query: " . $sql);
+		$result = search($sql);	
+		$rows = count($result);
+		
+		echo "<table cellpadding=3 cellspacing=0 border=1>";
+		echo "<tr bgcolor=#ddd><td><td>Fight<td>Outcome<td>Enemy<td align=center>AC<td align=center>ATK<td>Rounds</tr>";
+		
+		for ($r = 0; $r < $rows; $r++) {
+			
+			$index = $r+1;
+			echo "<td align=center>" . $index;
+			
+			// Fight Number
+			echo "<td align=center>" . $result[$r][0];
+			
+			//Outcome
+			if ($result[$r][5] == 1) {
+				echo "<td align=center>Defeated";
+			} else {
+				echo "<td align=center>Beaten by";
+			}
+			
+			// Enemy Name
+			$enemy_details = getEnemyInfo($result[$r][2]);
+			
+			echo "<td>" . $enemy_details[0][0] . "<td align=center>+" . $enemy_details[0][2] . "<td align=center>+" . $enemy_details[0][1];
+			
+			// Rounds
+			if ($result[$r][5] == 1) {
+				echo "<td align=right>" . barGraph($result[$r][4], 'char') . "</tr>";
+			} else {
+				echo "<td align=left>" . barGraph($result[$r][4], 'enemy') . "</tr>";
+			}
+			
+		}
+		echo "</table>";
+		
+	}
 	
-	
+	function characterFightCount($character_id) {
+		
+		// This function displays the combat history for the selected character
+		
+		addToDebugLog("characterFightCount(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		
+		$sql = "SELECT fight_id FROM hackcess.fight WHERE character_id = " . $character_id . ";";
+		addToDebugLog("characterFightCount(): Constructed query: " . $sql);
+		$result = search($sql);
+		$rows = count($result);
+		
+		return $rows;
+			
+	}
 	
 ?>

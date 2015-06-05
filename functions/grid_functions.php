@@ -791,7 +791,7 @@
 		$enemy_atk = $enemy_info[0][1];// 1	ATK
 		$enemy_ac = $enemy_info[0][2];// 2	AC
 		$enemy_hp = $enemy_info[0][3];// 3	HP
-		$enemy_gold = ($enemy_atk + $enemy_ac + $enemy_hp) * 3;
+		$enemy_gold = ($enemy_atk + $enemy_ac + $enemy_hp);
 		$enemy_xp = ($enemy_atk + $enemy_ac + $enemy_hp) * 2;
 
 		echo "<table cellpadding=3 cellspacing=0 border=1 width=100%>";
@@ -874,7 +874,12 @@
 		}
 
 		// Record fight (new table)
-		$dml = "INSERT INTO hackcess.fight (character_id, enemy_id, grid_id, rounds) VALUES (" . $character_id . ", " . $enemy_id . ", " . $grid_id . ", " . $round . ");";
+		if ($winner == "enemy") {
+			$boolWinner = 0; // Enemy won
+		} else {
+			$boolWinner = 1; // Character won
+		}
+		$dml = "INSERT INTO hackcess.fight (character_id, enemy_id, grid_id, rounds, winner) VALUES (" . $character_id . ", " . $enemy_id . ", " . $grid_id . ", " . $round . ", " . $boolWinner . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("doFight(): Fight entry added");
@@ -903,8 +908,8 @@
 			$best_item_id = getBestItem($character_id);
 			
 			// Update new character with fraction of predecessor gold and xp
-			$new_gold = round($gold/3, 0);
-			$new_xp = round($xp/3, 0);
+			$new_gold = round($gold/5, 0);
+			$new_xp = round($xp/5, 0);
 			$dml = "UPDATE hackcess.character_details SET gold = " . $new_gold . ", xp = " . $new_xp . " WHERE character_id = " . $new_character_id . ";";
 			$result = insert($dml);
 			if ($result == TRUE) {

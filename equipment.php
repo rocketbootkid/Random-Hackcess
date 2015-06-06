@@ -7,7 +7,7 @@
 
 <body>
 
-<h1>Equipment</h1>
+<h1 align=center>Equipment</h1>
 
 <?php
 
@@ -45,9 +45,8 @@
 			$value = manageEquipment($player_id, $character_id, $journey_id);
 			
 			if ($value == "ok") {
-				echo "<p><a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
+				echo "<p><div style='text-align: center;'><a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a></div>";
 			} else {
-				echo "<p>You are carrying too much equipment. Please drop some item(s) to continue.";
 			}
 			
 			//outputDebugLog();

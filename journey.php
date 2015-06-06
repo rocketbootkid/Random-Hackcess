@@ -2,7 +2,6 @@
 
 <head>
 	<title>Random Hackcess | Select Journey</title>
-	<!--<link rel="stylesheet" type="text/css" href="css/css.css">-->
 </head>
 
 <body>
@@ -23,14 +22,14 @@
 	} else { // Display journeys
 		// Display character name
 		$character_name = getCharacterDetails($_GET['character_id'], "character_name");
-		echo "<h1>The Many Journeys of " . $character_name . "</h1>";
+		echo "<h1 align=center>The Many Journeys of " . $character_name . "</h1>";
 		
 		// Display list of journeys
 		if ($_GET['player_id'] && $_GET['character_id']) {
 			journeySelect($_GET['player_id'], $_GET['character_id']);
 		}
 
-		echo "<p><a href='character.php?player_id=" . $_GET['player_id'] . "'>Back to Character Select</a>";
+		echo "<p><div style='text-align: center;'><a href='character.php?player_id=" . $_GET['player_id'] . "'>Back to Character Select</a></div>";
 		
 		//outputDebugLog();
 	}

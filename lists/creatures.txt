@@ -27,7 +27,7 @@ Bicorne
 Black Orc
 Bogeyman
 Bogie
-Brownies
+Brownie
 Bunyip
 Calygreyhound
 Camelopard
@@ -66,13 +66,13 @@ Great Eagle
 Gremlin
 Griffin
 Gulon
-Harpies
+Harpie
 Haunt
-Hellhounds
+Hellhound
 High Elf
 Hippocerf
 Hobgoblin
-Howlers
+Howler
 Hsigo
 Humbata
 Icthyocentaur
@@ -96,8 +96,8 @@ Murmur
 Necromancer
 Nightmare
 Nymph
-Ogres
-Orcs
+Ogre
+Orc
 Pegasus
 Peryton
 Phoenix
@@ -120,7 +120,7 @@ Thunderbird
 Titan
 Troglodyte
 Troian
-Trolls
+Troll
 Unicorn
 Uphir
 Vampire
@@ -128,7 +128,7 @@ Vampire Bat
 Vegetable Lamb
 Were Creature
 Wight
-Winging Nightmares
+Winging Nightmare
 Wood Elf
 Wraith
 Yale

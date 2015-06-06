@@ -11,7 +11,7 @@
 	
 		echo "<table cellpadding=3 cellspacing=0 border=1>";
 		echo "<tr><td colspan=5 align=center><h2>" . $character_name . "</h2></tr>";
-		echo "<tr bgcolor=#ddd><td>Item<td>Slot<td align=center>Weight<td align=center>Value<td align=center>Actions</tr>";
+		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Value<td align=center>Actions</tr>";
 	
 		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC, ac_boost, attack_boost DESC;";
 		addToDebugLog("manageEquipment(): Constructed query: " . $sql);
@@ -30,13 +30,13 @@
 		for ($e = 0; $e < $rows; $e++) {
 	
 			if ($result[$e][5] != $current_slot) {
-				echo "<tr><td colspan=5 bgcolor=#eee align=center>" . ucfirst($result[$e][5]) . "</tr>";
+				echo "<tr><td colspan=5 bgcolor=#ddd align=center>" . ucfirst($result[$e][5]) . "</tr>";
 				$current_slot = $result[$e][5];
 			}
 	
 			$bonus = $result[$e][2] + $result[$e][3];
 			echo "<tr><td>+" . $bonus . " " . $result[$e][1]; // Bonus + Item
-			echo "<td>" . ucfirst($result[$e][5]); // Slot
+			//echo "<td>" . ucfirst($result[$e][5]); // Slot
 			echo "<td align=center>" . $result[$e][4]; // Weight
 			
 			//Value
@@ -59,15 +59,14 @@
 				
 		}
 	
-		echo "<tr><td colspan=2 align=right>Total Weight<td align=center>" . $weight_total . "<td colspan=2></tr>";
-	
-		// Get character strength
+		// Get character strength		
 		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
-		echo "<tr><td colspan=2 align=right>Character Strength<td align=center>" . $character_strength . "<td colspan=2></tr>";
+		echo "<tr><td align=right>Total Weight<td align=center>" . $weight_total;
+		echo "<td align=center>" . $character_strength . "<td align=left>Strength</tr>";
 		
 		// Character Gold
 		$character_gold = getCharacterDetailsInfo($character_id,'gold');
-		echo "<tr><td colspan=2 align=right>Character Gold<td align=center>" . $character_gold . "<td colspan=2></tr>";
+		echo "<tr><td align=right colspan=2>Character Gold<td align=center>" . $character_gold . "<td></tr>";
 		
 		echo "</table>";
 	 
@@ -77,38 +76,71 @@
 		
 		// Creates and returns a store name
 		
+		addToDebugLog("manageEquipment(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Character ID: " . $charcter_id . ", Store ID: " . $store_id);
+		
 		// Get store name
 		$store_name = getStoreName($store_id);
+				
+		echo "<table cellpadding=3 cellspacing=0 border=1>";
+		echo "<tr><td colspan=5 align=center><h2>For Sale</h2></tr>";
+		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Cost<td align=center>Buy</tr>";		
+
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'chest');
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'head');
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'legs');
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'shield');
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'weapon');
+				
+		echo "</table>";
 		
-		// Get Store items
-		addToDebugLog("storeEquipment(): Function Entry - Parameters: Store ID: " . $store_id);
-		$sql = "SELECT * FROM hackcess.store_contents WHERE store_id  = " . $store_id . " ORDER BY item_slot ASC, item_ac_boost+item_attack_boost DESC;";
+	}
+	
+	function getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, $slot) {
+
+		// Lists items in the store for the provided slot
+		
+		addToDebugLog("manageEquipment(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Character ID: " . $charcter_id . ", Store ID: " . $store_id);
+
+		$row_limit = 3;
+		
+		if ($slot == 'weapon') {
+			$order_by = "item_attack_boost DESC";
+		} else {
+			$order_by = "item_ac_boost DESC";
+		}
+		
+		$sql = "SELECT * FROM hackcess.store_contents WHERE store_id  = " . $store_id . " AND item_slot = '" . $slot . "' ORDER BY " . $order_by . " LIMIT " . $row_limit . ";";
 		addToDebugLog("storeEquipment(): Constructed query: " . $sql);
 		$result = search($sql);
-		$rows = count($result);	
-		
-		echo "<table cellpadding=3 cellspacing=0 border=1>";
-		echo "<tr><td colspan=5 align=center><h2>" . $store_name . "</h2></tr>";
-		echo "<tr bgcolor=#ddd><td>Item<td>Slot<td align=center>Weight<td align=center>Cost<td align=center>Buy</tr>";		
-		
-		$current_slot = "";
-		
-		for ($i = 0; $i < $rows; $i++) {
-			if ($result[$i][6] != $current_slot) {
-				echo "<tr><td colspan=5 bgcolor=#eee align=center>" . ucfirst($result[$i][6]) . "</tr>"; 
-				$current_slot = $result[$i][6];
-			}
-			$boost = $result[$i][3] + $result[$i][4];
-			echo "<tr><td>+" . $boost . " " . $result[$i][2]; // Item and Boost
-			echo "<td>" . ucfirst($result[$i][6]); // Slot
-			echo "<td align=center>" . $result[$i][5]; // Weight
-			echo "<td align=center>" . $result[$i][7]; // Value
-			echo "<td align=center><a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&store_id=" . $store_id . "&action=buy&item_id=" . $result[$i][0] . "'>Buy</a>"; // Action
-			
-			echo "</tr>";
-			
+		$rows = count($result);
+		if ($rows < $row_limit) {
+			$row_limit = $rows;
 		}
-		echo "</table>";
+		
+		if ($rows > 0) {
+		
+			// Get character gold
+			$character_gold = getCharacterDetailsInfo($character_id, 'gold');
+	
+			echo "<tr><td colspan=5 bgcolor=#ddd align=center>" . ucfirst($slot) . "</tr>";
+			
+			for ($i = 0; $i < $row_limit; $i++) {
+		
+				$boost = $result[$i][3] + $result[$i][4];
+				echo "<tr><td>+" . $boost . " " . $result[$i][2]; // Item and Boost
+				echo "<td align=center>" . $result[$i][5]; // Weight
+				echo "<td align=center>" . $result[$i][7]; // Value
+				if ($result[$i][7] <= $character_gold) { 
+					echo "<td align=center><a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&store_id=" . $store_id . "&action=buy&item_id=" . $result[$i][0] . "'>Buy</a>"; // Action
+				} else {
+					echo "<td align=center>-";
+				}
+					
+				echo "</tr>";
+					
+			}
+		
+		}
 		
 	}
 	

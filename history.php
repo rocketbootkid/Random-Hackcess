@@ -2,7 +2,6 @@
 
 <head>
 	<title>Random Hackcess | Fight History</title>
-	<!--<link rel="stylesheet" type="text/css" href="css/css.css">-->
 </head>
 
 <body>
@@ -19,13 +18,13 @@
 	
 	// Display Character Name
 	$character_name = getCharacterDetails($character_id, "character_name");
-	echo "<h1>" . trim($character_name) . "'s Fight History</h1><p>";
+	echo "<h1 align=center>" . trim($character_name) . "'s Fight History</h1><p>";
 	
-	echo "<p><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a><p>";
+	echo "<p><div style='text-align: center;'><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a></div><p>";
 	
 	showCharacterHistory($character_id);
 
-	echo "<p><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a>";
+	echo "<p><div style='text-align: center;'><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a></div>";
 	
 	//outputDebugLog();
 	

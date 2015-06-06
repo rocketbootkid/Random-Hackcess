@@ -2,7 +2,6 @@
 
 <head>
 	<title>Random Hackcess | Select Character</title>
-	<!--<link rel="stylesheet" type="text/css" href="css/css.css">-->
 </head>
 
 <body>
@@ -17,19 +16,21 @@
 	// Create a new character
 	if ($_GET['create'] == "character") {
 		createCharacter($_GET['player_id'], 0);
-	}
-	
-	// Show list of characters
-	if ($_GET['player_id']) {
-		characterSelect($_GET['player_id']);
 	} else {
-		echo "<a href='player.php'>Go Back and select a Player</a>";
-	}
 	
-	echo "<p><a href='player.php'>Back to Player Select</a>";
+		// Show list of characters
+		if ($_GET['player_id']) {
+			characterSelect($_GET['player_id']);
+		} else {
+			echo "<div style='text-align: center;'><a href='player.php'>Go Back and select a Player</a></div>";
+		}
+		
+		echo "<p><div style='text-align: center;'><a href='player.php'>Back to Player Select</a></div>";
+	
+		//outputDebugLog();
 
-	//outputDebugLog();
-	
+	}
+		
 ?>
 
 

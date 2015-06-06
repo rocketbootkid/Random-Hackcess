@@ -2,7 +2,6 @@
 
 <head>
 	<title>Random Hackcess | Select Player</title>
-	<!--<link rel="stylesheet" type="text/css" href="css/css.css">-->
 </head>
 
 <body>

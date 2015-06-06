@@ -102,6 +102,7 @@ CREATE TABLE `fight` (
   `grid_id` int(11) default NULL,
   `rounds` int(11) default NULL,
   `winner` int(11) default NULL,
+  `journey_id` int(11) default NULL,
   PRIMARY KEY  (`fight_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

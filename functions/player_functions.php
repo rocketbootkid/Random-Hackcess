@@ -10,8 +10,10 @@
 		addToDebugLog("playerSelect(): Constructed query: " . $sql);
 		$result = search($sql);
 		$rows = count($result); 
+		
+		echo "<h1 align=center>Select Player</h1>";
 
-		echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
+		echo "<table class='characters' cellpadding=3 cellspacing=0 border=1 align=center>";
 		echo "<tr bgcolor=#ddd><td class='characters'>Player ID<td class='characters'>Name</tr>";
 		
 		for ($u = 0; $u < $rows; $u++) {
@@ -28,7 +30,7 @@
 	
 		// Get Player Name
 		$name = getPlayerDetails($player_id, "username");
-		echo "<h1>" . ucfirst($name) . "'s Characters</h1>";
+		echo "<h1 align=center>" . ucfirst($name) . "'s Characters</h1>";
 		
 		// Get List of Live Characters for this Player
 		characterList($player_id, "alive");
@@ -70,7 +72,7 @@
 		$rowsc = count($resultc);
 		
 		if ($rowsc != 0) {
-			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
+			echo "<table class='characters' cellpadding=3 cellspacing=0 border=1 align=center>";
 			echo "<tr bgcolor=#ddd><td class='characters' width=50px align=center>Gen.";
 			echo "<td class='characters' width=200px>Name";
 			echo "<td class='characters' width=100px>Class";
@@ -90,7 +92,7 @@
 				// Parent Name
 				if ($resultc[$c][9] > 0) {
 					$parent_name = getCharacterDetails($resultc[$c][9], "character_name");
-					echo "<td class='characters'>" . $parent_name;
+					echo "<td class='characters'><a href='history.php?player_id=" . $player_id . "&character_id=" . $resultc[$c][9] . "'>" . $parent_name . "</a>";
 				} else {
 					echo "<td class='characters' align=center>-";
 				}		
@@ -100,14 +102,14 @@
 				echo "</tr>";
 			}
 			if ($status == 'alive') {
-				echo "<tr><td colspan=6><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
+				echo "<tr><td colspan=6 align=center><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
 			}
 			echo "</table><p>";
 		} else {
 			if ($status == "alive") {
 				echo "<table class='characters' cellpadding=3 cellspacing=0 border=1 width=500px>";
 				echo "<tr><td>There are no live characters</tr>";
-				echo "<tr><td><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
+				echo "<tr><td align=center><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
 				echo "</table><p>";
 			} else {
 				echo "There are no dead / retired characters";
@@ -186,7 +188,7 @@
 		$resultj = search($sqlj);
 		$rowsj = count($resultj);
 		
-		echo "<table class='characters' cellpadding=3 cellspacing=0 border=1>";
+		echo "<table class='characters' cellpadding=3 cellspacing=0 border=1 align=center>";
 		echo "<tr bgcolor=#ddd><td>Journey<td>Grids<td>Action</tr>";
 		for ($j = 0; $j < $rowsj; $j++) {
 
@@ -212,7 +214,7 @@
 				echo "<td><a href='journey.php?player_id=" . $player_id . "&character_id=" . $resultj[$j][2] . "&journey_id=" . $resultj[$j][0] . "'>Switch to this journey</a></tr>";		
 			}
 		}
-		echo "<td colspan=3 class='characters'><a href='journey.php?create=journey&player_id=" . $player_id . "&character_id=" . $character_id . "'>Create new journey</a></a>";
+		echo "<td colspan=3 class='characters' align=center><a href='journey.php?create=journey&player_id=" . $player_id . "&character_id=" . $character_id . "'>Create new journey</a></a>";
 		echo "</table><p>";		
 		
 	}
@@ -453,21 +455,20 @@
 		$role = $result[0][1];
 		$level = $result[0][2];
 		
-		echo "<table cellpadding=2 cellspacing=0 border=0 width=500px>";
+		echo "<table cellpadding=2 cellspacing=0 border=0 width=100%>";
 		echo "<tr><td colspan=4 align=center><b>" . $name . ", Level " . $level . " " . $role . "</tr>";
-		echo "<tr bgcolor=#ddd><td align=center>Stats<td align=center>Value<td>Slot<td>Item</tr>";
+		echo "<tr bgcolor=#ddd><td align=center><td align=center>Value<td><td>Item</tr>";
 		
 		// Get Character Details
 		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
 		addToDebugLog("displayPlayerInformation(): Constructed query: " . $sql);
 		$result = search($sql);
 
-		echo "<tr><td>HP<td align=center>" . $result[0][13] . "<td>Head<td>" . getItemNameById($result[0][8]) . "</tr>";
-		echo "<tr><td>ATK<td align=center>" . $result[0][3] . "<td>Chest<td>" . getItemNameById($result[0][9]) . "</tr>";
-		echo "<tr><td>AC<td align=center>" . $result[0][4] . "<td>Legs<td>" . getItemNameById($result[0][10]) . "</tr>";
-		echo "<tr><td>Gold<td align=center>" . $result[0][5] . "<td>Shield<td>" . getItemNameById($result[0][11]) . "</tr>";
-		echo "<tr><td>STR<td align=center>" . $result[0][7] . "<td>Weapon<td>" . getItemNameById($result[0][12]) . "</tr>";
-		//echo "<tr><td>XP<td align=center>" . $result[0][6] . "<td colspan=2></tr>";
+		echo "<tr><td align=right>HP<td align=center>" . $result[0][13] . "<td align=right>Head | <td>" . getItemNameById($result[0][8]) . "</tr>";
+		echo "<tr><td align=right>ATK<td align=center>" . $result[0][3] . "<td align=right>Chest | <td>" . getItemNameById($result[0][9]) . "</tr>";
+		echo "<tr><td align=right>AC<td align=center>" . $result[0][4] . "<td align=right>Legs | <td>" . getItemNameById($result[0][10]) . "</tr>";
+		echo "<tr><td align=right>Gold<td align=center>" . $result[0][5] . "<td align=right>Shield | <td>" . getItemNameById($result[0][11]) . "</tr>";
+		echo "<tr><td align=right>STR<td align=center>" . $result[0][7] . "<td align=right>Weapon | <td>" . getItemNameById($result[0][12]) . "</tr>";
 		
 		echo "</table>";
 		
@@ -814,11 +815,11 @@
 		$total_attack_boost = $boosts[1];
 		
 		// Generate enemy stats based on character's stats
-		$enemy_hp = ($character_hp/2) + 5;
+		$enemy_hp = round($character_hp *0.75);
 		if ($enemy_hp <= 0) { $enemy_hp = 1;}
-		$enemy_ac = $character_ac + $total_ac_boost - rand(5, 10);
+		$enemy_ac = $character_atk + $total_attack_boost - rand(5, 10);
 		if ($enemy_ac <= 0) { $enemy_ac = 1;}
-		$enemy_atk = $character_atk + $total_attack_boost - rand(5, 10);
+		$enemy_atk = $character_ac + $total_ac_boost - rand(8, 15);
 		if ($enemy_atk <= 0) { $enemy_atk = 1;}
 		addToDebugLog("createEnemy(): Enemy Stats: HP: " . $enemy_hp . ", Character AC: " . $enemy_ac . ", Character ATK: " . $enemy_atk);	
 		
@@ -1027,8 +1028,8 @@
 		
 		addToDebugLog("manageEquipment(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Character ID: " . $charcter_id);
 		
-		echo "<table cellpadding=3 cellspacing=0 border=1>";
-		echo "<tr bgcolor=#ddd><td>Item<td>Slot<td align=center>Weight<td align=center>Actions</tr>";
+		echo "<table cellpadding=3 cellspacing=0 border=1 align=center>";
+		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Actions</tr>";
 
 		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC, ac_boost, attack_boost DESC;";
 		addToDebugLog("manageEquipment(): Constructed query: " . $sql);
@@ -1047,13 +1048,12 @@
 		for ($e = 0; $e < $rows; $e++) {		
 		
 			if ($result[$e][5] != $current_slot) {
-				echo "<tr><td colspan=4 bgcolor=#eee align=center>" . ucfirst($result[$e][5]) . "</tr>";
+				echo "<tr><td colspan=4 bgcolor=#ddd align=center>" . ucfirst($result[$e][5]) . "</tr>";
 				$current_slot = $result[$e][5];
 			}
 		
 			$bonus = $result[$e][2] + $result[$e][3];
 			echo "<tr><td>+" . $bonus . " " . $result[$e][1]; // Bonus + Item
-			echo "<td>" . ucfirst($result[$e][5]); // Slot
 			echo "<td align=center>" . $result[$e][4]; // Weight
 
 			// Determine if the item of equipment is equipped or not
@@ -1072,11 +1072,11 @@
 			
 		}
 		
-		echo "<tr><td colspan=2 align=right>Total Weight<td align=center>" . $weight_total . "<td></tr>";
+		echo "<tr bgcolor=#ddd><td align=right>Total Weight<td align=center>" . $weight_total . "<td></tr>";
 		
 		// Get character strength
 		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
-		echo "<tr><td colspan=2 align=right>Character Strength<td align=center>" . $character_strength . "<td></tr>";
+		echo "<tr bgcolor=#ddd><td align=right>Strength<td align=center>" . $character_strength . "<td></tr>";
 		
 		echo "</table>";
 		
@@ -1295,7 +1295,7 @@
 		$result = search($sql);	
 		$rows = count($result);
 		
-		echo "<table cellpadding=3 cellspacing=0 border=1>";
+		echo "<table cellpadding=3 cellspacing=0 border=1 align=center>";
 		echo "<tr bgcolor=#ddd><td><td>Fight<td>Outcome<td>Enemy<td align=center>AC<td align=center>ATK<td>Rounds</tr>";
 		
 		for ($r = 0; $r < $rows; $r++) {

@@ -49,20 +49,7 @@
 
 			for ($x = 0; $x < $cols; $x++) {	
 				$current_x = $start_x + $x;
-				addToDebugLog("drawGrid(): Current Grid Coordinates: " . $current_x . "," . $current_y);
-				
-				// Get grid_id
-				/*
-				$grid_id = getGridIDByCoordinates($current_x, $current_y, $journey_id);
-				$is_enemy_here = 0;
-				if ($grid_id > 0) {
-					// Determine if this grid has a live enemy at it
-					$is_enemy_here = isEnemyHere($grid_id, $character_id);
-				} else {
-					$is_enemy_here == 0;
-				}
-				*/
-				
+				addToDebugLog("drawGrid(): Current Grid Coordinates: " . $current_x . "," . $current_y);				
 				
 				if ($current_x > 0 && $current_x <= 50 && $current_y <= 50 && $current_y > 0) {
 					if ($grid_x == $current_x && $grid_y == $current_y) {
@@ -290,7 +277,7 @@
 			
 			// Determine if there's going to be a store here
 			srand(make_seed());
-			$isStore = rand(0, 30);
+			$isStore = rand(0, 50);
 			if ($isStore == 15) {
 				addToDebugLog("move(): Generating a store at Grid ID " . $grid_id);
 				generateStore($grid_id, $journey_id, $character_id);
@@ -542,9 +529,9 @@
 		// Get Journey Name
 		$journey_name = getJourneyDetails($journey_id, "journey_name");
 		
-		echo "<table cellpadding=2 cellspacing=0 border=0 width=500px>";
+		echo "<table cellpadding=2 cellspacing=0 border=0 width=100%>";
 		echo "<tr><td colspan=3 align=center><b>" . $journey_name . "</tr>";
-		echo "<tr bgcolor=#ddd><td align=center>Entry No.<td align=center>Grid ID<td>Entry</tr>";
+		echo "<tr bgcolor=#ddd><td align=center width=50px>Entry<td align=center width=50px>Grid<td>Entry</tr>";
 		
 		// Display the N latest journal entries for this journey
 		$sql = "SELECT journal_id, grid_id, journal_details FROM hackcess.journal WHERE journey_id = " . $journey_id . " ORDER BY journal_id DESC LIMIT " . $entries . ";";
@@ -794,7 +781,9 @@
 		$enemy_gold = ($enemy_atk + $enemy_ac + $enemy_hp);
 		$enemy_xp = ($enemy_atk + $enemy_ac + $enemy_hp) * 2;
 
-		echo "<table cellpadding=3 cellspacing=0 border=1 width=100%>";
+		echo "<h1 align=center>The fight is over!</h1>";
+		
+		echo "<table cellpadding=3 cellspacing=0 border=1 width=100% align=center>";
 		echo "<tr><td>";
 		echo "<td align=center><h2>" . $character_name . ", Level " . $character_level . " " . $character_role . "</h2>";
 		echo "(HP: " . $character_hp . ", ATK: " . $character_atk . " + " . $character_atk_boost . ", AC: " . $character_ac . " + " . $character_ac_boost . ")";
@@ -802,9 +791,6 @@
 		echo "(HP: " . $enemy_hp . ", ATK: " . $enemy_atk . ", AC: " . $enemy_ac . ")</tr>";
 		
 		// Run fight
-			// For each round, Character rand(0,ATK)+Boosts vs Enemy rand(0,AC)
-				// if hit, damage = rand(0, ATK/4)
-				// repeat for enemy
 		$round = 0;
 		while ($character_hp > 0 && $enemy_hp > 0) { // start round if both combatants still stand
 
@@ -817,11 +803,11 @@
 			$enemy_defend = rand(0, $enemy_ac);
 			addToDebugLog("Fight.php: - Enemy Defend: " . $enemy_defend);
 			
-			echo "<tr><td width=100px align=center>Round " . $round . "<td width=700px>" . $character_name . " attacks " . $enemy_name;
+			echo "<tr><td width=100px align=center>Round " . $round . "<td width=700px>" . $character_name . " attacks " . $enemy_name . " (" . $character_attack . " vs " . $enemy_defend . ")";
 			
 			if ($character_attack > $enemy_defend) { // Hit
 				addToDebugLog("Fight.php: - Character hits Enemy");
-				$enemy_damage = rand(1, ($character_atk + $character_atk_boost)/3);
+				$enemy_damage = rand(1, ($character_atk + $character_atk_boost)/2);
 				addToDebugLog("Fight.php: - Enemy takes damage: " . $enemy_damage);
 				$enemy_hp = $enemy_hp - $enemy_damage;
 				addToDebugLog("Fight.php: - Enemy HP reduced to: " . $enemy_hp);
@@ -834,12 +820,12 @@
 			// Check if enemy still standing
 			if ($enemy_hp > 0) {
 				
-				$enemy_attack = rand(0, $enemy_atk);
+				$enemy_attack = rand(0, $enemy_atk-5);
 				addToDebugLog("Fight.php: - Enemy Attack: " . $enemy_attack);
 				$character_defend = rand(0, $character_ac + $character_ac_boost) ;
 				addToDebugLog("Fight.php: - Character Defend: " . $character_defend);
 				
-				echo "<td width=700px>" . $enemy_name . " attacks " . $character_name;
+				echo "<td width=700px>" . $enemy_name . " attacks " . $character_name . " (" . $enemy_attack . " vs " . $character_defend . ")";
 				
 				if ($enemy_attack > $character_defend) { // Hit
 					addToDebugLog("Fight.php: - Enemy hits Character");
@@ -860,26 +846,26 @@
 			
 		}
 		
-		echo "<tr><td colspan=3 align=center><h2>";
+		// Once the fight is over, declare the winner!
 		if ($character_hp <= 0) { // character died
+			echo "<tr bgcolor=#f00><td colspan=3 align=center><h2>";
 			echo $character_name . " has been defeated! May their legend never die.";
 			$winner = "enemy";
-			echo "</h2></tr></table>";	
-			//return "enemy," . $round;
+			echo "</h2></tr>";	
 		} else { // enemy died
+			echo "<tr bgcolor=#0f0><td colspan=3 align=center><h2>";
 			echo $enemy_name . " has been defeated, and good riddance to that scum!";
 			$winner = "character";
-			echo "</h2></tr></table>";	
-			//return "character," . $round;
+			echo "</h2></tr>";	
 		}
 
-		// Record fight (new table)
+		// Record fight
 		if ($winner == "enemy") {
 			$boolWinner = 0; // Enemy won
 		} else {
 			$boolWinner = 1; // Character won
 		}
-		$dml = "INSERT INTO hackcess.fight (character_id, enemy_id, grid_id, rounds, winner) VALUES (" . $character_id . ", " . $enemy_id . ", " . $grid_id . ", " . $round . ", " . $boolWinner . ");";
+		$dml = "INSERT INTO hackcess.fight (character_id, enemy_id, grid_id, rounds, winner, journey_id) VALUES (" . $character_id . ", " . $enemy_id . ", " . $grid_id . ", " . $round . ", " . $boolWinner . ", " . $journey_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("doFight(): Fight entry added");
@@ -887,6 +873,7 @@
 			addToDebugLog("doFight(): ERROR: Fight entry not added");
 		}	
 		
+		// Update Character / Enemy
 		if ($winner == "enemy") { // Enemy wins
 			// Player dead
 			$dml = "UPDATE hackcess.character SET status = 'Dead' WHERE character_id = " . $character_id . ";";
@@ -897,7 +884,7 @@
 				addToDebugLog("doFight(): Character record not updated");
 			}	
 			
-			// Create Descendant
+			// Create Descendent
 			$new_character_id = createCharacter($player_id, $character_id);
 			
 			// Assign descendent some gold and best piece of equipment
@@ -932,12 +919,12 @@
 			
 			// Display details of new Character
 			$new_character_name = getCharacterDetails($new_character_id, "character_name");
-			echo "<p>" . $character_name . " might feast with the gods, but their child, " . trim($new_character_name) . ", shall continue the fight!";
+			echo "<tr><td>" . $character_name . " might feast with the gods, but their child, " . trim($new_character_name) . ", shall continue the fight! ";
 			
-			echo "<p>" . trim($new_character_name) . " inherits " . $new_gold . " gold from their ancestor, as well as " . $character_name . "'s " . $item_summary;
+			echo trim($new_character_name) . " inherits " . $new_gold . " gold from their ancestor, as well as " . $character_name . "'s " . $item_summary;
 			
 			// Back to Character Select
-			echo "<p><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a>";
+			echo "<p><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a></tr>";
 			
 		} else { // Character wins
 			// Kill enemy
@@ -970,14 +957,73 @@
 			}
 			
 			// Output details
-			
-			echo "<p>" . $enemy_name . " drops " . $enemy_gold . " gold and a " . $details . "<br/>";
-			echo $character_name . " also gains " . $enemy_xp . "XP.<p>";
-			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Show Equipment</a><br/>"; // Show Equipment screen
-			echo "<a href='adventure.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Back to Adventure</a>"; // Back to Adventure
+			echo "<tr><td colspan=3 align=center>" . $enemy_name . " drops " . $enemy_gold . " gold and a " . $details . " " . $character_name . " also gains " . $enemy_xp . "XP.<p>";
+			echo "<a href='adventure.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Back to Adventure</a> | "; // Back to Adventure
+			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Show Equipment</a>"; // Show Equipment screen
+			echo "</tr><t/table>";
 		
 		}
 		
 	}
+	
+	function storeList($journey_id, $player_id) {
+		
+		// Lists the stores on the current journey
+		
+		addToDebugLog("storeList(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id);
+		
+		$sql = "SELECT * FROM hackcess.store WHERE journey_id = " . $journey_id . ";";
+		addToDebugLog("storeList(): Constructed query: " . $sql);
+		$result = search($sql);
+		$rows = count($result);
+		
+		echo "<h3>Stores</h3>";
+		
+		
+		if ($rows > 0) {
+			for ($j = 0; $j < $rows; $j++) {
+				
+				// Get Grid coordinates
+				$coords = getCoordinatesByGridID($result[$j][2], $journey_id);
+				
+				echo "<a href='store.php?journey_id=" . $journey_id . "&character_id=" . $result[$j][4] . "&player_id=" . $player_id . "&store_id=" . $result[$j][0] . "'>" . $result[$j][1] . "</a> (" . $coords[0][0] . "," . $coords[0][1] . ")<br/>";
+				
+			}
+		} else {
+			echo "There are no stores.";
+		}
+		
+	}
+	
+	function enemyList($character_id, $journey_id, $player_id) {
+		
+		// Lists the unbeaten enemies on the current journey
+		
+		addToDebugLog("enemyList(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Player ID: " . $player_id . ", Journey ID: " . $journey_id);
+		
+		$sql = "SELECT * FROM hackcess.enemy, hackcess.grid WHERE enemy.character_id = " . $character_id . " AND grid.journey_id = " . $journey_id . " AND status = 'Alive' AND enemy.grid_id = grid.grid_id;";
+		addToDebugLog("enemyList(): Constructed query: " . $sql);
+		$result = search($sql);
+		$rows = count($result);
+		
+		echo "<h3>Enemies</h3>";
+		
+		if ($rows > 0) {
+			for ($j = 0; $j < $rows; $j++) {
+					
+				// Get Grid coordinates
+				$coords = getCoordinatesByGridID($result[$j][4], $journey_id);
+				
+				// journey, character, player, enemy, grid
+				echo "<a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $result[$j][0] . "&grid_id=" . $result[$j][4] . "'>" . $result[$j][1] . " (" . $coords[0][0] . "," . $coords[0][1] . ")</a><br/>";
+					
+			}		
+		} else {
+			echo "There are no unbeaten enemies.";
+		}
+		
+	}
+	
+	
 	
 ?>

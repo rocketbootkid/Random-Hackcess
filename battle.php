@@ -2,12 +2,11 @@
 
 <head>
 	<title>Random Hackcess | Battle</title>
-	<!--<link rel="stylesheet" type="text/css" href="css/css.css">-->
 </head>
 
 <body>
 
-<h1>Battle</h1>
+<h1 align=center>Ready for battle</h1>
 
 <?php
 
@@ -48,29 +47,29 @@
 		// Redirect back to the Adventure page
 		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
 		
+	} else {
+		
+		// Get Character Stats
+		$character_basic_info = getAllCharacterMainInfo($character_id);
+		$character_detailed_info = getAllCharacterDetailedInfo($character_id);
+		
+		// Get Enemy Stats
+		$enemy_info = getEnemyInfo($enemy_id);
+	
+		// Display Stats
+		displayBattleStats($character_basic_info, $character_detailed_info, $enemy_info);
+		
+		// Show option: Fight or Run
+		echo "<table cellpadding=3 cellspacing=0 border=0 style='margin-left: auto; margin-right: auto; margin-top: 20px;'>";
+		echo "<tr><td width=200px align=center><h2><a href='fight.php?character_id=" . $character_id . "&enemy_id=" . $enemy_id . "&grid_id=" . $grid_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "'>Fight!</a></h2>";
+		echo "<td><h2>  OR  </h2>";
+		echo "<td width=200px align=center><h2><a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&action=flee'>Run!</a></h2></tr>";
+		echo "</table>";
+	
+		//outputDebugLog();
+
 	}
 		
-	// Get Character Stats
-	$character_basic_info = getAllCharacterMainInfo($character_id);
-	$character_detailed_info = getAllCharacterDetailedInfo($character_id);
-	
-	// Get Enemy Stats
-	$enemy_info = getEnemyInfo($enemy_id);
-
-	// Display Stats
-	displayBattleStats($character_basic_info, $character_detailed_info, $enemy_info);
-	
-	// Show option: Fight or Run
-	echo "<table cellpadding=3 cellspacing=0 border=0 style='margin-left: auto; margin-right: auto; margin-top: 20px;'>";
-	echo "<tr><td width=200px align=center><h2><a href='fight.php?character_id=" . $character_id . "&enemy_id=" . $enemy_id . "&grid_id=" . $grid_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "'>Fight!</a></h2>";
-	echo "<td><h2>  OR  </h2>";
-	echo "<td width=200px align=center><h2><a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&action=flee'>Run!</a></h2></tr>";
-	echo "</table>";
-	
-	// Temporary "Back" option.
-	//echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Journey</a>";
-	//outputDebugLog();
-	
 ?>
 
 </body>

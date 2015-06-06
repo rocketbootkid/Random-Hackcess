@@ -2,7 +2,6 @@
 
 <head>
 	<title>Random Hackcess | Fight</title>
-	<!--<link rel="stylesheet" type="text/css" href="css/css.css">-->
 </head>
 
 <body>

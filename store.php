@@ -42,27 +42,37 @@
 	
 	} else { // Display Store and Character items
 		
-		echo "<table cellpadding=1 cellspacing=1 border=0><tr><td valign=top>";	
+		// Get store name
+		$store_name = getStoreName($store_id);
+		
+		echo "<h1 align=center>Welcome to " . $store_name . "</h1>";
+		
+		echo "<table cellpadding=5 cellspacing=1 border=0 align=center><tr><td valign=top>";	
 		characterEquipment($character_id, $player_id, $journey_id, $store_id);
 		echo "<td valign=top>";
 		storeEquipment($store_id, $journey_id, $character_id, $player_id);
+		echo "</tr>";
+		
+		// Get weight of character equipment
+		$equipment_total_weight = characterEquipmentWeight($character_id);
+		addToDebugLog("store.php: - Equipment Weight: " . $equipment_total_weight);
+		
+		// Get character strength
+		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
+		addToDebugLog("store.php: - Character Strength: " . $character_strength);
+		
+		echo "<tr><td align=center colspan=2>";
+		if ($equipment_total_weight > $character_strength) {
+			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
+		} else {
+			echo "You are carrying too much weight. You must sell items to continue.";
+		}
 		echo "</tr></table>";
 		
+		//outputDebugLog();
+		
 	}
-	
-	// Get weight of character equipment
-	$equipment_total_weight = characterEquipmentWeight($character_id);
-	
-	// Get character strength
-	$character_strength = getCharacterDetailsInfo($character_id, 'strength');
-	
-	if ($character_strength <= $equipment_total_weight) {
-		echo "<p><a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
-	} else {
-		echo "<p>You are overencumbered. You must sell items to continue.";
-	}
-	
-	//outputDebugLog();
+
 	
 ?>
 

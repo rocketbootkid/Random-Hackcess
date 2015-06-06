@@ -41,10 +41,24 @@
 		$radius_x = 10;
 		$radius_y = 6;
 		
-		// Draws the grid for defined radius around the current location
-		drawGrid($grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id);
+		echo "<table cellpadding=5 cellspacing=0 border=0 align=center><tr><td valign=top width=300px rowspan=2>";
 		
-		echo "<p>";
+			echo "<h2>Adventure</h2>";
+		
+			echo "<a href='player.php'>Player Select</a><br/>";
+			echo "<a href='character.php?player_id=" . $player_id . "'>Character Select</a><br/>";
+			echo "<a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Journey Select</a><p>";
+			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a>";	
+		
+			// Lists the stores available on the map
+			storeList($journey_id, $player_id);
+			
+			// Lists the unbeaten enemies on the map
+			enemyList($character_id, $journey_id, $player_id);
+			
+		echo "<td colspan=3 width=1000px>";
+			// Draws the grid for defined radius around the current location
+			drawGrid($grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id);
 		
 		// ************************************************************************************
 		// Draw Controls
@@ -53,39 +67,20 @@
 		// Get players current grid id
 		$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
 		
-		echo "<table width=1400px><tr>";
+		echo "<tr>";
 		
-		// First column: hyperlinks
-		echo "<td width=300px align=left valign=top>";
-		echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a><br/>";
-		echo "<a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Back to Journey Select</a>";
-		
-		$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
-
-		// Determine if there is a store here
-		$store_id = isThereAStoreHere($grid_id);
-		if ($store_id > 0) {
-			echo "<p><a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&store_id=" . $store_id . "'>Visit Store</a>"; // character, player, journey, store
-		} 
-		
-		// Determine if there is an enemy here
-		$enemy_id = isEnemyHere($grid_id, $character_id);
-		if ($enemy_id > 0) {
-			echo "<p><a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&grid_id=" . $grid_id . "'>Face Enemy</a>";
-		}
-		
-		// Second column: Journal entries
-		echo "<td width=300px align=right>";
+		// First column: Journal entries
+		echo "<td width=425px align=left>";
 		// Display Journey Name, Journal entries
 		displayJournal($journey_id);
 		
-		// Third column: navigation controls
-		echo "<td width=100px>";
+		// Second column: navigation controls
+		echo "<td width=150px>";
 		// Draw Navigation controls
 		drawControls($grid_id, $journey_id, $character_id, $player_id);
 		
-		// Fourth column: Player details
-		echo "<td>";
+		// Third column: Player details
+		echo "<td width=425px align=right>";
 		// Show character details
 		displayPlayerInformation($character_id);
 		

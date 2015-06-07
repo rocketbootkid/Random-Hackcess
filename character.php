@@ -27,7 +27,7 @@
 		
 		echo "<p><div style='text-align: center;'><a href='player.php'>Back to Player Select</a></div>";
 	
-		//outputDebugLog();
+		outputDebugLog();
 
 	}
 		

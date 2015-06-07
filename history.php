@@ -26,7 +26,7 @@
 
 	echo "<p><div style='text-align: center;'><a href='character.php?player_id=" . $player_id . "'>Back to Character Select</a></div>";
 	
-	//outputDebugLog();
+	outputDebugLog();
 	
 ?>
 

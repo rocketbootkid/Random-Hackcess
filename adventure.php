@@ -88,7 +88,8 @@
 		
 		//outputQueryCount();
 		//outputQueryList();
-		//outputDebugLog();
+		
+		outputDebugLog();
 
 	}
 	

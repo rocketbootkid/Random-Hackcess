@@ -4,10 +4,10 @@
 		
 		// Displays details for all players
 	
-		addToDebugLog("playerSelect(): Function Entry");	
+		addToDebugLog("playerSelect(), Function Entry, INFO");	
 		
 		$sql = "SELECT * FROM hackcess.user;";
-		addToDebugLog("playerSelect(): Constructed query: " . $sql);
+		addToDebugLog("playerSelect(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result); 
 		
@@ -26,7 +26,7 @@
 
 		// Lists characters for the selected Player
 	
-		addToDebugLog("characterSelect(): Function Entry - supplied parameters: Player ID: " . $player_id);			
+		addToDebugLog("characterSelect(), Function Entry - supplied parameters: Player ID: " . $player_id . ", INFO");			
 	
 		// Get Player Name
 		$name = getPlayerDetails($player_id, "username");
@@ -44,10 +44,10 @@
 		
 		// Returns selected player attribute
 	
-		addToDebugLog("getPlayerDetails(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Attribute: " . $attribute);	
+		addToDebugLog("getPlayerDetails(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Attribute: " . $attribute . ", INFO");	
 		
 		$sql = "SELECT " . $attribute . " FROM hackcess.user WHERE user_id = " . $player_id . ";";
-		addToDebugLog("playerSelect(): Constructed query: " . $sql);
+		addToDebugLog("playerSelect(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result[0][0];
@@ -58,16 +58,16 @@
 		
 		// Lists characters with the right status for the selected Player
 	
-		addToDebugLog("characterList(): Function Entry - supplied parameters: Player ID: " . $player_id);			
+		addToDebugLog("characterList(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Status: " . $status . ", INFO");			
 		
 		// Display Characters
 		if ($status == "alive") {
 			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status = 'Alive' ORDER BY character_level DESC;";	
 		} elseif ($status == "dead") {
-			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status != 'Alive' ORDER BY character_level DESC LIMIT 10;";
+			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $player_id . " AND status != 'Alive' ORDER BY character_level DESC LIMIT 20;";
 		}
 		
-		addToDebugLog("characterList(): Constructed query: " . $sqlc);
+		addToDebugLog("characterList(), Constructed query: " . $sqlc . ", INFO");
 		$resultc = search($sqlc);
 		$rowsc = count($resultc);
 		
@@ -122,10 +122,10 @@
 		
 		// Returns selected player attribute
 	
-		addToDebugLog("getCharacterDetails(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Attribute: " . $attribute);	
+		addToDebugLog("getCharacterDetails(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Attribute: " . $attribute . ", INFO");	
 		
 		$sql = "SELECT " . $attribute . " FROM hackcess.character WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getCharacterDetails(): Constructed query: " . $sql);
+		addToDebugLog("getCharacterDetails(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result[0][0];
@@ -136,10 +136,10 @@
 		
 		// Returns all main information for the selected player
 	
-		addToDebugLog("getAllCharacterDetails(): Function Entry - supplied parameters: Character ID: " . $character_id);	
+		addToDebugLog("getAllCharacterDetails(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");	
 		
 		$sql = "SELECT * FROM hackcess.character WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getAllCharacterDetails(): Constructed query: " . $sql);
+		addToDebugLog("getAllCharacterDetails(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result;
@@ -150,10 +150,10 @@
 		
 		// Returns all detailed information for the selected player
 	
-		addToDebugLog("getAllCharacterDetailedDetails(): Function Entry - supplied parameters: Character ID: " . $character_id);	
+		addToDebugLog("getAllCharacterDetailedDetails(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");	
 		
 		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getAllCharacterDetailedDetails(): Constructed query: " . $sql);
+		addToDebugLog("getAllCharacterDetailedDetails(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result;
@@ -164,13 +164,13 @@
 		
 		// Returns selected player attribute
 	
-		addToDebugLog("getCharacterDetailsInfo(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Attribute: " . $attribute);	
+		addToDebugLog("getCharacterDetailsInfo(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Attribute: " . $attribute . ", INFO");	
 		
 		$sql = "SELECT " . $attribute . " FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getCharacterDetailsInfo(): Constructed query: " . $sql);
+		addToDebugLog("getCharacterDetailsInfo(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
-		addToDebugLog("getCharacterDetailsInfo(): Attribute '" . $attribute . "' value: " . $result[0][0]);
+		addToDebugLog("getCharacterDetailsInfo(), Attribute '" . $attribute . "' value: " . $result[0][0] . ", INFO");
 		
 		return $result[0][0];
 		
@@ -180,11 +180,11 @@
 		
 		// Returns current journey id for supplied player
 	
-		addToDebugLog("journeySelect(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Character ID: " . $character_id);			
+		addToDebugLog("journeySelect(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Character ID: " . $character_id . ", INFO");			
 
 		// List of Journeys
 		$sqlj = "SELECT * FROM hackcess.journey WHERE player_id = " . $player_id . " AND character_id = " . $character_id . ";";
-		addToDebugLog("journeySelect(): Constructed query: " . $sqlj);
+		addToDebugLog("journeySelect(), Constructed query: " . $sqlj . ", INFO");
 		$resultj = search($sqlj);
 		$rowsj = count($resultj);
 		
@@ -196,16 +196,16 @@
 		
 			// Determine current journey
 			$journey_id = playerCurrentJourney($player_id, $character_id);
-			addToDebugLog("journeySelect(): Current Journey ID: " . $journey_id);
+			addToDebugLog("journeySelect(), Current Journey ID: " . $journey_id . ", INFO");
 			
 			// Determine how many grids exist for the journey
 			$sqlg = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $resultj[$j][0] . ";";
-			addToDebugLog("displayPlayers(): Constructed query: " . $sqlg);
+			addToDebugLog("displayPlayers(), Constructed query: " . $sqlg . ", INFO");
 			$resultg = search($sqlg);
 			$rowsg = count($resultg);				
 			echo "<td align=center>" . $rowsg . "/2500";
 			
-			addToDebugLog("journeySelect(): Journey ID: " . $resultj[$j][0]);
+			addToDebugLog("journeySelect(), Journey ID: " . $resultj[$j][0] . ", INFO");
 			
 			// Either set current journey, or embark on it
 			if ($journey_id == $resultj[$j][0]) {  // current journey
@@ -223,10 +223,10 @@
 		
 		// Displays details for all players
 	
-		addToDebugLog("displayPlayers(): Function Entry");	
+		addToDebugLog("displayPlayers(), Function Entry, INFO");	
 		
 		$sql = "SELECT * FROM hackcess.user;";
-		addToDebugLog("getPlayerCurrentGridCoordinates(): Constructed query: " . $sql);
+		addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result); 
 
@@ -235,7 +235,7 @@
 			
 			// Display Characters
 			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $result[$u][0] . ";";
-			addToDebugLog("getPlayerCurrentGridCoordinates(): Constructed query: " . $sqlc);
+			addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sqlc . ", INFO");
 			$resultc = search($sqlc);
 			$rowsc = count($resultc);
 			
@@ -256,7 +256,7 @@
 			
 			// List of Journeys
 			$sqlj = "SELECT * FROM hackcess.journey WHERE player_id = " . $result[$u][0] . ";";
-			addToDebugLog("getPlayerCurrentGridCoordinates(): Constructed query: " . $sqlj);
+			addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sqlj . ", INFO");
 			$resultj = search($sqlj);
 			$rowsj = count($resultj);
 			
@@ -271,7 +271,7 @@
 				
 				// Determine how many grids exist for the journey
 				$sqlg = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $resultj[$j][0] . ";";
-				addToDebugLog("displayPlayers(): Constructed query: " . $sqlg);
+				addToDebugLog("displayPlayers(), Constructed query: " . $sqlg . ", INFO");
 				$resultg = search($sqlg);
 				$rowsg = count($resultg);				
 				echo "<td align=center>" . $rowsg . "/2500";
@@ -293,10 +293,10 @@
 		
 		// Returns current journey id for supplied player
 	
-		addToDebugLog("playerCurrentJourney(): Function Entry - supplied parameters: Player ID: " . $player_id);	
+		addToDebugLog("playerCurrentJourney(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Character ID: " . $character_id . ", INFO");	
 		
 		$sql = "SELECT current_journey_id FROM hackcess.character WHERE player_id = " . $player_id . " AND character_id = " . $character_id . ";";
-		addToDebugLog("getPlayerCurrentGridCoordinates(): Constructed query: " . $sql);
+		addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		
 		return $result[0][0];
@@ -307,7 +307,7 @@
 		
 		// Changes journey for supplied character
 	
-		addToDebugLog("changeJourney(): Function Entry - supplied parameters: Journey ID: " . $journey_id . ", Character ID: " . $character_id);
+		addToDebugLog("changeJourney(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $character_id . ", INFO");
 		
 		// Determine the last grid visited / created
 		$grid_id = getLastLocation($journey_id, $character_id);
@@ -316,9 +316,9 @@
 		$dml = "UPDATE hackcess.character SET character_grid_id = " . $grid_id . ", current_journey_id = " . $journey_id . " WHERE character_id = " . $character_id . ";";
 		$resultdml = insert($dml);
 		if ($resultdml == TRUE) {
-			addToDebugLog("changeJourney(): Character record updated");
+			addToDebugLog("changeJourney(), Character record updated, INFO");
 		} else {
-			addToDebugLog("changeJourney(): Character record not updated");
+			addToDebugLog("changeJourney(), Character record not updated, ERROR");
 		}
 
 		// Navigate to page
@@ -330,10 +330,10 @@
 		
 		// Determines last location for certain journey
 	
-		addToDebugLog("getLastLocation(): Function Entry - supplied parameters: Journey ID: " . $journey_id . ", Character ID: " . $character_id);
+		addToDebugLog("getLastLocation(), Function Entry - supplied parameters: Journey ID: " . $journey_id . "; Character ID: " . $character_id . ", INFO");
 
 		$sql = "SELECT grid_id FROM hackcess.journal WHERE journey_id = " . $journey_id . " AND character_id = " . $character_id . " ORDER BY journal_id DESC LIMIT 1;";
-		addToDebugLog("getLastLocation(): Constructed query: " . $sql);
+		addToDebugLog("getLastLocation(), Constructed query: " . $sql);
 		$result = search($sql);
 		
 		return $result[0][0];
@@ -344,7 +344,7 @@
 
 		// Creates a new journey for the supplied player / character
 	
-		addToDebugLog("newJourney(): Function Entry - supplied parameters: Journey ID: " . $journey_id . ", Character ID: " . $character_id);
+		addToDebugLog("newJourney(), Function Entry - supplied parameters: Journey ID: " . $journey_id . "; Character ID: " . $character_id . "; Parent Character ID: " . $parent_character_id . ", INFO");
 	
 		// Create Journey Name
 		$journey_name = createJourneyName();
@@ -353,14 +353,14 @@
 		$dml = "INSERT INTO hackcess.journey (player_id, character_id, journey_name) VALUES (" . $player_id . ", " . $character_id . ", '" . $journey_name . "');";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("newJourney(): New journey added");
+			addToDebugLog("newJourney(), New journey added, INFO");
 		} else {
-			addToDebugLog("newJourney(): ERROR: New journey not added");
+			addToDebugLog("newJourney(), ERROR: New journey not added, ERROR");
 		}
 		
 		// Get new journey id
 		$sql = "SELECT journey_id FROM hackcess.journey WHERE player_id = " . $player_id . " AND character_id = " . $character_id . " ORDER BY journey_id DESC LIMIT 1;";
-		addToDebugLog("newJourney(): Constructed query: " . $sql);
+		addToDebugLog("newJourney(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$journey_id = $result[0][0];
 		
@@ -368,14 +368,14 @@
 		$dml = "INSERT INTO hackcess.grid (grid_x, grid_y, directions, journey_id) VALUES (25, 1, 1191, " . $journey_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("newJourney(): New grid added");
+			addToDebugLog("newJourney(), New grid added, INFO");
 		} else {
-			addToDebugLog("newJourney(): ERROR: New grid not added");
+			addToDebugLog("newJourney(), ERROR: New grid not added, ERROR");
 		}	
 	
 		// Get new grid id
 		$sql = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $journey_id . " LIMIT 1;";
-		addToDebugLog("newJourney(): Constructed query: " . $sql);
+		addToDebugLog("newJourney(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$grid_id = $result[0][0];
 		
@@ -383,18 +383,18 @@
 		$dml = "UPDATE hackcess.character SET character_grid_id = " . $grid_id . ", current_journey_id = " . $journey_id . " WHERE character_id = " . $character_id . ";";
 		$result = insert($dml);
 		if ($result== TRUE) {
-			addToDebugLog("newJourney(): Character record updated");
+			addToDebugLog("newJourney(), Character record updated, INFO");
 		} else {
-			addToDebugLog("newJourney(): Character record not updated");
+			addToDebugLog("newJourney(), Character record not updated, ERROR");
 		}
 		
 		// Create new journal entry
 		$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", 'Dropped off at 25,1 in " . $journey_name . "');";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("newJourney(): New journal entry added");
+			addToDebugLog("newJourney(), New journal entry added, INFO");
 		} else {
-			addToDebugLog("newJourney(): ERROR: New journal entry not added");
+			addToDebugLog("newJourney(), New journal entry not added, ERROR");
 		}		
 
 		// Navigate to page
@@ -410,7 +410,7 @@
 	
 		// Creates and returns a journey name
 	
-		addToDebugLog("createJourneyName(): Function Entry - no parameters");
+		addToDebugLog("createJourneyName(), Function Entry - no parameters");
 		
 		$syllables = rand(2, 4);
 		$name = "";
@@ -435,7 +435,7 @@
 		}
 			
 		$final_name = "The " . $location . " of " . $name;
-		addToDebugLog("- createJourneyName(): Generated journey name: " . $final_name);
+		addToDebugLog("- createJourneyName(), Generated journey name: " . $final_name);
 		
 		return $final_name;		
 	
@@ -445,11 +445,11 @@
 		
 		// Displays the latest journal entries for this journey
 	
-		addToDebugLog("displayPlayerInformation(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		addToDebugLog("displayPlayerInformation(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
 		// Get Character Basic details
 		$sql = "SELECT character_name, character_role, character_level FROM hackcess.character WHERE character_id = " . $character_id . ";";
-		addToDebugLog("displayPlayerInformation(): Constructed query: " . $sql);
+		addToDebugLog("displayPlayerInformation(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$name = $result[0][0];
 		$role = $result[0][1];
@@ -461,7 +461,7 @@
 		
 		// Get Character Details
 		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("displayPlayerInformation(): Constructed query: " . $sql);
+		addToDebugLog("displayPlayerInformation(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		echo "<tr><td align=right>HP<td align=center>" . $result[0][13] . "<td align=right>Head | <td>" . getItemNameById($result[0][8]) . "</tr>";
@@ -478,15 +478,15 @@
 
 		// Manage player changes on move
 	
-		addToDebugLog("updatePlayerOnMove(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Grid ID: " . $grid_id . ", Journey ID: " . $journey_id);	
+		addToDebugLog("updatePlayerOnMove(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Grid ID: " . $grid_id . "; Journey ID: " . $journey_id . ", INFO");	
 	
 		// Move player location to new grid square
 		$dml = "UPDATE hackcess.character SET character_grid_id = " . $grid_id . " WHERE character_id = " . $character_id . ";";
 		$resultdml = insert($dml);
 		if ($resultdml == TRUE) {
-			addToDebugLog("updatePlayerOnMove(): Character record updated");
+			addToDebugLog("updatePlayerOnMove(), Character record updated, INFO");
 		} else {
-			addToDebugLog("updatePlayerOnMove(): Character record not updated");
+			addToDebugLog("updatePlayerOnMove(), Character record not updated, ERROR");
 		}		
 
 		// Determine if player needs to recover HP
@@ -494,7 +494,7 @@
 		$max_hp = getCharacterDetailsInfo($character_id, "hp");
 		$current_hp = getCharacterDetailsInfo($character_id, "current_hp");
 		if ($current_hp < $max_hp) {
-			addToDebugLog("updatePlayerOnMove(): Healing by 1HP");
+			addToDebugLog("updatePlayerOnMove(), Healing by 1HP");
 			$hp_alteration = ", current_hp = current_hp + 1 ";
 		}
 		
@@ -502,20 +502,20 @@
 		$dml = "UPDATE hackcess.character_details SET xp = xp + 10 " . $hp_alteration . "WHERE character_id = " . $character_id . ";";
 		$resultdml = insert($dml);
 		if ($resultdml == TRUE) {
-			addToDebugLog("updatePlayerOnMove(): Character details updated");
+			addToDebugLog("updatePlayerOnMove(), Character details updated, INFO");
 		} else {
-			addToDebugLog("updatePlayerOnMove(): Character details not updated");
+			addToDebugLog("updatePlayerOnMove(), Character details not updated, ERROR");
 		}
 		
 		// Get player XP
 		$sql = "SELECT xp FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("updatePlayerOnMove(): Constructed query: " . $sql);
+		addToDebugLog("updatePlayerOnMove(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$xp = $result[0][0];
 
 		// Get player current level
 		$sql = "SELECT character_level FROM hackcess.character WHERE character_id = " . $character_id . ";";
-		addToDebugLog("updatePlayerOnMove(): Constructed query: " . $sql);
+		addToDebugLog("updatePlayerOnMove(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$level = $result[0][0];
 
@@ -525,23 +525,23 @@
 			$dml = "UPDATE hackcess.character_details SET hp = hp + 1, current_hp = current_hp + 1, armor_class = armor_class + 1, attack = attack + 1, strength = strength + 4 WHERE character_id = " . $character_id . ";";
 			$resultdml = insert($dml);
 			if ($resultdml == TRUE) {
-				addToDebugLog("updatePlayerOnMove(): Character details updated");
+				addToDebugLog("updatePlayerOnMove(), Character details updated, INFO");
 			} else {
-				addToDebugLog("updatePlayerOnMove(): Character details not updated");
+				addToDebugLog("updatePlayerOnMove(), Character details not updated, ERROR");
 			}				
 			
 			// Increase level
 			$dml = "UPDATE hackcess.character SET character_level = character_level + 1 WHERE character_id = " . $character_id . ";";
 			$resultdml = insert($dml);
 			if ($resultdml == TRUE) {
-				addToDebugLog("updatePlayerOnMove(): Character level updated");
+				addToDebugLog("updatePlayerOnMove(), Character level updated, INFO");
 			} else {
-				addToDebugLog("updatePlayerOnMove(): Character level not updated");
+				addToDebugLog("updatePlayerOnMove(), Character level not updated, ERROR");
 			}
 			
 			// Get player current level
 			$sql = "SELECT character_level, character_role, character_name FROM hackcess.character WHERE character_id = " . $character_id . ";";
-			addToDebugLog("updatePlayerOnMove(): Constructed query: " . $sql);
+			addToDebugLog("updatePlayerOnMove(), Constructed query: " . $sql . ", INFO");
 			$result = search($sql);
 			$level = $result[0][0];
 			$role = $result[0][1];
@@ -552,9 +552,9 @@
 			$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", '" . $details . "');";
 			$result = insert($dml);
 			if ($result == TRUE) {
-				addToDebugLog("move(): New grid generated");
+				addToDebugLog("move(), New grid generated, INFO");
 			} else {
-				addToDebugLog("move(): ERROR: New grid not generated");
+				addToDebugLog("move(), New grid not generated, ERROR");
 			}
 			
 		}
@@ -565,7 +565,7 @@
 		
 		// Creates a new character
 	
-		addToDebugLog("createCharacter(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Parent Character ID: " . $parent_character_id);		
+		addToDebugLog("createCharacter(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Parent Character ID: " . $parent_character_id . ", INFO");		
 		
 		// Create Character Name
 		$name = generateCharacterName();
@@ -577,14 +577,14 @@
 		$dml = "INSERT INTO hackcess.character (player_id, character_name, character_role, character_level, status, generation, parent_id) VALUES (" . $player_id . ", '" . $name . "', '" . $role . "', 1, 'Alive', 0, 0);";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("createCharacter(): New character generated");
+			addToDebugLog("createCharacter(), New character generated, INFO");
 		} else {
-			addToDebugLog("createCharacter(): ERROR: New character not generated");
+			addToDebugLog("createCharacter(), New character not generated, ERROR");
 		}
 		
 		// Get new Character id
 		$sql = "SELECT character_id FROM hackcess.character WHERE player_id = " . $player_id . " ORDER BY character_id DESC LIMIT 1;";
-		addToDebugLog("createCharacter(): Constructed query: " . $sql);
+		addToDebugLog("createCharacter(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$character_id = $result[0][0];
 		
@@ -599,11 +599,10 @@
 			$dml = "UPDATE hackcess.character SET parent_id = " . $parent_character_id . ", generation = " . $parent_generation . " WHERE character_id = " . $character_id . ";";
 			$resultdml = insert($dml);
 			if ($resultdml == TRUE) {
-				addToDebugLog("updatePlayerOnMove(): Character level updated");
+				addToDebugLog("updatePlayerOnMove(), Character level updated, INFO");
 			} else {
-				addToDebugLog("updatePlayerOnMove(): Character level not updated");
-			}			
-			
+				addToDebugLog("updatePlayerOnMove(), Character level not updated, ERROR");
+			}				
 		}
 
 		// Generate character details / items
@@ -627,7 +626,7 @@
 		
 		// Creates and returns a character name
 	
-		addToDebugLog("createJourneyName(): Function Entry - no parameters");
+		addToDebugLog("createJourneyName(), Function Entry - no parameters");
 		
 		// Determine the consonant to use for the name
 		$consonants = array("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "y", "z"); 
@@ -664,7 +663,7 @@
 		
 		// Creates and returns a character name
 	
-		addToDebugLog("generateRole(): Function Entry - no parameters");		
+		addToDebugLog("generateRole(), Function Entry - no parameters");		
 
 		// Determine the consonant to use for the role
 		$consonants = array("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "z"); 
@@ -697,56 +696,56 @@
 
 		// Generates stats / items for the new character
 	
-		addToDebugLog("generateCharacterStatsItems(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		addToDebugLog("generateCharacterStatsItems(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 	
 		// Create character items - Head
 		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('Helm', 1, 0, 1, 'head', " . $character_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("move(): Helm generated");
+			addToDebugLog("move(), Helm generated");
 		} else {
-			addToDebugLog("move(): ERROR: Helm not generated");
+			addToDebugLog("move(), ERROR: Helm not generated");
 		}			
 
 		// Create character items - Chest
 		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('Chestplate', 1, 0, 1, 'chest', " . $character_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("move(): Chestplate generated");
+			addToDebugLog("move(), Chestplate generated");
 		} else {
-			addToDebugLog("move(): ERROR: Chestplate not generated");
+			addToDebugLog("move(), ERROR: Chestplate not generated");
 		}	
 
 		// Create character items - Legs
 		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('Trousers', 1, 0, 1, 'legs', " . $character_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("move(): Trousers generated");
+			addToDebugLog("move(), Trousers generated");
 		} else {
-			addToDebugLog("move(): ERROR: Trousers not generated");
+			addToDebugLog("move(), ERROR: Trousers not generated");
 		}
 		
 		// Create character items - Shield
 		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('Shield', 1, 0, 1, 'shield', " . $character_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("move(): Shield generated");
+			addToDebugLog("move(), Shield generated");
 		} else {
-			addToDebugLog("move(): ERROR: Shield not generated");
+			addToDebugLog("move(), ERROR: Shield not generated");
 		}	
 
 		// Create character items - Sword
 		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('Sword', 0, 1, 1, 'weapon', " . $character_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("move(): Shield generated");
+			addToDebugLog("move(), Shield generated");
 		} else {
-			addToDebugLog("move(): ERROR: Shield not generated");
+			addToDebugLog("move(), ERROR: Shield not generated");
 		}	
 		
 		// Get items ids for details table
 		$sql = "SELECT equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY character_id ASC;";
-		addToDebugLog("createCharacter(): Constructed query: " . $sql);
+		addToDebugLog("createCharacter(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows == 5) {
@@ -756,16 +755,16 @@
 			$shield = $result[3][0];
 			$sword = $result[4][0];
 		} else {
-			addToDebugLog("createCharacter(): ERROR: Couldn't get item ids");
+			addToDebugLog("createCharacter(), Couldn't get item ids, ERROR");
 		}
 			
 		// Create character details
 		$dml = "INSERT INTO hackcess.character_details (character_id, hp, attack, armor_class, gold, xp, strength, head_slot, chest_slot, legs_slot, shield_slot, weapon_slot, current_hp) VALUES (" . $character_id . ", 20, 5, 1, 0, 0, 20, " . $head . ", " . $chest . ", " . $legs . ", " . $shield . ", " . $sword . ", 20);";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("move(): Character details stored");
+			addToDebugLog("move(), Character details stored");
 		} else {
-			addToDebugLog("move(): ERROR: Character details not stored");
+			addToDebugLog("move(), ERROR: Character details not stored");
 		}	
 		
 	}
@@ -774,10 +773,10 @@
 		
 		// Returns the item name
 	
-		addToDebugLog("getItemNameById(): Function Entry - supplied parameters: Item ID: " . $item_id);		
+		addToDebugLog("getItemNameById(), Function Entry - supplied parameters: Item ID: " . $item_id . ", INFO");		
 
 		$sql = "SELECT name, ac_boost, attack_boost FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
-		addToDebugLog("getItemNameById(): Constructed query: " . $sql);
+		addToDebugLog("getItemNameById(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$item_name = $result[0][0];
 		$ac_boost = $result[0][1];
@@ -798,7 +797,7 @@
 		
 		// Creates a new enemy
 	
-		addToDebugLog("createEnemy(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Character ID: " . $charcter_id . ", Grid ID: " . $grid_id);		
+		addToDebugLog("createEnemy(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Grid ID: " . $grid_id . ", INFO");		
 		
 		// Create Character Name
 		$name = generateEnemyName();
@@ -807,7 +806,7 @@
 		$character_hp = getCharacterDetailsInfo($character_id, "hp");
 		$character_ac = getCharacterDetailsInfo($character_id, "armor_class");
 		$character_atk = getCharacterDetailsInfo($character_id, "attack");
-		addToDebugLog("createEnemy(): Character Stats: HP: " . $character_hp . ", Character AC: " . $character_ac . ", Character ATK: " . $character_atk);	
+		addToDebugLog("createEnemy(), Character Stats: HP: " . $character_hp . "; Character AC: " . $character_ac . "; Character ATK: " . $character_atk . ", INFO");	
 		
 		// Get character boosts from armour / weapons
 		$boosts = getCharacterBoosts($character_id);
@@ -821,20 +820,20 @@
 		if ($enemy_ac <= 0) { $enemy_ac = 1;}
 		$enemy_atk = $character_ac + $total_ac_boost - rand(8, 15);
 		if ($enemy_atk <= 0) { $enemy_atk = 1;}
-		addToDebugLog("createEnemy(): Enemy Stats: HP: " . $enemy_hp . ", Character AC: " . $enemy_ac . ", Character ATK: " . $enemy_atk);	
+		addToDebugLog("createEnemy(), Enemy Stats: HP: " . $enemy_hp . "; Character AC: " . $enemy_ac . "; Character ATK: " . $enemy_atk . ", INFO");	
 		
 		// Create enemy record
 		$dml = "INSERT INTO hackcess.enemy (enemy_name, player_id, character_id, grid_id, atk, ac, hp, status) VALUES ('" . $name . "', " . $player_id . ", " . $character_id . ", " . $grid_id . ", " . $enemy_atk . ", " . $enemy_ac . ", " . $enemy_hp . ", 'Alive');";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("createEnemy(): New enemy generated");
+			addToDebugLog("createEnemy(), New enemy generated");
 		} else {
-			addToDebugLog("createEnemy(): ERROR: New enemy not generated");
+			addToDebugLog("createEnemy(), ERROR: New enemy not generated");
 		}
 		
 		// Get new enemy id
 		$sql = "SELECT enemy_id FROM hackcess.enemy WHERE grid_id = " . $grid_id . " LIMIT 1;";
-		addToDebugLog("createEnemy(): Constructed query: " . $sql);
+		addToDebugLog("createEnemy(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$enemy_id = $result[0][0];
 		
@@ -846,10 +845,10 @@
 
 		// Returns information about the supplied enemy
 	
-		addToDebugLog("getEnemyInfo(): Function Entry - supplied parameters: Enemy ID: " . $enemy_id);	
+		addToDebugLog("getEnemyInfo(), Function Entry - supplied parameters: Enemy ID: " . $enemy_id . ", INFO");	
 		
 		$sql = "SELECT enemy_name, atk, ac, hp FROM hackcess.enemy WHERE enemy_id = " . $enemy_id . ";";
-		addToDebugLog("getEnemyInfo(): Constructed query: " . $sql);
+		addToDebugLog("getEnemyInfo(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		
 		return $result;		
@@ -860,7 +859,7 @@
 		
 		// Creates and returns a enemy name
 	
-		addToDebugLog("generateEnemyName(): Function Entry - no parameters");
+		addToDebugLog("generateEnemyName(), Function Entry - no parameters");
 		
 		// Choose the Creature
 		$filepath = "lists/creatures.txt";
@@ -872,7 +871,7 @@
 			$creature = $creatures[rand(0, $creatures_length)];
 			$creature = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $creature); // Removes CRLF
 		}
-		addToDebugLog("generateEnemyName(): Selected creature: " . $creature);
+		addToDebugLog("generateEnemyName(), Selected creature: " . $creature . ", INFO");
 		
 		// Generate the name
 		$syllables = rand(2, 4);
@@ -889,10 +888,10 @@
 
 		}
 		$name = ucfirst($name);
-		addToDebugLog("generateEnemyName(): Name: " . $name);
+		addToDebugLog("generateEnemyName(), Name: " . $name . ", INFO");
 		
 		$final_name = ucfirst($name) . " the " . ucfirst($creature);
-		addToDebugLog("generateEnemyName(): Final name: " . $final_name);
+		addToDebugLog("generateEnemyName(), Final name: " . $final_name . ", INFO");
 		
 		return $final_name;
 		
@@ -902,7 +901,7 @@
 		
 		// Displays table of character and enemy_details
 		
-		addToDebugLog("displayBattleStats(): Function Entry - 3 parameters (arrays)");
+		addToDebugLog("displayBattleStats(), Function Entry - 3 parameters (arrays), INFO");
 		
 		// Heading: $character_basic_info; 0: id, 1: player id, 2: name, 3: role, 4: level
 		// Column 1: $character_detailed_info; 2: hp, 3: attack, 4: ac, 5: gold, 6: xp, 7: strength, 8: head, 9: chest, 10: legs, 11: shield, 12: weapon, 13: current_hp.
@@ -913,7 +912,7 @@
 		$boosts = getCharacterBoosts($character_basic_info[0][0]);
 		$total_ac_boost = $boosts[0];
 		$total_attack_boost = $boosts[1];
-		addToDebugLog("displayBattleStats(): Boosts: AC: " . $total_ac_boost . ", ATK: " . $total_attack_boost);
+		addToDebugLog("displayBattleStats(), Boosts: AC: " . $total_ac_boost . "; ATK: " . $total_attack_boost . ", INFO");
 		
 		// Get equipment names
 		$head = getItemNameById($character_detailed_info[0][8]);
@@ -960,10 +959,10 @@
 		
 		// Get character boosts from armour / weapons
 		
-		addToDebugLog("getCharacterBoosts(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		addToDebugLog("getCharacterBoosts(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
 		$sql = "SELECT ac_boost, attack_boost, slot, equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getCharacterBoosts(): Constructed query: " . $sql);
+		addToDebugLog("getCharacterBoosts(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		$total_attack_boost = 0;
@@ -982,7 +981,7 @@
 				}			
 			}
 		}
-		addToDebugLog("getCharacterBoosts(): AC Boost: " . $total_ac_boost . ", Attack Boost: " . $total_attack_boost);
+		addToDebugLog("getCharacterBoosts(), AC Boost: " . $total_ac_boost . ", Attack Boost: " . $total_attack_boost . ", INFO");
 		$details = array();
 		$details[0] = $total_ac_boost;
 		$details[1] = $total_attack_boost;
@@ -995,16 +994,16 @@
 		
 		// This function handles where the character runs away from a fight
 		
-		addToDebugLog("getCharacterBoosts(): Function Entry - supplied parameters: Character ID: " . $character_id);	
+		addToDebugLog("getCharacterBoosts(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");	
 
 		// Reduce character HP
 		$hp = rand(1, 5);
 		$dml = "UPDATE hackcess.character_details SET current_hp = current_hp - " . $hp . " WHERE character_id = " . $character_id . ";";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("flee(): Character record updated");
+			addToDebugLog("flee(), Character record updated, INFO");
 		} else {
-			addToDebugLog("flee(): Character record not updated");
+			addToDebugLog("flee(), Character record not updated, ERROR");
 		}		
 		
 		// Get enemy name
@@ -1015,9 +1014,9 @@
 		$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", 'Ran from a fight with " . $name . ", lost " . $hp . "HP.');";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("flee(): New journal entry added");
+			addToDebugLog("flee(), New journal entry added, INFO");
 		} else {
-			addToDebugLog("flee(): ERROR: New journal entry not added");
+			addToDebugLog("flee(), ERROR: New journal entry not added, ERROR");
 		}			
 
 	}
@@ -1026,13 +1025,13 @@
 		
 		// This function lists the equipment held by each player
 		
-		addToDebugLog("manageEquipment(): Function Entry - supplied parameters: Player ID: " . $player_id . ", Journey ID: " . $journey_id . ", Character ID: " . $charcter_id);
+		addToDebugLog("manageEquipment(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . ", INFO");
 		
 		echo "<table cellpadding=3 cellspacing=0 border=1 align=center>";
 		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Actions</tr>";
 
 		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC, ac_boost, attack_boost DESC;";
-		addToDebugLog("manageEquipment(): Constructed query: " . $sql);
+		addToDebugLog("manageEquipment(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 
@@ -1092,10 +1091,10 @@
 
 		// This function lists the equipment held by each player
 		
-		addToDebugLog("isEquipped(): Function Entry - supplied parameters: Slot Name: " . $slot . ", Item ID: " . $item_id . ", Character ID: " . $character_id);
+		addToDebugLog("isEquipped(), Function Entry - supplied parameters: Slot Name: " . $slot . "; Item ID: " . $item_id . "; Character ID: " . $character_id . ", INFO");
 		
 		$sql = "SELECT " . $slot . "_slot FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("isEquipped(): Constructed query: " . $sql);
+		addToDebugLog("isEquipped(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		if ($result[0][0] == $item_id) {
@@ -1110,15 +1109,15 @@
 		
 		// This function equips the item selected
 		
-		addToDebugLog("equip(): Function Entry - supplied parameters: Slot Name: " . $slot . ", Item ID: " . $item_id . ", Character ID: " . $character_id);	
+		addToDebugLog("equip(), Function Entry - supplied parameters: Slot Name: " . $slot . ", Item ID: " . $item_id . "l Character ID: " . $character_id . ", INFO");	
 
 		// Equip item
 		$dml = "UPDATE hackcess.character_details SET " . $slot . "_slot = " . $item_id . " WHERE character_id = " . $character_id . ";";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("flee(): Item equipped");
+			addToDebugLog("flee(), Item equipped, INFO");
 		} else {
-			addToDebugLog("flee(): Item not equipped");
+			addToDebugLog("flee(), Item not equipped, ERROR");
 		}
 		
 	}
@@ -1127,7 +1126,7 @@
 		
 		// This function equips the item selected
 		
-		addToDebugLog("createRandomItem(): Function Entry - supplied parameters: Character ID: " . $character_id . ", Character AC Boost: " . $character_ac_boost . ", Character Attack Boost: " . $character_atk_boost);
+		addToDebugLog("createRandomItem(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Character AC Boost: " . $character_ac_boost . "; Character Attack Boost: " . $character_atk_boost . ", INFO");
 
 		srand(make_seed());
 		$item_choice = rand(0, 4);
@@ -1135,7 +1134,8 @@
 		switch ($item_choice) {
 			case 0: // Head
 				$slot = "head";
-				$name = "Helm";
+				$prefix = getAdjective();
+				$name = ucfirst($prefix) . "Helm";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
 				if ($ac_boost < 1) { $ac_boost = 1; };
@@ -1145,7 +1145,8 @@
 				break;
 			case 1: // Chest
 				$slot = "chest";
-				$name = "Chestplate";
+				$prefix = getAdjective();
+				$name = ucfirst($prefix) . "Chestplate";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
 				if ($ac_boost < 1) { $ac_boost = 1; };
@@ -1155,7 +1156,8 @@
 				break;
 			case 2: // Legs
 				$slot = "legs";
-				$name = "Trousers";
+				$prefix = getAdjective();
+				$name = ucfirst($prefix) . "Trousers";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
 				if ($ac_boost < 1) { $ac_boost = 1; };
@@ -1165,7 +1167,8 @@
 				break;
 			case 3: // Shield
 				$slot = "shield";
-				$name = "Shield";
+				$prefix = getAdjective();
+				$name = ucfirst($prefix) . "Shield";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
 				if ($ac_boost < 1) { $ac_boost = 1; };
@@ -1175,7 +1178,8 @@
 				break;
 			case 4: // Weapon
 				$slot = "weapon";
-				$name = "Sword";
+				$prefix = getAdjective();
+				$name = ucfirst($prefix) . "Sword";
 				$attack_boost = rand(intval($character_atk_boost)-2, intval($character_atk_boost)+2);
 				$weight = round($attack_boost/2);
 				$ac_boost = 0;
@@ -1187,9 +1191,9 @@
 		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $name . "', " . $ac_boost . ", " . $attack_boost . ", " . $weight . ", '" . $slot . "', " . $character_id  .");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("createRandomItem(): New item added");
+			addToDebugLog("createRandomItem(), New item added, INFO");
 		} else {
-			addToDebugLog("createRandomItem(): ERROR: New item not added");
+			addToDebugLog("createRandomItem(), New item not added, ERROR");
 		}
 		
 		return $details;
@@ -1200,14 +1204,14 @@
 		
 		// This function equips the item selected
 		
-		addToDebugLog("drop(): Function Entry - supplied parameters: Equipment ID: " . $equipment_id);	
+		addToDebugLog("drop(), Function Entry - supplied parameters: Equipment ID: " . $equipment_id . ", INFO");	
 		
 		$dml = "DELETE FROM hackcess.character_equipment WHERE equipment_id = " . $equipment_id . ";";
 		$result = delete($dml);
 		if ($result == TRUE) {
-			addToDebugLog("drop(): Item deleted");
+			addToDebugLog("drop(), Item deleted, INFO");
 		} else {
-			addToDebugLog("drop(): ERROR: Item not deleted");
+			addToDebugLog("drop(), Item not deleted, ERROR");
 		}
 		
 	}
@@ -1216,14 +1220,14 @@
 		
 		// This function probably dosen't work
 		
-		("drop(): Function Entry - supplied parameters: Name: " . $name);
+		addToDebugLog("createPlayer(), Function Entry - supplied parameters: Name: " . $name . ", INFO");
 		
 		$dml = "INSERT INTO hackcess.user (name) VALUES ('" . $name . "')";
 		$result = delete($dml);
 		if ($result == TRUE) {
-			addToDebugLog("drop(): Item deleted");
+			addToDebugLog("createPlayer(), Player created, INFO");
 		} else {
-			addToDebugLog("drop(): ERROR: Item not deleted");
+			addToDebugLog("createPlayer(), Player not created, ERROR");
 		}
 		
 	}
@@ -1232,10 +1236,10 @@
 		
 		// This function equips the item selected
 		
-		addToDebugLog("equipmentWeight(): Function Entry - supplied parameters: Character ID: " . $character_id);		
+		addToDebugLog("equipmentWeight(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");		
 
 		$sql = "SELECT weight FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
-		addToDebugLog("equipmentWeight(): Constructed query: " . $sql);
+		addToDebugLog("equipmentWeight(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		$weight = 0;
@@ -1252,10 +1256,10 @@
 		
 		// This function returns the id of the best item for the supplied character_id
 		
-		addToDebugLog("getBestItem(): Function Entry - supplied parameters: Character ID: " . $character_id);		
+		addToDebugLog("getBestItem(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");		
 		
 		$sql = "SELECT equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY attack_boost, ac_boost DESC LIMIT 1;";
-		addToDebugLog("getBestItem(): Constructed query: " . $sql);
+		addToDebugLog("getBestItem(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$best_item_id = $result[0][0];	
 		
@@ -1267,10 +1271,10 @@
 		
 		// This function returns the summary for the supplied item_id
 		
-		addToDebugLog("getItemSummary(): Function Entry - supplied parameters: Item ID: " . $item_id);
+		addToDebugLog("getItemSummary(), Function Entry - supplied parameters: Item ID: " . $item_id . ", INFO");
 		
 		$sql = "SELECT name, ac_boost, attack_boost FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
-		addToDebugLog("getItemSummary(): Constructed query: " . $sql);
+		addToDebugLog("getItemSummary(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		
 		if ($result[0][1] == 0) {
@@ -1278,7 +1282,7 @@
 		} else {
 			$name = "+" . $result[0][1] . " " . $result[0][0];
 		}
-		addToDebugLog("getItemSummary(): Item Summary: " . $name);
+		addToDebugLog("getItemSummary(), Item Summary: " . $name . ", INFO");
 		
 		return $name;		
 		
@@ -1288,10 +1292,10 @@
 		
 		// This function displays the combat history for the selected character
 		
-		addToDebugLog("getItemSummary(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		addToDebugLog("getItemSummary(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
 		$sql = "SELECT * FROM hackcess.fight WHERE character_id = " . $character_id . ";";
-		addToDebugLog("showCharacterHistory(): Constructed query: " . $sql);
+		addToDebugLog("showCharacterHistory(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);	
 		$rows = count($result);
 		
@@ -1334,10 +1338,10 @@
 		
 		// This function displays the combat history for the selected character
 		
-		addToDebugLog("characterFightCount(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		addToDebugLog("characterFightCount(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
 		$sql = "SELECT fight_id FROM hackcess.fight WHERE character_id = " . $character_id . ";";
-		addToDebugLog("characterFightCount(): Constructed query: " . $sql);
+		addToDebugLog("characterFightCount(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		

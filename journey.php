@@ -31,7 +31,7 @@
 
 		echo "<p><div style='text-align: center;'><a href='character.php?player_id=" . $_GET['player_id'] . "'>Back to Character Select</a></div>";
 		
-		//outputDebugLog();
+		outputDebugLog();
 	}
 	
 ?>

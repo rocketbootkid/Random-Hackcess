@@ -1,10 +1,10 @@
 <?php
 
-	function createEffect($store_id) {
+	function createPositiveEffect($store_id) {
 		
 		// Creates a new positive effect potion in a store
 		
-		addToDebugLog("createEffect(): Function Entry - supplied parameters: Store: " . $store_id);
+		addToDebugLog("createPositiveEffect(), Function Entry - supplied parameters: Store: " . $store_id . ", INFO");
 		
 		// Red potion: ATK
 		// Green potion: HP
@@ -61,9 +61,9 @@
 		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $name . "', " . $ac . ", " . $atk . ", " . $weight . ", '" . $slot  . "', " . $cost . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("createEffect(): New potion added");
+			addToDebugLog("createPositiveEffect(), New potion added, INFO");
 		} else {
-			addToDebugLog("createEffect(): ERROR: New potion not added");
+			addToDebugLog("createPositiveEffect(), New potion not added, ERROR");
 		}
 		
 	}
@@ -72,7 +72,7 @@
 		
 		// This function will start new effects affecting the player, either when purchased or inflicted.
 
-		addToDebugLog("createEffect(): Function Entry - supplied parameters: Store: " . $store_id);
+		addToDebugLog("createEffect(), Function Entry - supplied parameters: Store: " . $store_id . ", INFO");
 		
 	}
 	
@@ -80,7 +80,7 @@
 		
 		// This function will manage the ongoing effects affecting a character
 
-		addToDebugLog("manageEffects(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		addToDebugLog("manageEffects(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
 		// Reduce the remaining duration by 1 for all ongoing effects
 		
@@ -97,10 +97,10 @@
 		
 		// This function lists all ongoing effects for the supplied character
 		
-		listCharacterEffects("createEffect(): Function Entry - supplied parameters: Character ID: " . $character_id);
+		listCharacterEffects("createEffect(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
 		$sql = "SELECT * FROM hackcess.effects WHERE character_id = " . $character_id . ";";
-		addToDebugLog("listCharacterEffects(): Constructed query: " . $sql);
+		addToDebugLog("listCharacterEffects(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows > 0) {
@@ -118,14 +118,14 @@
 		
 		// This function removes all effects for the supplied character
 		
-		listCharacterEffects("removeEffect(): Function Entry - supplied parameters: Effect ID: " . $effect_id);		
+		listCharacterEffects("removeEffect(), Function Entry - supplied parameters: Effect ID: " . $effect_id . ", INFO");		
 		
 		$dml = "DELETE FROM hackcess.effects WHERE effect_id = " . $effect_id . ";";
 		$result = delete($dml);
 		if ($result == TRUE) {
-			addToDebugLog("removeEffect(): Effect deleted from character");
+			addToDebugLog("removeEffect(), Effect deleted from character, INFO");
 		} else {
-			addToDebugLog("removeEffect(): ERROR: Effect not deleted from character");
+			addToDebugLog("removeEffect(), Effect not deleted from character, ERROR");
 		}
 		
 	}

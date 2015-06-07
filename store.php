@@ -69,7 +69,7 @@
 		}
 		echo "</tr></table>";
 		
-		//outputDebugLog();
+		outputDebugLog();
 		
 	}
 

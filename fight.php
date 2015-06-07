@@ -12,6 +12,7 @@
 	include 'functions/mysql_functions.php';
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
+	include 'functions/store_functions.php';
 
 	$character_id = $_GET['character_id'];
 	$enemy_id = $_GET['enemy_id'];
@@ -21,7 +22,7 @@
 	
 	doFight($character_id, $enemy_id, $grid_id, $player_id, $journey_id);
 	
-	//outputDebugLog();
+	outputDebugLog();
 	
 ?>
 

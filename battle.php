@@ -66,7 +66,7 @@
 		echo "<td width=200px align=center><h2><a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&action=flee'>Run!</a></h2></tr>";
 		echo "</table>";
 	
-		//outputDebugLog();
+		outputDebugLog();
 
 	}
 		

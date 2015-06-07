@@ -2,7 +2,6 @@
 
 <head>
 	<title>Random Hackcess | Equipment</title>
-	<!--<link rel="stylesheet" type="text/css" href="css/css.css">-->
 </head>
 
 <body>
@@ -36,8 +35,6 @@
 		// Redirect to this page
 		echo "<script>window.location.href = 'equipment.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
 		
-		//outputDebugLog();
-		
 	} else {
 
 		if ($character_id > 0 && $player_id > 0 && $journey_id > 0) {
@@ -47,9 +44,10 @@
 			if ($value == "ok") {
 				echo "<p><div style='text-align: center;'><a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a></div>";
 			} else {
+				echo "<p><div style='text-align: center;'>You can't move. You need to drop something.</div>";
 			}
 			
-			//outputDebugLog();
+			outputDebugLog();
 		} else {
 			echo "You fumble with the straps on your pack, but cannot open it. Guess the contents will have to remain a mystery.";
 		}

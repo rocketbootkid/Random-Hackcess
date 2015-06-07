@@ -9,6 +9,9 @@
 	$current_player = 0;
 	$queries = 0;
 	$query_sql = "";
+	$debug_enabled = 0;
+	$debug_level = "WARN";
+	$debug_dirty_flag = 0;
 
 	// ********************************************************************************************************************************************
 	// ************************************************ DATABASE-RELATED FUNCTIONS ****************************************************************
@@ -26,7 +29,7 @@
 	
 		global $connection;
 	
-		//addToDebugLog(" - - connect(): Connect to MySQL");
+		//addToDebugLog("___- connect(): Connect to MySQL");
 	
 		$connection = mysql_connect('localhost', 'root', 'root');
 		if (!$connection) {
@@ -42,7 +45,7 @@
 		
 		global $connection;
 		
-		//addToDebugLog(" - - disconnect(): Disconnect from MySQL");
+		//addToDebugLog("___- disconnect(): Disconnect from MySQL");
 		
 		mysql_close($connection);
 	
@@ -52,7 +55,7 @@
 	
 		// Does MySQL SELECT operations, returning a results array
 	
-		addToDebugLog(" - search(): Function Entry - supplied parameter: " . $sql);
+		addToDebugLog("___search(), Function Entry: supplied parameter: " . $sql . ", INFO");
 	
 		connect();
 
@@ -66,9 +69,9 @@
 		$rows = mysql_num_rows($result);
 		if ($rows == "") {
 			$rows = 0;
-			addToDebugLog(" - search(): *** ERROR *** Query returned " . $rows . " rows");
+			addToDebugLog("___search(), Query returned " . $rows . " rows, WARN");
 		} else {
-			addToDebugLog(" - search(): Query returned " . $rows . " rows");
+			addToDebugLog("___search(), Query returned " . $rows . " rows, INFO");
 		}
 		
 		$cols = mysql_num_fields($result);
@@ -91,7 +94,7 @@
 
 		// Does MySQL INSERT and UPDATE operations, returning a boolean flag
 	
-		addToDebugLog(" - insert(): Function Entry - supplied parameter: " . $dml);
+		addToDebugLog("___insert(), Function Entry: supplied parameter: " . $dml . ", INFO");
 	
 		connect();
 
@@ -101,9 +104,9 @@
 		$status = $result;
 	
 		if ($status == TRUE) {
-			addToDebugLog(" - insert(): Insert operation successful");
+			addToDebugLog("___insert(), Insert operation successful, INFO");
 		} else {
-			addToDebugLog(" - insert(): *** ERROR *** Insert operation failed: " . mysql_error($connection));
+			addToDebugLog("___insert(), Insert operation failed: " . mysql_error($connection) . ", ERROR");
 		}
 	
 		disconnect();
@@ -116,7 +119,7 @@
 	
 		// Does MySQL DELETE operations, returning a boolean flag
 	
-		addToDebugLog(" - delete(): Function Entry - supplied parameter: " . $dml);
+		addToDebugLog("___delete(), Function Entry: supplied parameter: " . $dml . ", INFO");
 	
 		connect();
 
@@ -126,9 +129,9 @@
 		$status = $result;
 	
 		if ($status == TRUE) {
-			addToDebugLog(" - delete(): Delete operation successful");
+			addToDebugLog("___delete(), Delete operation successful, INFO");
 		} else {
-			addToDebugLog(" - delete(): *** ERROR *** Delete operation failed: " . mysql_error($connection));
+			addToDebugLog("___delete(), Delete operation failed: " . mysql_error($connection) . ", ERROR");
 		}
 	
 		disconnect();

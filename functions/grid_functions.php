@@ -352,8 +352,7 @@
 		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";		
 
 	}
-	
-	
+		
 	function getGridIDByCoordinates($grid_x, $grid_y, $journey_id) {
 
 		// Returns the grid id for the supplied grid coordinates
@@ -1023,7 +1022,5 @@
 		}
 		
 	}
-	
-	
 	
 ?>

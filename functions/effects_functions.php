@@ -68,12 +68,25 @@
 		
 	}
 	
-	function startEffect() {
-		
-		// This function will start new effects affecting the player, either when purchased or inflicted.
-
-		addToDebugLog("createEffect(), Function Entry - supplied parameters: Store: " . $store_id . ", INFO");
-		
+	function listCharacterEffects($character_id) {
+	
+		// This function lists all ongoing effects for the supplied character
+	
+		listCharacterEffects("createEffect(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
+	
+		$sql = "SELECT * FROM hackcess.effects WHERE character_id = " . $character_id . ";";
+		addToDebugLog("listCharacterEffects(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+		$rows = count($result);
+		if ($rows > 0) {
+			for ($e = 0; $e < $rows; $e++) {
+				echo $result[$][2] . ": " . $result[$e][4] . " to " . $result[$e][3] . " for " . $result[$e][5] . " moves.<br/>";
+				// e.g. Poisoned: -5 to HP for 15 moves.
+			}
+		} else {
+			echo "No ongoing effects.";
+		}
+	
 	}
 	
 	function manageEffects($character_id) {
@@ -93,27 +106,6 @@
 		
 	}
 	
-	function listCharacterEffects($character_id) {
-		
-		// This function lists all ongoing effects for the supplied character
-		
-		listCharacterEffects("createEffect(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
-		
-		$sql = "SELECT * FROM hackcess.effects WHERE character_id = " . $character_id . ";";
-		addToDebugLog("listCharacterEffects(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);
-		$rows = count($result);
-		if ($rows > 0) {
-			for ($e = 0; $e < $rows; $e++) {
-				echo $result[$][2] . ": " . $result[$e][4] . " to " . $result[$e][3] . " for " . $result[$e][5] . " moves.<br/>";
-				// e.g. Poisoned: -5 to HP for 15 moves.
-			}
-		} else {
-			echo "No ongoing effects.";
-		}
-		
-	}
-	
 	function removeEffect($effect_id) {
 		
 		// This function removes all effects for the supplied character
@@ -128,6 +120,14 @@
 			addToDebugLog("removeEffect(), Effect not deleted from character, ERROR");
 		}
 		
+	}
+	
+	function startEffect() {
+	
+		// This function will start new effects affecting the player, either when purchased or inflicted.
+	
+		addToDebugLog("createEffect(), Function Entry - supplied parameters: Store: " . $store_id . ", INFO");
+	
 	}
 
 ?>

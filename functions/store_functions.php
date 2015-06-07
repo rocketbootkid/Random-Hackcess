@@ -1,5 +1,59 @@
 <?php
 
+	function buyItem($store_id, $journey_id, $character_id, $player_id, $item_id) {
+	
+		// Buys an item from the store
+	
+		addToDebugLog("buyItem(), Function Entry - Store ID: " . $store_id . ", Journey ID: " . $journey_id . "; Character ID: " . $character_id . "; Player ID: " . $player_id . "; Item ID: " . $item_id . ", INFO");
+	
+		// Get item details from the store
+		$sql = "SELECT * FROM hackcess.store_contents WHERE contents_id = " . $item_id . ";";
+		addToDebugLog("buyItem(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+		$name = $result[0][2];
+		$ac_boost = $result[0][3];
+		$atk_boost = $result[0][4];
+		$weight = $result[0][5];
+		$slot = $result[0][6];
+		$cost = $result[0][7];
+	
+		// Remove gold from player
+		$dml = "UPDATE hackcess.character_details SET gold = gold - " . $cost . " WHERE character_id = " . $character_id . ";";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("buyItem(), Character record updated, INFO");
+		} else {
+			addToDebugLog("buyItem(), Character record not updated, ERROR");
+		}
+	
+		// Determine if item is a potion or armor / weapon
+	
+		// Add item to player equipment
+		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $name . "', " . $ac_boost . ", " . $atk_boost . ", " . $weight . ", '" . $slot . "', " . $character_id . ");";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("buyItem(), Item added to player inventory, INFO");
+				
+			// Remove item from store
+			$dml = "DELETE FROM hackcess.store_contents WHERE contents_id = " . $item_id . ";";
+			$result = delete($dml);
+			if ($result == TRUE) {
+				addToDebugLog("buyItem(), Item deleted from store, INFO");
+			} else {
+				addToDebugLog("buyItem(), Item not deleted from store, ERROR");
+			}
+				
+		} else {
+			addToDebugLog("buyItem(), Item not added to player inventory, ERROR");
+		}
+	
+		// Redirect back to store page
+		echo "<script>window.location.href = 'store.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "'</script>";
+	
+		//outputDebugLog();
+	
+	}
+
 	function characterEquipment($character_id, $player_id, $journey_id, $store_id) {
 		
 		// This function lists the equipment held by each player
@@ -72,294 +126,24 @@
 	 
 	}
 
-	function storeEquipment($store_id, $journey_id, $character_id, $player_id) {
-		
-		// Creates and returns a store name
-		
-		addToDebugLog("manageEquipment(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Store ID: " . $store_id . ", INFO");
-		
-		// Get store name
-		$store_name = getStoreName($store_id);
-				
-		echo "<table cellpadding=3 cellspacing=0 border=1>";
-		echo "<tr><td colspan=5 align=center><h2>For Sale</h2></tr>";
-		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Cost<td align=center>Buy</tr>";		
-
-		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'chest');
-		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'head');
-		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'legs');
-		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'shield');
-		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'weapon');
-				
-		echo "</table>";
-		
-	}
+	function characterEquipmentWeight($character_id) {
 	
-	function getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, $slot) {
-
-		// Lists items in the store for the provided slot
-		
-		addToDebugLog("manageEquipment(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Store ID: " . $store_id . ", INFO");
-
-		$row_limit = 3;
-		
-		if ($slot == 'weapon') {
-			$order_by = "item_attack_boost DESC";
-		} else {
-			$order_by = "item_ac_boost DESC";
-		}
-		
-		$sql = "SELECT * FROM hackcess.store_contents WHERE store_id  = " . $store_id . " AND item_slot = '" . $slot . "' ORDER BY " . $order_by . " LIMIT " . $row_limit . ";";
-		addToDebugLog("storeEquipment(), Constructed query: " . $sql . ", INFO");
+		// This function returns the weight of the equipment held by each player
+	
+		addToDebugLog("characterEquipmentWeight(), Function Entry - supplied parameters: Character ID: " . $charcter_id . ", INFO");
+	
+		$sql = "SELECT weight FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		addToDebugLog("characterEquipmentWeight(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
-		if ($rows < $row_limit) {
-			$row_limit = $rows;
+		$weight = 0;
+		for ($r = 0; $r < $rows; $r++) {
+			$weight = $weight + $result[$r][0];
 		}
-		
-		if ($rows > 0) {
-		
-			// Get character gold
-			$character_gold = getCharacterDetailsInfo($character_id, 'gold');
+		addToDebugLog("characterEquipmentWeight(), Total Weight: " . $weight . ", INFO");
 	
-			echo "<tr><td colspan=5 bgcolor=#ddd align=center>" . ucfirst($slot) . "</tr>";
-			
-			for ($i = 0; $i < $row_limit; $i++) {
-		
-				$boost = $result[$i][3] + $result[$i][4];
-				echo "<tr><td>+" . $boost . " " . $result[$i][2]; // Item and Boost
-				echo "<td align=center>" . $result[$i][5]; // Weight
-				echo "<td align=center>" . $result[$i][7]; // Value
-				if ($result[$i][7] <= $character_gold) { 
-					echo "<td align=center><a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&store_id=" . $store_id . "&action=buy&item_id=" . $result[$i][0] . "'>Buy</a>"; // Action
-				} else {
-					echo "<td align=center>-";
-				}
-					
-				echo "</tr>";
-					
-			}
-		
-		}
-		
-	}
+		return weight;
 	
-	function generateStore($grid_id, $journey_id, $character_id) {
-		
-		// Creates and returns a store name
-		
-		addToDebugLog("generateStore(), Function Entry - Parameters: Grid ID: " . $grid_id . "; Journey ID: " . $journey_id . "; Character ID: " . $character_id . ", INFO");
-		
-		// Store will have 0-2 of each item
-		// Items will be range from lowest modifier of existing items, to 5 levels above the highest modifier
-		// Cost of an item will be 50 x the modifier value
-		
-		// Generate Store Name
-		$store_name = generateStoreName();
-		
-		// Create store
-		$dml = "INSERT INTO hackcess.store (store_name, grid_id, journey_id, character_id) VALUES ('" . $store_name . "', " . $grid_id . ", " . $journey_id . ", " . $character_id . ");";
-		$result = insert($dml);
-		if ($result == TRUE) {
-			addToDebugLog("generateStore(), New journal entry added, INFO");
-		} else {
-			addToDebugLog("generateStore(), New journal entry not added, ERROR");
-		}
-		
-		// Get store ID
-		$sql = "SELECT store_id FROM hackcess.store ORDER BY store_id DESC LIMIT 1;";
-		addToDebugLog("generateStore(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);
-		$store_id = $result[0][0];
-		
-		// Populate with items
-		
-		// Get character lowest rank equipped item
-		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
-		addToDebugLog("generateStore(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);
-		$rows = count($result);
-		
-		$min_ac = 1000;
-		$min_atk = 1000;
-		for ($i = 0; $i < $rows; $i++) {
-			$is_equipped = isEquipped($result[$i][5], $result[$i][0], $character_id);
-			if ($is_equipped == 1 && $result[$i][2] > 0 && $result[$i][2] < $min_ac) { // AC
-				$min_ac = $result[$i][2];
-			}
-			if ($is_equipped == 1 && $result[$i][3] > 0 && $result[$i][3] < $min_atk) { // ATK
-				$min_atk = $result[$i][3];
-			}			
-		}
-		addToDebugLog("generateStore(), Min AC: " . $min_ac . "; Min ATK: " . $min_atk . ", INFO");
-
-		// Head Items
-		$num_items = rand(1, 3);
-		for ($item = 0; $item < $num_items; $item++) {
-			createStoreItem('head', $store_id, $min_ac);
-		}
-
-		// Chest Items
-		$num_items = rand(1, 3);
-		for ($item = 0; $item < $num_items; $item++) {
-			createStoreItem('chest', $store_id, $min_ac);
-		}
-		
-		// Legs Items
-		$num_items = rand(1, 3);
-		for ($item = 0; $item < $num_items; $item++) {
-			createStoreItem('legs', $store_id, $min_ac);
-		}
-		
-		// Shield Items
-		$num_items = rand(1, 3);
-		for ($item = 0; $item < $num_items; $item++) {
-			createStoreItem('shield', $store_id, $min_ac);
-		}
-		
-		// Sword Items
-		$num_items = rand(1, 3);
-		for ($item = 0; $item < $num_items; $item++) {
-			createStoreItem('weapon', $store_id, $min_atk);
-		}
-		
-	}
-	
-	function sellItem($store_id, $journey_id, $character_id, $player_id, $item_id) {
-
-		// Sells an item from the characters equipment
-		
-		addToDebugLog("sellItem(), Function Entry - Store ID: " . $store_id . ", Journey ID: " . $journey_id . "; Character ID: " . $character_id . "; Player ID: " . $player_id . "; Item ID: " . $item_id . ", INFO");
-		
-		// Get item details from the character
-		$sql = "SELECT * FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
-		addToDebugLog("sellItem(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);
-		$name = $result[0][1];
-		$ac_boost = $result[0][2];
-		$attack_boost = $result[0][3];
-		$weight = $result[0][4];
-		$slot = $result[0][5];
-		$cost = 50 * ($ac_boost + $attack_boost);
-		
-		// Add value to player gold
-		$dml = "UPDATE hackcess.character_details SET gold = gold + " . $cost . " WHERE character_id = " . $character_id . ";";
-		$result = insert($dml);
-		if ($result == TRUE) {
-			addToDebugLog("sellItem(), Character record updated, INFO");
-		} else {
-			addToDebugLog("sellItem(), Character record not updated, ERROR");
-		}		
-		
-		// Add item to store
-		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $name . "', " . $ac_boost . ", " . $attack_boost . ", " . $weight . ", '" . $slot . "', " . $cost . ");";
-		$result = insert($dml);		
-		if ($result == TRUE) {
-			addToDebugLog("sellItem(), Item added to store, INFO");
-				
-			// Remove item from store
-			$dml = "DELETE FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
-			$result = delete($dml);
-			if ($result == TRUE) {
-				addToDebugLog("sellItem(), Item deleted from character equipment, INFO");
-			} else {
-				addToDebugLog("sellItem(), Item not deleted from character equipment, ERROR");
-			}
-				
-		} else {
-			addToDebugLog("sellItem(), Item not added to store, ERROR");
-		}
-		
-		// Redirect back to store page
-		echo "<script>window.location.href = 'store.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "'</script>";
-		
-		//outputDebugLog();
-		
-		
-	}
-	
-	function buyItem($store_id, $journey_id, $character_id, $player_id, $item_id) {
-
-		// Buys an item from the store
-		
-		addToDebugLog("buyItem(), Function Entry - Store ID: " . $store_id . ", Journey ID: " . $journey_id . "; Character ID: " . $character_id . "; Player ID: " . $player_id . "; Item ID: " . $item_id . ", INFO");
-		
-		// Get item details from the store
-		$sql = "SELECT * FROM hackcess.store_contents WHERE contents_id = " . $item_id . ";";
-		addToDebugLog("buyItem(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);	
-		$name = $result[0][2];
-		$ac_boost = $result[0][3];
-		$atk_boost = $result[0][4];
-		$weight = $result[0][5];
-		$slot = $result[0][6];
-		$cost = $result[0][7];
-		
-		// Remove gold from player
-		$dml = "UPDATE hackcess.character_details SET gold = gold - " . $cost . " WHERE character_id = " . $character_id . ";";
-		$result = insert($dml);
-		if ($result == TRUE) {
-			addToDebugLog("buyItem(), Character record updated, INFO");
-		} else {
-			addToDebugLog("buyItem(), Character record not updated, ERROR");
-		}
-		
-		// Determine if item is a potion or armor / weapon
-		
-		// Add item to player equipment
-		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $name . "', " . $ac_boost . ", " . $atk_boost . ", " . $weight . ", '" . $slot . "', " . $character_id . ");";
-		$result = insert($dml);
-		if ($result == TRUE) {
-			addToDebugLog("buyItem(), Item added to player inventory, INFO");
-			
-			// Remove item from store
-			$dml = "DELETE FROM hackcess.store_contents WHERE contents_id = " . $item_id . ";";
-			$result = delete($dml);
-			if ($result == TRUE) {
-				addToDebugLog("buyItem(), Item deleted from store, INFO");
-			} else {
-				addToDebugLog("buyItem(), Item not deleted from store, ERROR");
-			}
-			
-		} else {
-			addToDebugLog("buyItem(), Item not added to player inventory, ERROR");
-		}
-		
-		// Redirect back to store page
-		echo "<script>window.location.href = 'store.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "'</script>";
-		
-		//outputDebugLog();
-		
-	}
-	
-	function generateStoreName() {
-
-		// Creates and returns a store name
-	
-		addToDebugLog("generateEnemyName(), Function Entry - no parameters");
-	
-		// Generate the name
-		$syllables = rand(2, 4);
-		$name = "";
-		for ($a = 0; $a < $syllables; $a++) {
-	
-			$consonants = array("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z");
-			$consonant = $consonants[rand(0, 20)];
-				
-			$vowels = array("a", "e", "i", "o", "u");
-			$vowel = $vowels[rand(0, 4)];
-				
-			$name = $name . $consonant . $vowel;
-	
-		}
-		$name = ucfirst($name);
-		addToDebugLog("generateStoreName(), Name: " . $name . ", INFO");
-	
-		$final_name = $name . "&apos;s Store";
-		addToDebugLog("generateStoreName(), Final name: " . $final_name . ", INFO");
-	
-		return $final_name;
-		
 	}
 	
 	function createStoreItem($slot, $store_id, $min_level) {
@@ -442,64 +226,16 @@
 	
 	}
 	
-	function isThereAStoreHere($grid_id) {
-		
-		// This function returns the store id (if present) for the provided grid id
-		
-		addToDebugLog("isThereAStoreHere(), Function Entry - supplied parameters: Grid ID: " . $grid_id . ", INFO");		
-		
-		$sql = "SELECT store_id FROM hackcess.store where grid_id = " . $grid_id . ";";
-		addToDebugLog("isThereAStoreHere(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);
-		
-		return $result[0][0];		
-		
-	}
-	
-	function getStoreName($store_id) {
-		
-		// This function returns the store name for the provided store id
-		
-		addToDebugLog("getStoreName(), Function Entry - supplied parameters: Store ID: " . $store_id . ", INFO");
-		
-		$sql = "SELECT store_name FROM hackcess.store where store_id = " . $store_id . ";";
-		addToDebugLog("getStoreName(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);
-		
-		return $result[0][0];		
-		
-	}
-	
-	function characterEquipmentWeight($character_id) {
-
-		// This function returns the weight of the equipment held by each player
-	
-		addToDebugLog("characterEquipmentWeight(), Function Entry - supplied parameters: Character ID: " . $charcter_id . ", INFO");
-	
-		$sql = "SELECT weight FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
-		addToDebugLog("characterEquipmentWeight(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);
-		$rows = count($result);
-		$weight = 0;
-		for ($r = 0; $r < $rows; $r++) {
-			$weight = $weight + $result[$r][0];
-		}
-		addToDebugLog("characterEquipmentWeight(), Total Weight: " . $weight . ", INFO");
-		
-		return weight;
-		
-	}
-	
 	function getAdjective() {
-		
+	
 		// This function returns a random adjective for store items.
-		
+	
 		addToDebugLog("getAdjective(), Function Entry - No parameters, INFO");
-				
+	
 		// Determine the consonant to use for the name
 		$consonants = array("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "y", "z");
 		$consonant = $consonants[rand(0, 20)];
-		
+	
 		// Choose the title based on the consonant
 		$filepath = "lists/adjectives/" . $consonant . ".txt";
 		$titles = file($filepath); // reads contents of select file into the array
@@ -508,12 +244,276 @@
 		while ($title == "") {
 			srand(make_seed());
 			$title = $titles[rand(0, $titles_length)];
-		}	
-		
+		}
+	
 		addToDebugLog("getAdjective(), Adjective: " . $title . ", INFO");
-		
+	
 		return $title;
+	
+	}
+	
+	function getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, $slot) {
+
+		// Lists items in the store for the provided slot
 		
+		addToDebugLog("manageEquipment(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Store ID: " . $store_id . ", INFO");
+
+		$row_limit = 3;
+		
+		if ($slot == 'weapon') {
+			$order_by = "item_attack_boost DESC";
+		} else {
+			$order_by = "item_ac_boost DESC";
+		}
+		
+		$sql = "SELECT * FROM hackcess.store_contents WHERE store_id  = " . $store_id . " AND item_slot = '" . $slot . "' ORDER BY " . $order_by . " LIMIT " . $row_limit . ";";
+		addToDebugLog("storeEquipment(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+		$rows = count($result);
+		if ($rows < $row_limit) {
+			$row_limit = $rows;
+		}
+		
+		if ($rows > 0) {
+		
+			// Get character gold
+			$character_gold = getCharacterDetailsInfo($character_id, 'gold');
+	
+			echo "<tr><td colspan=5 bgcolor=#ddd align=center>" . ucfirst($slot) . "</tr>";
+			
+			for ($i = 0; $i < $row_limit; $i++) {
+		
+				$boost = $result[$i][3] + $result[$i][4];
+				echo "<tr><td>+" . $boost . " " . $result[$i][2]; // Item and Boost
+				echo "<td align=center>" . $result[$i][5]; // Weight
+				echo "<td align=center>" . $result[$i][7]; // Value
+				if ($result[$i][7] <= $character_gold) { 
+					echo "<td align=center><a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&store_id=" . $store_id . "&action=buy&item_id=" . $result[$i][0] . "'>Buy</a>"; // Action
+				} else {
+					echo "<td align=center>-";
+				}
+					
+				echo "</tr>";
+					
+			}
+		
+		}
+		
+	}
+	
+	function getStoreName($store_id) {
+	
+		// This function returns the store name for the provided store id
+	
+		addToDebugLog("getStoreName(), Function Entry - supplied parameters: Store ID: " . $store_id . ", INFO");
+	
+		$sql = "SELECT store_name FROM hackcess.store where store_id = " . $store_id . ";";
+		addToDebugLog("getStoreName(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+	
+		return $result[0][0];
+	
+	}
+	
+	function generateStore($grid_id, $journey_id, $character_id) {
+		
+		// Creates and returns a store name
+		
+		addToDebugLog("generateStore(), Function Entry - Parameters: Grid ID: " . $grid_id . "; Journey ID: " . $journey_id . "; Character ID: " . $character_id . ", INFO");
+		
+		// Store will have 0-2 of each item
+		// Items will be range from lowest modifier of existing items, to 5 levels above the highest modifier
+		// Cost of an item will be 50 x the modifier value
+		
+		// Generate Store Name
+		$store_name = generateStoreName();
+		
+		// Create store
+		$dml = "INSERT INTO hackcess.store (store_name, grid_id, journey_id, character_id) VALUES ('" . $store_name . "', " . $grid_id . ", " . $journey_id . ", " . $character_id . ");";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("generateStore(), New journal entry added, INFO");
+		} else {
+			addToDebugLog("generateStore(), New journal entry not added, ERROR");
+		}
+		
+		// Get store ID
+		$sql = "SELECT store_id FROM hackcess.store ORDER BY store_id DESC LIMIT 1;";
+		addToDebugLog("generateStore(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+		$store_id = $result[0][0];
+		
+		// Populate with items
+		
+		// Get character lowest rank equipped item
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		addToDebugLog("generateStore(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+		$rows = count($result);
+		
+		$min_ac = 1000;
+		$min_atk = 1000;
+		for ($i = 0; $i < $rows; $i++) {
+			$is_equipped = isEquipped($result[$i][5], $result[$i][0], $character_id);
+			if ($is_equipped == 1 && $result[$i][2] > 0 && $result[$i][2] < $min_ac) { // AC
+				$min_ac = $result[$i][2];
+			}
+			if ($is_equipped == 1 && $result[$i][3] > 0 && $result[$i][3] < $min_atk) { // ATK
+				$min_atk = $result[$i][3];
+			}			
+		}
+		addToDebugLog("generateStore(), Min AC: " . $min_ac . "; Min ATK: " . $min_atk . ", INFO");
+
+		// Head Items
+		$num_items = rand(1, 3);
+		for ($item = 0; $item < $num_items; $item++) {
+			createStoreItem('head', $store_id, $min_ac);
+		}
+
+		// Chest Items
+		$num_items = rand(1, 3);
+		for ($item = 0; $item < $num_items; $item++) {
+			createStoreItem('chest', $store_id, $min_ac);
+		}
+		
+		// Legs Items
+		$num_items = rand(1, 3);
+		for ($item = 0; $item < $num_items; $item++) {
+			createStoreItem('legs', $store_id, $min_ac);
+		}
+		
+		// Shield Items
+		$num_items = rand(1, 3);
+		for ($item = 0; $item < $num_items; $item++) {
+			createStoreItem('shield', $store_id, $min_ac);
+		}
+		
+		// Sword Items
+		$num_items = rand(1, 3);
+		for ($item = 0; $item < $num_items; $item++) {
+			createStoreItem('weapon', $store_id, $min_atk);
+		}
+		
+	}
+
+	function generateStoreName() {
+	
+		// Creates and returns a store name
+	
+		addToDebugLog("generateEnemyName(), Function Entry - no parameters");
+	
+		// Generate the name
+		$syllables = rand(2, 4);
+		$name = "";
+		for ($a = 0; $a < $syllables; $a++) {
+	
+			$consonants = array("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z");
+			$consonant = $consonants[rand(0, 20)];
+	
+			$vowels = array("a", "e", "i", "o", "u");
+			$vowel = $vowels[rand(0, 4)];
+	
+			$name = $name . $consonant . $vowel;
+	
+		}
+		$name = ucfirst($name);
+		addToDebugLog("generateStoreName(), Name: " . $name . ", INFO");
+	
+		$final_name = $name . "&apos;s Store";
+		addToDebugLog("generateStoreName(), Final name: " . $final_name . ", INFO");
+	
+		return $final_name;
+	
+	}
+	
+	function isThereAStoreHere($grid_id) {
+	
+		// This function returns the store id (if present) for the provided grid id
+	
+		addToDebugLog("isThereAStoreHere(), Function Entry - supplied parameters: Grid ID: " . $grid_id . ", INFO");
+	
+		$sql = "SELECT store_id FROM hackcess.store where grid_id = " . $grid_id . ";";
+		addToDebugLog("isThereAStoreHere(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+	
+		return $result[0][0];
+	
+	}
+	
+	function sellItem($store_id, $journey_id, $character_id, $player_id, $item_id) {
+
+		// Sells an item from the characters equipment
+		
+		addToDebugLog("sellItem(), Function Entry - Store ID: " . $store_id . ", Journey ID: " . $journey_id . "; Character ID: " . $character_id . "; Player ID: " . $player_id . "; Item ID: " . $item_id . ", INFO");
+		
+		// Get item details from the character
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
+		addToDebugLog("sellItem(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+		$name = $result[0][1];
+		$ac_boost = $result[0][2];
+		$attack_boost = $result[0][3];
+		$weight = $result[0][4];
+		$slot = $result[0][5];
+		$cost = 50 * ($ac_boost + $attack_boost);
+		
+		// Add value to player gold
+		$dml = "UPDATE hackcess.character_details SET gold = gold + " . $cost . " WHERE character_id = " . $character_id . ";";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("sellItem(), Character record updated, INFO");
+		} else {
+			addToDebugLog("sellItem(), Character record not updated, ERROR");
+		}		
+		
+		// Add item to store
+		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $name . "', " . $ac_boost . ", " . $attack_boost . ", " . $weight . ", '" . $slot . "', " . $cost . ");";
+		$result = insert($dml);		
+		if ($result == TRUE) {
+			addToDebugLog("sellItem(), Item added to store, INFO");
+				
+			// Remove item from store
+			$dml = "DELETE FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
+			$result = delete($dml);
+			if ($result == TRUE) {
+				addToDebugLog("sellItem(), Item deleted from character equipment, INFO");
+			} else {
+				addToDebugLog("sellItem(), Item not deleted from character equipment, ERROR");
+			}
+				
+		} else {
+			addToDebugLog("sellItem(), Item not added to store, ERROR");
+		}
+		
+		// Redirect back to store page
+		echo "<script>window.location.href = 'store.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "'</script>";
+		
+		//outputDebugLog();
+		
+		
+	}
+	
+	function storeEquipment($store_id, $journey_id, $character_id, $player_id) {
+	
+		// Creates and returns a store name
+	
+		addToDebugLog("manageEquipment(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Store ID: " . $store_id . ", INFO");
+	
+		// Get store name
+		$store_name = getStoreName($store_id);
+	
+		echo "<table cellpadding=3 cellspacing=0 border=1>";
+		echo "<tr><td colspan=5 align=center><h2>For Sale</h2></tr>";
+		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Cost<td align=center>Buy</tr>";
+	
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'chest');
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'head');
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'legs');
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'shield');
+		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'weapon');
+	
+		echo "</table>";
+	
 	}
 	
 ?>

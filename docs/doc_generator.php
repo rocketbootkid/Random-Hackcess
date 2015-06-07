@@ -16,12 +16,12 @@
 	for ($f = 2; $f < $numFiles; $f++) { // Start at 2 to miss off "." and "..".
 		
 		$path = "../functions/" . $files[$f];
-		echo "<tr bgcolor=#bbb><td colspan=3>" . $path;
+		echo "<tr bgcolor=#bbb><td colspan=3><h3>" . $path;
 
 		// Read file contents into an array
 		$file_contents = file($path, FILE_SKIP_EMPTY_LINES);
 		$file_numLines = count($file_contents);
-		echo ", Lines: " . $file_numLines . "<p>";
+		echo ", Lines: " . $file_numLines . "<h3>";
 		
 		// For each file, parse through for function declarations
 		$function_count = 0;

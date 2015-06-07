@@ -1,5 +1,20 @@
 <?php
 
+	function characterFightCount($character_id) {
+	
+		// This function displays the combat history for the selected character
+	
+		addToDebugLog("characterFightCount(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
+	
+		$sql = "SELECT fight_id FROM hackcess.fight WHERE character_id = " . $character_id . ";";
+		addToDebugLog("characterFightCount(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+		$rows = count($result);
+	
+		return $rows;
+			
+	}
+
 	function playerSelect() {
 		
 		// Displays details for all players
@@ -1333,20 +1348,6 @@
 		echo "</table>";
 		
 	}
-	
-	function characterFightCount($character_id) {
-		
-		// This function displays the combat history for the selected character
-		
-		addToDebugLog("characterFightCount(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
-		
-		$sql = "SELECT fight_id FROM hackcess.fight WHERE character_id = " . $character_id . ";";
-		addToDebugLog("characterFightCount(), Constructed query: " . $sql . ", INFO");
-		$result = search($sql);
-		$rows = count($result);
-		
-		return $rows;
-			
-	}
+
 	
 ?>

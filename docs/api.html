@@ -1,18 +1,18 @@
-<html><head><title>Random Hackcess Function List></title></head><body style='font-family: monospace;'><table cellpadding=3 cellspacing=0 border=1 width=100%><tr bgcolor=#999><td align=center colspan=3><h1>Function List</h1></tr><tr bgcolor=#bbb><td colspan=3>../functions/debug_functions.php, Lines: 45<p><tr><td> addToDebugLog<td>$text 
+<html><head><title>Random Hackcess Function List></title></head><body style='font-family: monospace;'><table cellpadding=3 cellspacing=0 border=1 width=100%><tr bgcolor=#999><td align=center colspan=3><h1>Function List</h1></tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/debug_functions.php, Lines: 80<h3><tr><td> addToDebugLog<td>$text 
 <td><i>No comment found.</i></tr><tr><td> outputDebugLog<td> 
 <td><i>No comment found.</i></tr><tr><td> outputQueryCount<td> 
 <td><i>No comment found.</i></tr><tr><td> outputQueryList<td> 
-<td><i>No comment found.</i></tr><tr bgcolor=#ddd><td colspan=3>4 functions found.</tr><tr bgcolor=#bbb><td colspan=3>../functions/effects_functions.php, Lines: 133<p><tr><td> createEffect<td>$store_id 
+<td><i>No comment found.</i></tr><tr bgcolor=#ddd><td colspan=3>4 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/effects_functions.php, Lines: 133<h3><tr><td> createPositiveEffect<td>$store_id 
 <td><i>		Creates a new positive effect potion in a store
-</i></tr><tr><td> startEffect<td> 
-<td><i>		This function will start new effects affecting the player, either when purchased or inflicted.
-</i></tr><tr><td> manageEffects<td>$character_id 
-<td><i>		This function will manage the ongoing effects affecting a character
 </i></tr><tr><td> listCharacterEffects<td>$character_id 
 <td><i>		This function lists all ongoing effects for the supplied character
+</i></tr><tr><td> manageEffects<td>$character_id 
+<td><i>		This function will manage the ongoing effects affecting a character
 </i></tr><tr><td> removeEffect<td>$effect_id 
 <td><i>		This function removes all effects for the supplied character
-</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3>../functions/grid_functions.php, Lines: 1029<p><tr><td> getPlayerCurrentGridCoordinates<td>$character_id, $journey_id 
+</i></tr><tr><td> startEffect<td> 
+<td><i>		This function will start new effects affecting the player, either when purchased or inflicted.
+</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/grid_functions.php, Lines: 1029<h3><tr><td> getPlayerCurrentGridCoordinates<td>$character_id, $journey_id 
 <td><i>		Returns the grid coordinates for current character / journey
 </i></tr><tr><td> drawGrid<td>$grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id 
 <td><i>		Draws the adventure grid
@@ -56,7 +56,7 @@
 <td><i>		Lists the stores on the current journey
 </i></tr><tr><td> enemyList<td>$character_id, $journey_id, $player_id 
 <td><i>		Lists the unbeaten enemies on the current journey
-</i></tr><tr bgcolor=#ddd><td colspan=3>22 functions found.</tr><tr bgcolor=#bbb><td colspan=3>../functions/mysql_functions.php, Lines: 140<p><tr><td> connect<td> 
+</i></tr><tr bgcolor=#ddd><td colspan=3>22 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/mysql_functions.php, Lines: 143<h3><tr><td> connect<td> 
 <td><i>		Connects to MySQL
 </i></tr><tr><td> disconnect<td> 
 <td><i>		Disconnects from MySQL
@@ -66,7 +66,7 @@
 <td><i>		Does MySQL INSERT and UPDATE operations, returning a boolean flag
 </i></tr><tr><td> delete<td>$dml 
 <td><i>		Does MySQL DELETE operations, returning a boolean flag
-</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3>../functions/player_functions.php, Lines: 1348<p><tr><td> playerSelect<td> 
+</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/player_functions.php, Lines: 1352<h3><tr><td> playerSelect<td> 
 <td><i>		Displays details for all players
 </i></tr><tr><td> characterSelect<td>$player_id 
 <td><i>		Lists characters for the selected Player
@@ -148,26 +148,28 @@
 <td><i>		This function displays the combat history for the selected character
 </i></tr><tr><td> characterFightCount<td>$character_id 
 <td><i>		This function displays the combat history for the selected character
-</i></tr><tr bgcolor=#ddd><td colspan=3>41 functions found.</tr><tr bgcolor=#bbb><td colspan=3>../functions/store_functions.php, Lines: 488<p><tr><td> characterEquipment<td>$character_id, $player_id, $journey_id, $store_id 
-<td><i>		This function lists the equipment held by each player
-</i></tr><tr><td> storeEquipment<td>$store_id, $journey_id, $character_id, $player_id 
-<td><i>		Creates and returns a store name
-</i></tr><tr><td> getStoreContentsBySlot<td>$store_id, $journey_id, $character_id, $player_id, $slot 
-<td><i>		Lists items in the store for the provided slot
-</i></tr><tr><td> generateStore<td>$grid_id, $journey_id, $character_id 
-<td><i>		Creates and returns a store name
-</i></tr><tr><td> sellItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
-<td><i>		Sells an item from the characters equipment
-</i></tr><tr><td> buyItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
+</i></tr><tr bgcolor=#ddd><td colspan=3>41 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/store_functions.php, Lines: 519<h3><tr><td> buyItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
 <td><i>		Buys an item from the store
-</i></tr><tr><td> generateStoreName<td> 
-<td><i>		Creates and returns a store name
-</i></tr><tr><td> createStoreItem<td>$slot, $store_id, $min_level 
-<td><i>		This function creates a store item
-</i></tr><tr><td> isThereAStoreHere<td>$grid_id 
-<td><i>		This function returns the store id (if present) for the provided grid id
-</i></tr><tr><td> getStoreName<td>$store_id 
-<td><i>		This function returns the store name for the provided store id
+</i></tr><tr><td> characterEquipment<td>$character_id, $player_id, $journey_id, $store_id 
+<td><i>		This function lists the equipment held by each player
 </i></tr><tr><td> characterEquipmentWeight<td>$character_id 
 <td><i>		This function returns the weight of the equipment held by each player
-</i></tr><tr bgcolor=#ddd><td colspan=3>11 functions found.</tr></body></html>
+</i></tr><tr><td> createStoreItem<td>$slot, $store_id, $min_level 
+<td><i>		This function creates a store item
+</i></tr><tr><td> getAdjective<td> 
+<td><i>		This function returns a random adjective for store items.
+</i></tr><tr><td> getStoreContentsBySlot<td>$store_id, $journey_id, $character_id, $player_id, $slot 
+<td><i>		Lists items in the store for the provided slot
+</i></tr><tr><td> getStoreName<td>$store_id 
+<td><i>		This function returns the store name for the provided store id
+</i></tr><tr><td> generateStore<td>$grid_id, $journey_id, $character_id 
+<td><i>		Creates and returns a store name
+</i></tr><tr><td> generateStoreName<td> 
+<td><i>		Creates and returns a store name
+</i></tr><tr><td> isThereAStoreHere<td>$grid_id 
+<td><i>		This function returns the store id (if present) for the provided grid id
+</i></tr><tr><td> sellItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
+<td><i>		Sells an item from the characters equipment
+</i></tr><tr><td> storeEquipment<td>$store_id, $journey_id, $character_id, $player_id 
+<td><i>		Creates and returns a store name
+</i></tr><tr bgcolor=#ddd><td colspan=3>12 functions found.</tr></body></html>

@@ -304,6 +304,8 @@
 			addToDebugLog("buyItem(): Character record not updated");
 		}
 		
+		// Determine if item is a potion or armor / weapon
+		
 		// Add item to player equipment
 		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $name . "', " . $ac_boost . ", " . $atk_boost . ", " . $weight . ", '" . $slot . "', " . $character_id . ");";
 		$result = insert($dml);

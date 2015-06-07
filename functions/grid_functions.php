@@ -783,7 +783,7 @@
 
 		echo "<h1 align=center>The fight is over!</h1>";
 		
-		echo "<table cellpadding=3 cellspacing=0 border=1 width=100% align=center>";
+		echo "<table cellpadding=3 cellspacing=0 border=1 width=1200px align=center>";
 		echo "<tr><td>";
 		echo "<td align=center><h2>" . $character_name . ", Level " . $character_level . " " . $character_role . "</h2>";
 		echo "(HP: " . $character_hp . ", ATK: " . $character_atk . " + " . $character_atk_boost . ", AC: " . $character_ac . " + " . $character_ac_boost . ")";
@@ -919,7 +919,7 @@
 			
 			// Display details of new Character
 			$new_character_name = getCharacterDetails($new_character_id, "character_name");
-			echo "<tr><td>" . $character_name . " might feast with the gods, but their child, " . trim($new_character_name) . ", shall continue the fight! ";
+			echo "<tr><td colspan=3>" . $character_name . " might feast with the gods, but their child, " . trim($new_character_name) . ", shall continue the fight! ";
 			
 			echo trim($new_character_name) . " inherits " . $new_gold . " gold from their ancestor, as well as " . $character_name . "'s " . $item_summary;
 			

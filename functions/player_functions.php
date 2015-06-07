@@ -112,7 +112,7 @@
 				echo "<tr><td align=center><a href='character.php?create=character&player_id=" . $player_id . "'>Create new character</a></tr>";
 				echo "</table><p>";
 			} else {
-				echo "There are no dead / retired characters";
+				echo "<div style='text-align: center;'>There are no dead / retired characters.</div>";
 			}
 		}
 		

@@ -127,6 +127,16 @@ CREATE TABLE `store_contents` (
   PRIMARY KEY  (`contents_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `effects` (
+  `effect_id` int(11) NOT NULL auto_increment,
+  `character_id` int(11) default NULL,
+  `effect_name` varchar(45) default NULL,
+  `affects` varchar(45) default NULL,
+  `amount` int(11) default NULL,
+  `duration` int(11) default NULL,
+  PRIMARY KEY  (`effect_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE INDEX idx_gridid ON grid (grid_id);
 CREATE INDEX idx_gridx ON grid (grid_x);
 CREATE INDEX idx_gridy ON grid (grid_y);

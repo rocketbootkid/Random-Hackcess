@@ -1,7 +1,7 @@
 <html>
 
 <head>
-	<title>Adventure</title>
+	<title>Random Hackess | Adventure</title>
 	<link rel="stylesheet" type="text/css" href="css/css.css">
 </head>
 
@@ -45,10 +45,11 @@
 		
 			echo "<h2>Adventure</h2>";
 		
-			echo "<a href='player.php'>Player Select</a><br/>";
-			echo "<a href='character.php?player_id=" . $player_id . "'>Character Select</a><br/>";
-			echo "<a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Journey Select</a><p>";
-			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a>";	
+			echo "Select | <a href='player.php'>Player</a> | ";
+			echo "<a href='character.php?player_id=" . $player_id . "'>Character</a> | ";
+			echo "<a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Journey</a><p>";
+			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a><p>";
+			echo "<a href='journey_map.php?journey_id=" . $journey_id . "' target='_blank'>View Entire Journey Map</a>";
 		
 			// Lists the stores available on the map
 			storeList($journey_id, $player_id);

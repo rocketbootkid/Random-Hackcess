@@ -1,4 +1,4 @@
-<html><head><title>Random Hackcess Function List></title></head><body style='font-family: monospace;'><table cellpadding=3 cellspacing=0 border=1 width=100%><tr bgcolor=#999><td align=center colspan=3><h1>Function List</h1></tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/debug_functions.php, Lines: 80<h3><tr><td> addToDebugLog<td>$text 
+<html><head><title>Random Hackcess Function List></title></head><body style='font-family: monospace;'><table cellpadding=3 cellspacing=0 border=1 width=100%><tr bgcolor=#999><td align=center colspan=3><h1>Function List</h1></tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/debug_functions.php, Lines: 72<h3><tr><td> addToDebugLog<td>$text 
 <td><i>No comment found.</i></tr><tr><td> outputDebugLog<td> 
 <td><i>No comment found.</i></tr><tr><td> outputQueryCount<td> 
 <td><i>No comment found.</i></tr><tr><td> outputQueryList<td> 
@@ -12,10 +12,12 @@
 <td><i>		This function removes all effects for the supplied character
 </i></tr><tr><td> startEffect<td> 
 <td><i>		This function will start new effects affecting the player, either when purchased or inflicted.
-</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/grid_functions.php, Lines: 1029<h3><tr><td> getPlayerCurrentGridCoordinates<td>$character_id, $journey_id 
+</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/grid_functions.php, Lines: 1077<h3><tr><td> getPlayerCurrentGridCoordinates<td>$character_id, $journey_id 
 <td><i>		Returns the grid coordinates for current character / journey
 </i></tr><tr><td> drawGrid<td>$grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id 
 <td><i>		Draws the adventure grid
+</i></tr><tr><td> drawEntireJourney<td>$journey_id 
+<td><i>		Draws the entire grid for the provided journey
 </i></tr><tr><td> getGridDirectionsByID<td>$grid_id 
 <td><i>		Returns the grid directions for the supplied grid_id
 </i></tr><tr><td> getGridDirectionsByCoordinates<td>$grid_x, $grid_y, $journey_id 
@@ -56,7 +58,7 @@
 <td><i>		Lists the stores on the current journey
 </i></tr><tr><td> enemyList<td>$character_id, $journey_id, $player_id 
 <td><i>		Lists the unbeaten enemies on the current journey
-</i></tr><tr bgcolor=#ddd><td colspan=3>22 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/mysql_functions.php, Lines: 143<h3><tr><td> connect<td> 
+</i></tr><tr bgcolor=#ddd><td colspan=3>23 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/mysql_functions.php, Lines: 143<h3><tr><td> connect<td> 
 <td><i>		Connects to MySQL
 </i></tr><tr><td> disconnect<td> 
 <td><i>		Disconnects from MySQL
@@ -66,7 +68,9 @@
 <td><i>		Does MySQL INSERT and UPDATE operations, returning a boolean flag
 </i></tr><tr><td> delete<td>$dml 
 <td><i>		Does MySQL DELETE operations, returning a boolean flag
-</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/player_functions.php, Lines: 1352<h3><tr><td> playerSelect<td> 
+</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/player_functions.php, Lines: 1353<h3><tr><td> characterFightCount<td>$character_id 
+<td><i>		This function displays the combat history for the selected character
+</i></tr><tr><td> playerSelect<td> 
 <td><i>		Displays details for all players
 </i></tr><tr><td> characterSelect<td>$player_id 
 <td><i>		Lists characters for the selected Player
@@ -145,8 +149,6 @@
 </i></tr><tr><td> getItemSummary<td>$item_id 
 <td><i>		This function returns the summary for the supplied item_id
 </i></tr><tr><td> showCharacterHistory<td>$character_id 
-<td><i>		This function displays the combat history for the selected character
-</i></tr><tr><td> characterFightCount<td>$character_id 
 <td><i>		This function displays the combat history for the selected character
 </i></tr><tr bgcolor=#ddd><td colspan=3>41 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/store_functions.php, Lines: 519<h3><tr><td> buyItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
 <td><i>		Buys an item from the store

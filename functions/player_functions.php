@@ -1150,7 +1150,7 @@
 			case 0: // Head
 				$slot = "head";
 				$prefix = getAdjective();
-				$name = ucfirst($prefix) . "Helm";
+				$name = ucfirst($prefix) . " Helm";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
 				if ($ac_boost < 1) { $ac_boost = 1; };
@@ -1161,7 +1161,7 @@
 			case 1: // Chest
 				$slot = "chest";
 				$prefix = getAdjective();
-				$name = ucfirst($prefix) . "Chestplate";
+				$name = ucfirst($prefix) . " Chestplate";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
 				if ($ac_boost < 1) { $ac_boost = 1; };
@@ -1172,7 +1172,7 @@
 			case 2: // Legs
 				$slot = "legs";
 				$prefix = getAdjective();
-				$name = ucfirst($prefix) . "Trousers";
+				$name = ucfirst($prefix) . " Trousers";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
 				if ($ac_boost < 1) { $ac_boost = 1; };
@@ -1183,7 +1183,7 @@
 			case 3: // Shield
 				$slot = "shield";
 				$prefix = getAdjective();
-				$name = ucfirst($prefix) . "Shield";
+				$name = ucfirst($prefix) . " Shield";
 				$ac_start = intval(ceil($character_ac_boost/4));
 				$ac_boost = rand($ac_start-2, $ac_start+2);
 				if ($ac_boost < 1) { $ac_boost = 1; };
@@ -1194,7 +1194,7 @@
 			case 4: // Weapon
 				$slot = "weapon";
 				$prefix = getAdjective();
-				$name = ucfirst($prefix) . "Sword";
+				$name = ucfirst($prefix) . " Sword";
 				$attack_boost = rand(intval($character_atk_boost)-2, intval($character_atk_boost)+2);
 				$weight = round($attack_boost/2);
 				$ac_boost = 0;
@@ -1349,5 +1349,53 @@
 		
 	}
 
+	function updateTitle($character_id) {
+		
+		// This function wil update the title for the selected character if necessary
+		
+		addToDebugLog("updateTitle(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");		
+		
+		// check how many wins the character has
+		$sql = "SELECT count(*) FROM hackcess.fight WHERE character_id = " . $character_id . ";";
+		addToDebugLog("updateTitle(), Constructed query: " . $sql . ", INFO");
+		$result = search($sql);
+		$rows = $result[0][0];
+		addToDebugLog("updateTitle(), Wins: " . $rows . ", INFO");
+		
+		$titles = array("", "The Well-known", "The Renowned", "The Notorious", "The Mighty", "The Glorious", "The Infamous", "The Exalted", "The Legendary", "The Godlike", "The Mythical");
+		
+		// If wins is divisible by 10, update the title to the next level
+		// from the array, get the previous title and strip it off, before adding the new one
+		addToDebugLog("updateTitle(), Last elements of Wins: " . substr($rows, 1, 1) . ", INFO");
+		if (substr($rows, 1, 1) == 0) {
+			$title = $titles[substr($rows, 0, 1)];
+			$previous_title = $titles[substr($rows, 0, 1)-1];
+			addToDebugLog("updateTitle(), Title: " . $title . ", INFO");
+			addToDebugLog("updateTitle(), Previous Title: " . $previous_title . ", INFO");
+
+			// Get current character name
+			$character_name = getCharacterDetails($character_id, "character_name");
+			
+			// Remove old title
+			if ($rows > 10) { // There's already a title to remove
+				$name = str_replace($previous_title, $title, $character_name);
+			} else {
+				$name = $title . " " . $character_name;
+			}
+			
+			// Update Character details
+			$dml = "UPDATE hackcess.character SET character_name = '" . $name . "' WHERE character_id = " . $character_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("updateTitle(), Character record updated, INFO");
+			} else {
+				addToDebugLog("updateTitle(), Character record not updated, ERROR");
+			}
+		
+		} else {
+			addToDebugLog("updateTitle(), No need to update title, INFO");
+		}
+		
+	}
 	
 ?>

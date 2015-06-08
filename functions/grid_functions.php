@@ -96,6 +96,57 @@
 		echo "</table>";
 
 	}
+	
+	function drawEntireJourney($journey_id) {
+		
+		// Draws the entire grid for the provided journey
+		
+		addToDebugLog("drawEntireJourney(), Function Entry - supplied parameters: Journey ID: " . $journey_id . ", INFO");		
+		
+		// Get journey name
+		$journey_name = getJourneyDetails($journey_id, "journey_name");
+		echo "<h3 align=left>" . $journey_name . "</h3>";
+		
+		echo "<table cellpadding=0 cellspacing=0 border=1>";
+		
+		$rows = 50;
+		$cols = 50;
+		
+		$start_y = 50;
+		$start_x = 0;
+		
+		for ($y = 0; $y < $rows; $y++) {
+		
+			$current_y = $start_y - $y;
+			addToDebugLog("drawGrid(), Current Y: " . $current_y . ", INFO");
+			if ($current_y <= 50 && $current_y > 0) {
+				echo "<tr height=25px>";
+			}
+		
+			for ($x = 1; $x <= $cols; $x++) {
+				$current_x = $start_x + $x;
+				addToDebugLog("drawEntireJourney(), Current Grid Coordinates: " . $current_x . "." . $current_y . ", INFO");
+						
+				// Determine which tile image to show
+				$directions = getGridDirectionsByCoordinates($current_x, $current_y, $journey_id);
+				addToDebugLog("drawEntireJourney(), Directions: " . $directions . ", INFO");
+
+				if ($current_x == 25 && $current_y == 1) {
+					$class = "start";
+				} else {
+					$class = "normal";
+				}
+				
+				echo "<td class='" . $class . "' width=25px title='(" . $current_x . "," . $current_y . ")'>";
+				echo "<img src='images/" . $directions . ".png' border=0>";
+
+			}
+			echo "</tr>";
+		}
+		echo "</table>";
+		
+		
+	}
 
 	function getGridDirectionsByID($grid_id) {
 
@@ -870,7 +921,10 @@
 			addToDebugLog("doFight(), Fight entry added, INFO");
 		} else {
 			addToDebugLog("doFight(), Fight entry not added, ERROR");
-		}	
+		}
+
+		// Check if character title needs to change
+		updateTitle($character_id);
 		
 		// Update Character / Enemy
 		if ($winner == "enemy") { // Enemy wins

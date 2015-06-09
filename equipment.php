@@ -15,6 +15,8 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 	
+	addToDebugLog("equipment.php, page, INFO");
+	
 	$player_id = $_GET['player_id'];
 	$character_id = $_GET['character_id'];
 	$journey_id = $_GET['journey_id'];

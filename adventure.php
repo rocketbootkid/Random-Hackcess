@@ -14,17 +14,23 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 	include 'functions/store_functions.php';
+	include 'functions/effects_functions.php';
+	
+	
 	
 	// ************************************************************************************
 	// Move to new Grid
 	// ************************************************************************************
 	
 	if ($_GET['direction'] && $_GET['direction'] <> "") {
-			move($_GET['journey_id'], $_GET['character_id'], $_GET['direction'], $_GET['player_id']);
+		addToDebugLog("adventure.php, move, INFO");
+		move($_GET['journey_id'], $_GET['character_id'], $_GET['direction'], $_GET['player_id']);
 	} elseif ($_GET['jump'] && $_GET['jump'] == 'true') {
-			jump($_GET['journey_id'], $_GET['character_id'], $_GET['grid_id'], $_GET['player_id']);
+		addToDebugLog("adventure.php, jump, INFO");
+		jump($_GET['journey_id'], $_GET['character_id'], $_GET['grid_id'], $_GET['player_id']);
 	} else { // Only draw everything if not using page to move / jump, since those functions will reload the page
 	
+		addToDebugLog("adventure.php, main, INFO");
 		// ************************************************************************************
 		// Draw Grid
 		// ************************************************************************************

@@ -9,9 +9,6 @@
 	$current_player = 0;
 	$queries = 0;
 	$query_sql = "";
-	$debug_enabled = 0;
-	$debug_level = "INFO";
-	$debug_dirty_flag = 0;
 
 	// ********************************************************************************************************************************************
 	// ************************************************ DATABASE-RELATED FUNCTIONS ****************************************************************
@@ -54,8 +51,9 @@
 	function search($sql) {
 	
 		// Does MySQL SELECT operations, returning a results array
-	
-		addToDebugLog("___search(), Function Entry: supplied parameter: " . $sql . ", INFO");
+		
+		$debug_sql = str_replace(',', '&#44;', $sql); // Replaces commas with ASCII equivalent
+		addToDebugLog("___search(), Function Entry: supplied parameter: " . $debug_sql . ", INFO");
 	
 		connect();
 
@@ -94,7 +92,8 @@
 
 		// Does MySQL INSERT and UPDATE operations, returning a boolean flag
 	
-		addToDebugLog("___insert(), Function Entry: supplied parameter: " . $dml . ", INFO");
+		$debug_dml = str_replace(',', '&#44;', $dml); // Replaces commas with ASCII equivalent
+		addToDebugLog("___insert(), Function Entry: supplied parameter: " . $debug_dml . ", INFO");
 	
 		connect();
 
@@ -119,7 +118,8 @@
 	
 		// Does MySQL DELETE operations, returning a boolean flag
 	
-		addToDebugLog("___delete(), Function Entry: supplied parameter: " . $dml . ", INFO");
+		$debug_dml = str_replace(',', '&#44;', $dml); // Replaces commas with ASCII equivalent
+		addToDebugLog("___delete(), Function Entry: supplied parameter: " . $debug_dml . ", INFO");
 	
 		connect();
 

@@ -14,6 +14,8 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 
+	addToDebugLog("start.php, page, INFO");
+	
 	if ($_GET['journey_id'] && $_GET['character_id']) {
 		changeJourney($_GET['journey_id'], $_GET['character_id']);
 	}

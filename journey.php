@@ -13,6 +13,7 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 
+	addToDebugLog("journey.php, page, INFO");
 
 	if ($_GET['journey_id']) { // Change Current Journey
 		changeJourney($_GET['player_id'], $_GET['character_id'], $_GET['journey_id']);

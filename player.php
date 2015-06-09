@@ -13,6 +13,8 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 
+	addToDebugLog("player.php, page, INFO");
+	
 	playerSelect();
 	
 	echo "<p><div style='text-align: center;'><a href='docs/doc_generator.php' target='_blank'>Generate Docs</a> | <a href='docs/api.html' target='_blank'>View Docs</a></div>";

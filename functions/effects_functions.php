@@ -58,7 +58,7 @@
 		}
 		
 		// Add potion to store
-		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $name . "', " . $ac . ", " . $atk . ", " . $weight . ", '" . $slot  . "', " . $cost . ");";
+		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $item_name . "', " . $item_ac_boost . ", " . $item_attack_boost . ", " . $item_weight . ", '" . $item_slot  . "', " . $item_cost . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("createPositiveEffect(), New potion added, INFO");
@@ -75,12 +75,11 @@
 		listCharacterEffects("createEffect(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 	
 		$sql = "SELECT * FROM hackcess.effects WHERE character_id = " . $character_id . ";";
-		addToDebugLog("listCharacterEffects(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows > 0) {
 			for ($e = 0; $e < $rows; $e++) {
-				echo $result[$][2] . ": " . $result[$e][4] . " to " . $result[$e][3] . " for " . $result[$e][5] . " moves.<br/>";
+				echo $result[$e][2] . ": " . $result[$e][4] . " to " . $result[$e][3] . " for " . $result[$e][5] . " moves.<br/>";
 				// e.g. Poisoned: -5 to HP for 15 moves.
 			}
 		} else {

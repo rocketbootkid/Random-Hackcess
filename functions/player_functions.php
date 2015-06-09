@@ -7,7 +7,6 @@
 		addToDebugLog("characterFightCount(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 	
 		$sql = "SELECT fight_id FROM hackcess.fight WHERE character_id = " . $character_id . ";";
-		addToDebugLog("characterFightCount(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 	
@@ -22,7 +21,6 @@
 		addToDebugLog("playerSelect(), Function Entry, INFO");	
 		
 		$sql = "SELECT * FROM hackcess.user;";
-		addToDebugLog("playerSelect(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result); 
 		
@@ -62,7 +60,6 @@
 		addToDebugLog("getPlayerDetails(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Attribute: " . $attribute . ", INFO");	
 		
 		$sql = "SELECT " . $attribute . " FROM hackcess.user WHERE user_id = " . $player_id . ";";
-		addToDebugLog("playerSelect(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result[0][0];
@@ -140,7 +137,6 @@
 		addToDebugLog("getCharacterDetails(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Attribute: " . $attribute . ", INFO");	
 		
 		$sql = "SELECT " . $attribute . " FROM hackcess.character WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getCharacterDetails(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result[0][0];
@@ -154,7 +150,6 @@
 		addToDebugLog("getAllCharacterDetails(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");	
 		
 		$sql = "SELECT * FROM hackcess.character WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getAllCharacterDetails(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result;
@@ -168,7 +163,6 @@
 		addToDebugLog("getAllCharacterDetailedDetails(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");	
 		
 		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getAllCharacterDetailedDetails(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result;
@@ -182,7 +176,6 @@
 		addToDebugLog("getCharacterDetailsInfo(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Attribute: " . $attribute . ", INFO");	
 		
 		$sql = "SELECT " . $attribute . " FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getCharacterDetailsInfo(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		addToDebugLog("getCharacterDetailsInfo(), Attribute '" . $attribute . "' value: " . $result[0][0] . ", INFO");
@@ -199,7 +192,6 @@
 
 		// List of Journeys
 		$sqlj = "SELECT * FROM hackcess.journey WHERE player_id = " . $player_id . " AND character_id = " . $character_id . ";";
-		addToDebugLog("journeySelect(), Constructed query: " . $sqlj . ", INFO");
 		$resultj = search($sqlj);
 		$rowsj = count($resultj);
 		
@@ -241,7 +233,6 @@
 		addToDebugLog("displayPlayers(), Function Entry, INFO");	
 		
 		$sql = "SELECT * FROM hackcess.user;";
-		addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result); 
 
@@ -250,7 +241,6 @@
 			
 			// Display Characters
 			$sqlc = "SELECT * FROM hackcess.character WHERE player_id = " . $result[$u][0] . ";";
-			addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sqlc . ", INFO");
 			$resultc = search($sqlc);
 			$rowsc = count($resultc);
 			
@@ -271,7 +261,6 @@
 			
 			// List of Journeys
 			$sqlj = "SELECT * FROM hackcess.journey WHERE player_id = " . $result[$u][0] . ";";
-			addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sqlj . ", INFO");
 			$resultj = search($sqlj);
 			$rowsj = count($resultj);
 			
@@ -286,7 +275,6 @@
 				
 				// Determine how many grids exist for the journey
 				$sqlg = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $resultj[$j][0] . ";";
-				addToDebugLog("displayPlayers(), Constructed query: " . $sqlg . ", INFO");
 				$resultg = search($sqlg);
 				$rowsg = count($resultg);				
 				echo "<td align=center>" . $rowsg . "/2500";
@@ -311,7 +299,6 @@
 		addToDebugLog("playerCurrentJourney(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Character ID: " . $character_id . ", INFO");	
 		
 		$sql = "SELECT current_journey_id FROM hackcess.character WHERE player_id = " . $player_id . " AND character_id = " . $character_id . ";";
-		addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		
 		return $result[0][0];
@@ -348,7 +335,6 @@
 		addToDebugLog("getLastLocation(), Function Entry - supplied parameters: Journey ID: " . $journey_id . "; Character ID: " . $character_id . ", INFO");
 
 		$sql = "SELECT grid_id FROM hackcess.journal WHERE journey_id = " . $journey_id . " AND character_id = " . $character_id . " ORDER BY journal_id DESC LIMIT 1;";
-		addToDebugLog("getLastLocation(), Constructed query: " . $sql);
 		$result = search($sql);
 		
 		return $result[0][0];
@@ -375,7 +361,6 @@
 		
 		// Get new journey id
 		$sql = "SELECT journey_id FROM hackcess.journey WHERE player_id = " . $player_id . " AND character_id = " . $character_id . " ORDER BY journey_id DESC LIMIT 1;";
-		addToDebugLog("newJourney(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$journey_id = $result[0][0];
 		
@@ -390,7 +375,6 @@
 	
 		// Get new grid id
 		$sql = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $journey_id . " LIMIT 1;";
-		addToDebugLog("newJourney(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$grid_id = $result[0][0];
 		
@@ -464,7 +448,6 @@
 		
 		// Get Character Basic details
 		$sql = "SELECT character_name, character_role, character_level FROM hackcess.character WHERE character_id = " . $character_id . ";";
-		addToDebugLog("displayPlayerInformation(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$name = $result[0][0];
 		$role = $result[0][1];
@@ -476,7 +459,6 @@
 		
 		// Get Character Details
 		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("displayPlayerInformation(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		echo "<tr><td align=right>HP<td align=center>" . $result[0][13] . "<td align=right>Head | <td>" . getItemNameById($result[0][8]) . "</tr>";
@@ -524,13 +506,11 @@
 		
 		// Get player XP
 		$sql = "SELECT xp FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("updatePlayerOnMove(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$xp = $result[0][0];
 
 		// Get player current level
 		$sql = "SELECT character_level FROM hackcess.character WHERE character_id = " . $character_id . ";";
-		addToDebugLog("updatePlayerOnMove(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$level = $result[0][0];
 
@@ -556,7 +536,6 @@
 			
 			// Get player current level
 			$sql = "SELECT character_level, character_role, character_name FROM hackcess.character WHERE character_id = " . $character_id . ";";
-			addToDebugLog("updatePlayerOnMove(), Constructed query: " . $sql . ", INFO");
 			$result = search($sql);
 			$level = $result[0][0];
 			$role = $result[0][1];
@@ -599,7 +578,6 @@
 		
 		// Get new Character id
 		$sql = "SELECT character_id FROM hackcess.character WHERE player_id = " . $player_id . " ORDER BY character_id DESC LIMIT 1;";
-		addToDebugLog("createCharacter(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$character_id = $result[0][0];
 		
@@ -760,7 +738,6 @@
 		
 		// Get items ids for details table
 		$sql = "SELECT equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY character_id ASC;";
-		addToDebugLog("createCharacter(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows == 5) {
@@ -791,7 +768,6 @@
 		addToDebugLog("getItemNameById(), Function Entry - supplied parameters: Item ID: " . $item_id . ", INFO");		
 
 		$sql = "SELECT name, ac_boost, attack_boost FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
-		addToDebugLog("getItemNameById(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$item_name = $result[0][0];
 		$ac_boost = $result[0][1];
@@ -848,7 +824,6 @@
 		
 		// Get new enemy id
 		$sql = "SELECT enemy_id FROM hackcess.enemy WHERE grid_id = " . $grid_id . " LIMIT 1;";
-		addToDebugLog("createEnemy(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$enemy_id = $result[0][0];
 		
@@ -863,7 +838,6 @@
 		addToDebugLog("getEnemyInfo(), Function Entry - supplied parameters: Enemy ID: " . $enemy_id . ", INFO");	
 		
 		$sql = "SELECT enemy_name, atk, ac, hp FROM hackcess.enemy WHERE enemy_id = " . $enemy_id . ";";
-		addToDebugLog("getEnemyInfo(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		
 		return $result;		
@@ -977,7 +951,6 @@
 		addToDebugLog("getCharacterBoosts(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
 		$sql = "SELECT ac_boost, attack_boost, slot, equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
-		addToDebugLog("getCharacterBoosts(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		$total_attack_boost = 0;
@@ -1046,7 +1019,6 @@
 		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Actions</tr>";
 
 		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC, ac_boost, attack_boost DESC;";
-		addToDebugLog("manageEquipment(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 
@@ -1109,7 +1081,6 @@
 		addToDebugLog("isEquipped(), Function Entry - supplied parameters: Slot Name: " . $slot . "; Item ID: " . $item_id . "; Character ID: " . $character_id . ", INFO");
 		
 		$sql = "SELECT " . $slot . "_slot FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
-		addToDebugLog("isEquipped(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		if ($result[0][0] == $item_id) {
@@ -1254,7 +1225,6 @@
 		addToDebugLog("equipmentWeight(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");		
 
 		$sql = "SELECT weight FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
-		addToDebugLog("equipmentWeight(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		$weight = 0;
@@ -1274,7 +1244,6 @@
 		addToDebugLog("getBestItem(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");		
 		
 		$sql = "SELECT equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY attack_boost, ac_boost DESC LIMIT 1;";
-		addToDebugLog("getBestItem(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$best_item_id = $result[0][0];	
 		
@@ -1289,7 +1258,6 @@
 		addToDebugLog("getItemSummary(), Function Entry - supplied parameters: Item ID: " . $item_id . ", INFO");
 		
 		$sql = "SELECT name, ac_boost, attack_boost FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
-		addToDebugLog("getItemSummary(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		
 		if ($result[0][1] == 0) {
@@ -1310,7 +1278,6 @@
 		addToDebugLog("getItemSummary(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
 		$sql = "SELECT * FROM hackcess.fight WHERE character_id = " . $character_id . ";";
-		addToDebugLog("showCharacterHistory(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);	
 		$rows = count($result);
 		
@@ -1362,29 +1329,42 @@
 		$rows = $result[0][0];
 		addToDebugLog("updateTitle(), Wins: " . $rows . ", INFO");
 		
-		$titles = array("", "The Well-known", "The Renowned", "The Notorious", "The Mighty", "The Glorious", "The Infamous", "The Exalted", "The Legendary", "The Godlike", "The Mythical");
+		$titles = array(1 => "The Well-known",
+						2 => "The Renowned",
+						3 => "The Notorious", 
+						4 => "The Mighty",
+						5 => "The Glorious",
+						6 => "The Infamous",
+						7 => "The Exalted",
+						8 => "The Legendary",
+						9 => "The Godlike",
+						10 => "The Mythical"
+					);
 		
 		// If wins is divisible by 10, update the title to the next level
 		// from the array, get the previous title and strip it off, before adding the new one
-		addToDebugLog("updateTitle(), Last elements of Wins: " . substr($rows, 1, 1) . ", INFO");
-		if (substr($rows, 1, 1) == 0) {
-			$title = $titles[substr($rows, 0, 1)];
-			$previous_title = $titles[substr($rows, 0, 1)-1];
-			addToDebugLog("updateTitle(), Title: " . $title . ", INFO");
-			addToDebugLog("updateTitle(), Previous Title: " . $previous_title . ", INFO");
-
+		
+		$title = $titles[($rows/10)];
+		if ($title != "") {
+			
 			// Get current character name
 			$character_name = getCharacterDetails($character_id, "character_name");
-			
-			// Remove old title
-			if ($rows > 10) { // There's already a title to remove
-				$name = str_replace($previous_title, $title, $character_name);
+
+			$name_components = explode(" ", $character_name);
+			if (count($name_components) == 5) {
+				$untitled_name = $name_components[2] . " " . $name_components[3] . " " . $name_components[4];
 			} else {
-				$name = $title . " " . $character_name;
+				$untitled_name = $character_name;
 			}
+			addToDebugLog("updateTitle(), Character Name with title removed: " . $untitled_name . ", INFO");
+			
+			$new_name = $title . " " . $untitled_name;
+			
+			addToDebugLog("updateTitle(), New Title: " . $title . ", INFO");
+			addToDebugLog("updateTitle(), New Name: " . $new_name . ", INFO");
 			
 			// Update Character details
-			$dml = "UPDATE hackcess.character SET character_name = '" . $name . "' WHERE character_id = " . $character_id . ";";
+			$dml = "UPDATE hackcess.character SET character_name = '" . $new_name . "' WHERE character_id = " . $character_id . ";";
 			$result = insert($dml);
 			if ($result == TRUE) {
 				addToDebugLog("updateTitle(), Character record updated, INFO");

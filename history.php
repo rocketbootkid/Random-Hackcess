@@ -13,6 +13,8 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 	
+	addToDebugLog("history.php, page, INFO");
+	
 	$player_id = $_GET['player_id'];
 	$character_id = $_GET['character_id'];
 	

@@ -11,7 +11,6 @@
 		addToDebugLog("getPlayerCurrentGridCoordinates(), Player's current grid ID: " . $grid_id . ", INFO");
 		
 		$sql = "SELECT grid_x, grid_y FROM hackcess.grid WHERE grid_id = " . $grid_id . ";";
-		addToDebugLog("getPlayerCurrentGridCoordinates(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		// $result[0][0] = X
@@ -155,7 +154,6 @@
 		addToDebugLog("getGridDirectionsByID(), Function Entry - supplied parameters: Grid ID: " . $grid_id . ", INFO");	
  	
 		$sql = "SELECT directions FROM hackcess.grid WHERE grid_id = " . $grid_id . ";";
-		addToDebugLog("getGridDirectionsByID(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows != 0) {
@@ -175,7 +173,6 @@
 		addToDebugLog("getGridDirectionsByCoordinates(), Function Entry - supplied parameters: Grid X: " . $grid_x . "; Grid Y: " . $grid_y . "; Journey ID: " . $journey_id . ", INFO");	
  	
 		$sql = "SELECT directions FROM hackcess.grid WHERE grid_x = " . $grid_x . " AND grid_y = " . $grid_y . " AND journey_id = " . $journey_id . ";";
-		addToDebugLog("getGridDirectionsByCoordinates(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows != 0) {
@@ -243,7 +240,6 @@
 	
 		// Determine first what grid square we're on, based on current player and journey
 		$sql = "SELECT character_grid_id FROM hackcess.character WHERE character_id = " . $character_id . " AND current_journey_id = " . $journey_id . ";";
-		addToDebugLog("getPlayerCurrentGrid(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$grid_id = $result[0][0];	
 		
@@ -361,11 +357,13 @@
 			echo "<script>window.location.href = 'battle.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&grid_id=" . $grid_id . "&action=create'</script>";
 		}
 		
+		outputDebugLog();
+		
 		// Reload page
 		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
 		//echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back</a>";
 		
-		//outputDebugLog();
+		
 		
 	}
 	
@@ -411,7 +409,6 @@
 		addToDebugLog("getGridDirectionsByCoordinates(), Function Entry - supplied parameters: Grid X: " . $grid_x . "; Grid Y: " . $grid_y . "; Journey ID: " . $journey_id . ", INFO");	
  	
 		$sql = "SELECT grid_id FROM hackcess.grid WHERE grid_x = " . $grid_x . " AND grid_y = " . $grid_y . " AND journey_id = " . $journey_id . ";";
-		addToDebugLog("getGridDirectionsByCoordinates(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 
@@ -430,7 +427,6 @@
 		addToDebugLog("getCoordinatesByGridID(), Function Entry - supplied parameters: Grid ID: " . $grid_id . "; Journey ID: " . $journey_id . ", INFO");	
  	
 		$sql = "SELECT grid_x, grid_y FROM hackcess.grid WHERE grid_id = " . $grid_id . " AND journey_id = " . $journey_id . ";";
-		addToDebugLog("getGridDirectionsByCoordinates(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		return $result;	
@@ -585,7 +581,6 @@
 		
 		// Display the N latest journal entries for this journey
 		$sql = "SELECT journal_id, grid_id, journal_details FROM hackcess.journal WHERE journey_id = " . $journey_id . " ORDER BY journal_id DESC LIMIT " . $entries . ";";
-		addToDebugLog("getJourneyDetails(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 
 		for ($j = 0; $j < 5; $j++) {
@@ -603,7 +598,6 @@
 		addToDebugLog("getJourneyDetails(), Function Entry - supplied parameters: Journey ID: " . $journey_id . "; Attribute: " . $attribute . ", INFO");		
 
 		$sql = "SELECT " . $attribute . " FROM hackcess.journey WHERE journey_id = " . $journey_id . " LIMIT 1;";
-		addToDebugLog("getJourneyDetails(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$attribute = $result[0][0];
 		
@@ -689,7 +683,6 @@
 		
 		// Return Feature ID
 		$sql = "SELECT feature_id FROM hackcess.features WHERE grid_id = " . $grid_id . " ORDER BY feature_id DESC LIMIT 1;";
-		addToDebugLog("generateFeature(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$feature_id = $result[0][0];
 		
@@ -773,7 +766,6 @@
 		
 		// Get new grid ID
 		$sql = "SELECT grid_id FROM hackcess.grid WHERE journey_id = " . $journey_id . " ORDER BY grid_id DESC LIMIT 1;";
-		addToDebugLog("writeGrid(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$grid_id = $result[0][0];
 		addToDebugLog("writeGrid(), New grid ID (Newly created grid): " . $grid_id . ", INFO");
@@ -789,7 +781,6 @@
 		addToDebugLog("isEnemyHere(), Function Entry - supplied parameters: Grid ID: " . $grid_id . "; Character ID: " . $character_id . ", INFO");			
 		
 		$sql = "SELECT enemy_id FROM hackcess.enemy WHERE grid_id = " . $grid_id . " AND character_id = " . $character_id . " AND status = 'Alive';";
-		addToDebugLog("isEnemyHere(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows > 0) {
@@ -1026,7 +1017,6 @@
 		addToDebugLog("storeList(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . ", INFO");
 		
 		$sql = "SELECT * FROM hackcess.store WHERE journey_id = " . $journey_id . ";";
-		addToDebugLog("storeList(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		
@@ -1055,7 +1045,6 @@
 		addToDebugLog("enemyList(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Player ID: " . $player_id . "; Journey ID: " . $journey_id . ", INFO");
 		
 		$sql = "SELECT * FROM hackcess.enemy, hackcess.grid WHERE enemy.character_id = " . $character_id . " AND grid.journey_id = " . $journey_id . " AND status = 'Alive' AND enemy.grid_id = grid.grid_id;";
-		addToDebugLog("enemyList(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		

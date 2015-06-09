@@ -13,6 +13,8 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 
+	addToDebugLog("character.php, page, INFO");
+	
 	// Create a new character
 	if ($_GET['create'] == "character") {
 		createCharacter($_GET['player_id'], 0);

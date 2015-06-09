@@ -8,7 +8,6 @@
 	
 		// Get item details from the store
 		$sql = "SELECT * FROM hackcess.store_contents WHERE contents_id = " . $item_id . ";";
-		addToDebugLog("buyItem(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$name = $result[0][2];
 		$ac_boost = $result[0][3];
@@ -68,7 +67,6 @@
 		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Value<td align=center>Actions</tr>";
 	
 		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC, ac_boost, attack_boost DESC;";
-		addToDebugLog("manageEquipment(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 	
@@ -133,7 +131,6 @@
 		addToDebugLog("characterEquipmentWeight(), Function Entry - supplied parameters: Character ID: " . $charcter_id . ", INFO");
 	
 		$sql = "SELECT weight FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
-		addToDebugLog("characterEquipmentWeight(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		$weight = 0;
@@ -267,7 +264,6 @@
 		}
 		
 		$sql = "SELECT * FROM hackcess.store_contents WHERE store_id  = " . $store_id . " AND item_slot = '" . $slot . "' ORDER BY " . $order_by . " LIMIT " . $row_limit . ";";
-		addToDebugLog("storeEquipment(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		if ($rows < $row_limit) {
@@ -301,6 +297,47 @@
 		
 	}
 	
+	function getStoreContentPotions($store_id, $journey_id, $character_id, $player_id) {
+		
+		// Lists potions in the store
+		
+		addToDebugLog("getStoreContentPotions(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . ", INFO");
+		
+		$row_limit = 3;
+		
+		$sql = "SELECT * FROM hackcess.store_contents WHERE store_id  = " . $store_id . " AND item_slot LIKE 'potion%' ORDER BY item_cost DESC LIMIT " . $row_limit . ";";
+		$result = search($sql);
+		$rows = count($result);
+		if ($rows < $row_limit) {
+			$row_limit = $rows;
+		}
+		
+		if ($rows > 0) {
+		
+			// Get character gold
+			$character_gold = getCharacterDetailsInfo($character_id, 'gold');
+		
+			echo "<tr><td colspan=5 bgcolor=#ddd align=center>Potions</tr>";
+				
+			for ($i = 0; $i < $row_limit; $i++) {
+		
+				echo "<tr><td>" . $result[$i][2]; // Item and Boost
+				echo "<td align=center>" . $result[$i][5]; // Weight
+				echo "<td align=center>" . $result[$i][7]; // Value
+				if ($result[$i][7] <= $character_gold) {
+					echo "<td align=center><a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&store_id=" . $store_id . "&action=buy&item_id=" . $result[$i][0] . "'>Buy</a>"; // Action
+				} else {
+					echo "<td align=center>-";
+				}
+					
+				echo "</tr>";
+					
+			}
+		
+		}
+		
+	}
+	
 	function getStoreName($store_id) {
 	
 		// This function returns the store name for the provided store id
@@ -308,7 +345,6 @@
 		addToDebugLog("getStoreName(), Function Entry - supplied parameters: Store ID: " . $store_id . ", INFO");
 	
 		$sql = "SELECT store_name FROM hackcess.store where store_id = " . $store_id . ";";
-		addToDebugLog("getStoreName(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 	
 		return $result[0][0];
@@ -339,7 +375,6 @@
 		
 		// Get store ID
 		$sql = "SELECT store_id FROM hackcess.store ORDER BY store_id DESC LIMIT 1;";
-		addToDebugLog("generateStore(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$store_id = $result[0][0];
 		
@@ -347,7 +382,6 @@
 		
 		// Get character lowest rank equipped item
 		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
-		addToDebugLog("generateStore(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = count($result);
 		
@@ -393,6 +427,12 @@
 		for ($item = 0; $item < $num_items; $item++) {
 			createStoreItem('weapon', $store_id, $min_atk);
 		}
+
+		// Potions
+		$num_items = rand(1, 3);
+		for ($item = 0; $item < $num_items; $item++) {
+			createPositiveEffect($store_id);
+		}	
 		
 	}
 
@@ -511,6 +551,7 @@
 		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'legs');
 		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'shield');
 		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'weapon');
+		getStoreContentPotions($store_id, $journey_id, $character_id, $player_id);
 	
 		echo "</table>";
 	

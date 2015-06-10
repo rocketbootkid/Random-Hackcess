@@ -25,8 +25,6 @@
 			addToDebugLog("buyItem(), Character record not updated, ERROR");
 		}
 	
-		// Determine if item is a potion or armor / weapon
-	
 		// Add item to player equipment
 		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $name . "', " . $ac_boost . ", " . $atk_boost . ", " . $weight . ", '" . $slot . "', " . $character_id . ");";
 		$result = insert($dml);
@@ -46,10 +44,10 @@
 			addToDebugLog("buyItem(), Item not added to player inventory, ERROR");
 		}
 	
+		outputDebugLog();
+		
 		// Redirect back to store page
 		echo "<script>window.location.href = 'store.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "'</script>";
-	
-		//outputDebugLog();
 	
 	}
 
@@ -57,7 +55,7 @@
 		
 		// This function lists the equipment held by each player
 	
-		addToDebugLog("manageEquipment(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Store ID: " . $store_id . ", INFO");
+		addToDebugLog("characterEquipment(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Store ID: " . $store_id . ", INFO");
 		
 		// Get Character Name
 		$character_name = getCharacterDetails($character_id, 'character_name');
@@ -66,7 +64,7 @@
 		echo "<tr><td colspan=5 align=center><h2>" . $character_name . "</h2></tr>";
 		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Value<td align=center>Actions</tr>";
 	
-		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC, ac_boost, attack_boost DESC;";
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%' ORDER BY slot ASC, ac_boost, attack_boost DESC;";
 		$result = search($sql);
 		$rows = count($result);
 	
@@ -88,7 +86,6 @@
 	
 			$bonus = $result[$e][2] + $result[$e][3];
 			echo "<tr><td>+" . $bonus . " " . $result[$e][1]; // Bonus + Item
-			//echo "<td>" . ucfirst($result[$e][5]); // Slot
 			echo "<td align=center>" . $result[$e][4]; // Weight
 			
 			//Value
@@ -111,6 +108,33 @@
 				
 		}
 	
+		// Display Character potions
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot LIKE 'potion%' ORDER BY ac_boost, attack_boost DESC;";
+		$result = search($sql);
+		$rows = count($result);	
+
+		echo "<tr><td colspan=5 bgcolor=#ddd align=center>Potions</tr>";
+		
+		for ($p = 0; $p < $rows; $p++) {
+			
+			echo "<tr><td>" . $result[$p][1]; // Item
+			echo "<td align=center>-"; // Weight
+				
+			//Value
+			$potion_name = explode(' ', $result[$p][1]);
+			$value = $potion_name[3] * 100;
+			echo "<td align=center>" . $value;
+			
+			// Write actions Sell
+			echo "<td align=center>";
+			echo "<a href='store.php?slot=" . $result[$p][5] . "&item_id=" . $result[$p][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "&action=sell'>Sell</a>"; // $slot, $item_id, $character_id
+			echo "</tr>";			
+			
+		}
+		
+		
+		
+		
 		// Get character strength		
 		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
 		echo "<tr><td align=right>Total Weight<td align=center>" . $weight_total;
@@ -128,7 +152,7 @@
 	
 		// This function returns the weight of the equipment held by each player
 	
-		addToDebugLog("characterEquipmentWeight(), Function Entry - supplied parameters: Character ID: " . $charcter_id . ", INFO");
+		addToDebugLog("characterEquipmentWeight(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 	
 		$sql = "SELECT weight FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
 		$result = search($sql);
@@ -139,7 +163,7 @@
 		}
 		addToDebugLog("characterEquipmentWeight(), Total Weight: " . $weight . ", INFO");
 	
-		return weight;
+		return $weight;
 	
 	}
 	
@@ -495,7 +519,14 @@
 		$attack_boost = $result[0][3];
 		$weight = $result[0][4];
 		$slot = $result[0][5];
-		$cost = 50 * ($ac_boost + $attack_boost);
+		if (substr($result[0][5], 0, 6) == 'potion') {
+			$name_elements = explode(' ', $name);
+			$cost = 100 * $name_elements[3];
+		} else {
+			$cost = 50 * ($ac_boost + $attack_boost);
+		}
+		
+		
 		
 		// Add value to player gold
 		$dml = "UPDATE hackcess.character_details SET gold = gold + " . $cost . " WHERE character_id = " . $character_id . ";";
@@ -525,11 +556,10 @@
 			addToDebugLog("sellItem(), Item not added to store, ERROR");
 		}
 		
+		outputDebugLog();
+		
 		// Redirect back to store page
 		echo "<script>window.location.href = 'store.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "'</script>";
-		
-		//outputDebugLog();
-		
 		
 	}
 	

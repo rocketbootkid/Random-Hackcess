@@ -1018,7 +1018,7 @@
 		echo "<table cellpadding=3 cellspacing=0 border=1 align=center>";
 		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Actions</tr>";
 
-		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " ORDER BY slot ASC, ac_boost, attack_boost DESC;";
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%' ORDER BY slot ASC, ac_boost, attack_boost DESC;";
 		$result = search($sql);
 		$rows = count($result);
 
@@ -1056,6 +1056,25 @@
 			
 			echo "</tr>";
 			
+		}
+
+		// Display Character potions
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot LIKE 'potion%' ORDER BY ac_boost, attack_boost DESC;";
+		$result = search($sql);
+		$rows = count($result);
+		
+		echo "<tr><td colspan=5 bgcolor=#ddd align=center>Potions</tr>";
+		
+		for ($p = 0; $p < $rows; $p++) {
+				
+			echo "<tr><td>" . $result[$p][1]; // Item
+			echo "<td align=center>-"; // Weight
+				
+			// Write action: Drink
+			echo "<td align=center>";
+			echo "<a href='equipment.php?item_id=" . $result[$p][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&action=drink'>Drink</a>";
+			echo "</tr>";
+				
 		}
 		
 		echo "<tr bgcolor=#ddd><td align=right>Total Weight<td align=center>" . $weight_total . "<td></tr>";
@@ -1324,7 +1343,6 @@
 		
 		// check how many wins the character has
 		$sql = "SELECT count(*) FROM hackcess.fight WHERE character_id = " . $character_id . ";";
-		addToDebugLog("updateTitle(), Constructed query: " . $sql . ", INFO");
 		$result = search($sql);
 		$rows = $result[0][0];
 		addToDebugLog("updateTitle(), Wins: " . $rows . ", INFO");

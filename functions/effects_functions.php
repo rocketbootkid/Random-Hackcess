@@ -121,12 +121,84 @@
 		
 	}
 	
-	function startEffect() {
+	function startEffect($item_id) {
 	
 		// This function will start new effects affecting the player, either when purchased or inflicted.
-	
-		addToDebugLog("createEffect(), Function Entry - supplied parameters: Store: " . $store_id . ", INFO");
-	
+		
+		addToDebugLog("startEffect(), Function Entry - supplied parameters: Item ID: " . $item_id . ", INFO");
+		
+		// Get potion details
+		$potion_details = getEquipmentDetails($item_id);
+		// 0: equipment_id
+		// 1: name
+		// 2: ac_boost
+		// 3: attack_boost
+		// 4: weight
+		// 5: slot
+		// 6: character_id
+		
+		$potion_name = explode(' ', $potion_details[0][1]);
+		$level = $potion_name[3]; 
+		// Determine Effect Name based on potion colour
+		switch($potion_name[0]) {
+			case "Red": // Attack
+				$affects = "atk";
+				$effect_name = "Attack Level " . $level;
+				$amount = $level;
+				$duration = 10;
+				break;
+			case "Blue": // AC
+				$affects = "ac";
+				$effect_name = "Defence Level " . $level;
+				$amount = $level;
+				$duration = 10;
+				break;			
+			case "Green": // HP
+				$affects = "hp";
+				$effect_name = "Health Level " . $level;
+				$amount = $level;
+				$duration = 10;
+				break;
+			case "Yellow": // Strength
+				$affects = "str";
+				$effect_name = "Strength Level " . $level;
+				$amount = $level;
+				$duration = 10;
+				break;
+		}
+		
+		// Create effect in effects db
+		$dml = "INSERT INTO hackcess.effects (character_id, effect_name, affects, amount, duration) VALUES (" . $potion_details[0][6] . ", '" . $effect_name . "', '" . $affects . "', " . $amount . ", " . $duration . ");";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("startEffect(), New effect added, INFO");
+			
+			// Delete potion from character equipment
+			$dml = "DELETE FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . " AND character_id = '" . $potion_details[0][6] . "';";
+			$result = delete($dml);
+			if ($result == TRUE) {
+				addToDebugLog("startEffect(), Item deleted, INFO");
+			} else {
+				addToDebugLog("startEffect(), Item not deleted, ERROR");
+			}
+			
+		} else {
+			addToDebugLog("startEffect(), New effect not added, ERROR");
+		}		
+		
 	}
 
+	function getEquipmentDetails($item_id) {
+	
+		// This function returns details for the piece of equipment
+	
+		addToDebugLog("getEquipmentDetails(), Function Entry - supplied parameters: Item ID: " . $item_id . ", INFO");
+	
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
+		$result = search($sql);
+	
+		return $result;
+	
+	}
+	
 ?>

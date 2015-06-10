@@ -1,7 +1,7 @@
 <?php
 	
 	$debug_enabled = 0;
-	$debug_level = "INFO";
+	$debug_level = "ERROR";
 	$debug_dirty_flag = 0;
 	$debug_to_file = 1;
 
@@ -75,9 +75,7 @@
 			$timestamp = Date("Ymd_Hms");
 			$file = "log/debug_" . $timestamp . "_" . $page_name . ".html";
 			file_put_contents($file, $content);
-		}
-		
-		if ($debug_enabled == 1 && $debug_dirty_flag == 1) {
+		} elseif ($debug_enabled == 1 && $debug_dirty_flag == 1) {
 			echo "<p>\n<table cellpadding=2 cellspacing=0 border=1 width=100%>\n\t<tr bgcolor=#bbb><td colspan=5 align=center>Debug Log</tr>" . $debug_log . "\n</table>";
 		}
 	

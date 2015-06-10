@@ -63,6 +63,9 @@
 			// Lists the unbeaten enemies on the map
 			enemyList($character_id, $journey_id, $player_id);
 			
+			// List ongoing effects
+			listCharacterEffects($character_id);
+			
 		echo "<td colspan=3 width=1000px>";
 			// Draws the grid for defined radius around the current location
 			drawGrid($grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id);
@@ -93,7 +96,7 @@
 		
 		echo "</tr></table>";
 		
-		//outputQueryCount();
+		outputQueryCount();
 		//outputQueryList();
 		
 		outputDebugLog();

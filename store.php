@@ -28,15 +28,17 @@
 	
 	if ($action == "sell") {
 		// Sell item
+		addToDebugLog("store.php, sell, INFO");
 		sellItem($store_id, $journey_id, $character_id, $player_id, $item_id);
 		
 	} elseif ($action == "buy") {
 		// Buy item
+		addToDebugLog("store.php, buy, INFO");
 		buyItem($store_id, $journey_id, $character_id, $player_id, $item_id);
 		
-	} elseif ($action == "equip") {
-	
+	} elseif ($action == "equip") {	
 		// Equip the item
+		addToDebugLog("store.php, equip, INFO");
 		equip($_GET['slot'], $_GET['item_id'], $character_id);
 	
 		// Redirect back to page
@@ -44,6 +46,8 @@
 		
 	
 	} else { // Display Store and Character items
+		
+		addToDebugLog("store.php, main, INFO");
 		
 		// Get store name
 		$store_name = getStoreName($store_id);
@@ -58,14 +62,14 @@
 		
 		// Get weight of character equipment
 		$equipment_total_weight = characterEquipmentWeight($character_id);
-		addToDebugLog("store.php: - Equipment Weight: " . $equipment_total_weight);
+		addToDebugLog("store.php, Equipment Weight: " . $equipment_total_weight . ", INFO");
 		
 		// Get character strength
 		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
-		addToDebugLog("store.php: - Character Strength: " . $character_strength);
+		addToDebugLog("store.php, Character Strength: " . $character_strength . ", INFO");
 		
 		echo "<tr><td align=center colspan=2>";
-		if ($equipment_total_weight > $character_strength) {
+		if ($equipment_total_weight < $character_strength) {
 			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
 		} else {
 			echo "You are carrying too much weight. You must sell items to continue.";

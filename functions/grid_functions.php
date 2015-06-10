@@ -247,7 +247,7 @@
 		
 	}
 	
-	function move($journey_id, $character_id, $direction, $player_id) {		
+	function move($journey_id, $character_id, $direction, $player_id) {
 
 		// Moves the player to a new grid
 	

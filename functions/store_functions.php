@@ -132,9 +132,6 @@
 			
 		}
 		
-		
-		
-		
 		// Get character strength		
 		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
 		echo "<tr><td align=right>Total Weight<td align=center>" . $weight_total;

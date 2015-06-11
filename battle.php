@@ -14,6 +14,7 @@
 	include 'functions/mysql_functions.php';
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
+	include 'functions/effects_functions.php';
 	
 	addToDebugLog("battle.php, page, INFO");
 	
@@ -25,6 +26,8 @@
 
 	if ($_GET['action'] == "create") {
 	
+		addToDebugLog("battle.php, create, INFO");
+		
 		// Create feature record
 		$feature_id = generateFeature($grid_id, "fight");
 		addToDebugLog("battle.php: Feature ID: " . $feature_id);
@@ -33,6 +36,8 @@
 		$enemy_id = createEnemy($player_id, $journey_id, $character_id, $grid_id);
 		addToDebugLog("battle.php: Enemy ID: " . $enemy_id);
 		
+		outputDebugLog();
+		
 		// Redirect to this page
 		echo "<script>window.location.href = 'battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $enemy_id . "&grid_id=" . $grid_id . "'</script>";
 
@@ -40,16 +45,22 @@
 	
 	if ($_GET['action'] == "flee") {
 		
+		addToDebugLog("battle.php, flee, INFO");
+		
 		// Get current grid id
 		$grid_id = getCharacterCurrentGrid($character_id, $journey_id);
 		
 		// Handle the running away
 		flee($character_id, $journey_id, $grid_id, $enemy_id);
 		
+		outputDebugLog();
+		
 		// Redirect back to the Adventure page
 		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
 		
 	} else {
+		
+		addToDebugLog("battle.php, main, INFO");
 		
 		// Get Character Stats
 		$character_basic_info = getAllCharacterMainInfo($character_id);

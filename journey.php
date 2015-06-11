@@ -16,11 +16,21 @@
 	addToDebugLog("journey.php, page, INFO");
 
 	if ($_GET['journey_id']) { // Change Current Journey
+		
+		addToDebugLog("journey.php, change journey, INFO");
+		
 		changeJourney($_GET['player_id'], $_GET['character_id'], $_GET['journey_id']);
-		//outputDebugLog();
+		
 	} elseif ($_GET['create'] == "journey") { // Create a new journey
+		
+		addToDebugLog("journey.php, new journey, INFO");
+		
 		newJourney($_GET['player_id'], $_GET['character_id']);
+		
 	} else { // Display journeys
+		
+		addToDebugLog("journey.php, main, INFO");
+		
 		// Display character name
 		$character_name = getCharacterDetails($_GET['character_id'], "character_name");
 		echo "<h1 align=center>The Many Journeys of " . $character_name . "</h1>";

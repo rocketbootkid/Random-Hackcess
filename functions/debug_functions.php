@@ -1,7 +1,7 @@
 <?php
 	
 	$debug_enabled = 0;
-	$debug_level = "ERROR";
+	$debug_level = "INFO";
 	$debug_dirty_flag = 0;
 	$debug_to_file = 1;
 

@@ -275,7 +275,7 @@
 				$north = checkDirection("north", $x, $y, $journey_id); // North
 				$east = checkDirection("east", $x, $y, $journey_id); // East
 				$west = checkDirection("west", $x, $y, $journey_id); // West
-				addToDebugLog("move(), NORTH: After comparing neighbouring grids, final directions are: North: " . $north . "; East: " . $east . "; South: " . $south . "; West: " . $west . ", INFO");
+				addToDebugLog("move(), NORTH: After comparing neighbouring grids final directions are: North: " . $north . "; East: " . $east . "; South: " . $south . "; West: " . $west . ", INFO");
 				break;
 			case "east":
 				$x = $x + 1;
@@ -284,7 +284,7 @@
 				$north = checkDirection("north", $x, $y, $journey_id); // North
 				$east = checkDirection("east", $x, $y, $journey_id); // East
 				$south = checkDirection("south", $x, $y, $journey_id); // South
-				addToDebugLog("move(), EAST: After comparing neighbouring grids, final directions are: North: " . $north . "; East: " . $east . "; South: " . $south . "; West: " . $west . ", INFO");
+				addToDebugLog("move(), EAST: After comparing neighbouring grids final directions are: North: " . $north . "; East: " . $east . "; South: " . $south . "; West: " . $west . ", INFO");
 				break;
 			case "south":
 				$y = $y - 1;
@@ -293,7 +293,7 @@
 				$south = checkDirection("south", $x, $y, $journey_id); // South
 				$east = checkDirection("east", $x, $y, $journey_id); // East
 				$west = checkDirection("west", $x, $y, $journey_id); // West
-				addToDebugLog("move(), SOUTH: After comparing neighbouring grids, final directions are: North: " . $north . "; East: " . $east . "; South: " . $south . "; West: " . $west . ", INFO");
+				addToDebugLog("move(), SOUTH: After comparing neighbouring grids final directions are: North: " . $north . "; East: " . $east . "; South: " . $south . "; West: " . $west . ", INFO");
 				break;
 			case "west":
 				$x = $x - 1;
@@ -302,7 +302,7 @@
 				$north = checkDirection("north", $x, $y, $journey_id); // North
 				$south = checkDirection("south", $x, $y, $journey_id); // South
 				$west = checkDirection("west", $x, $y, $journey_id); // West
-				addToDebugLog("move(), WEST: After comparing neighbouring grids, final directions are: North: " . $north . "; East: " . $east . "; South: " . $south . "; West: " . $west . ", INFO");
+				addToDebugLog("move(), WEST: After comparing neighbouring grids final directions are: North: " . $north . "; East: " . $east . "; South: " . $south . "; West: " . $west . ", INFO");
 				break;	
 		}
 		
@@ -357,13 +357,14 @@
 			echo "<script>window.location.href = 'battle.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&grid_id=" . $grid_id . "&action=create'</script>";
 		}
 		
+		// Manage Effects; handles reducing remaining duration and removing expired effects
+		manageEffects($character_id);
+		
 		outputDebugLog();
 		
 		// Reload page
 		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";
 		//echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back</a>";
-		
-		
 		
 	}
 	
@@ -396,6 +397,9 @@
 		} else {
 			addToDebugLog("move(), Character record not updated, ERROR");
 		}
+		
+		// Manage Effects; handles reducing remaining duration and removing expired effects
+		manageEffects($character_id);
 
 		// Reload page
 		echo "<script>window.location.href = 'adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'</script>";		
@@ -460,7 +464,7 @@
 					} else {
 						// Need to know if the northern grid has a southward path
 						$is_path = substr($neighbour_directions, 2, 1); // extract southern component
-						addToDebugLog("checkDirection(), " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes, 9 = no): " . $is_path . ", INFO");
+						addToDebugLog("checkDirection(), " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes; 9 = no): " . $is_path . ", INFO");
 						if ($is_path == 1) {
 							$north = 1000; // Must have path to join with northern neighbour
 						} else {
@@ -489,7 +493,7 @@
 					} else {
 						// Need to know if the eastern grid has a westward path
 						$is_path = substr($neighbour_directions, 3, 1); // extract western component
-						addToDebugLog("checkDirection(), " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes, 9 = no): " . $is_path . ", INFO");
+						addToDebugLog("checkDirection(), " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes; 9 = no): " . $is_path . ", INFO");
 						if ($is_path == 1) {
 							$east = 100;
 						} else {
@@ -516,7 +520,7 @@
 					} else {					
 						// Need to know if the western grid has a eastward path
 						$is_path = substr($neighbour_directions, 1, 1);
-						addToDebugLog("checkDirection(), " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes, 9 = no): " . $is_path . ", INFO");
+						addToDebugLog("checkDirection(), " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes; 9 = no): " . $is_path . ", INFO");
 						if ($is_path == 1) {
 							$west = 1;
 						} else {
@@ -543,7 +547,7 @@
 					} else {
 						// Need to know if the southern grid has a northward path
 						$is_path = substr($neighbour_directions, 0, 1);
-						addToDebugLog("checkDirection(), " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes, 9 = no): " . $is_path . ", INFO");
+						addToDebugLog("checkDirection(), " . ucfirst($direction) . " neighbour has path to this grid? (1 = yes; 9 = no): " . $is_path . ", INFO");
 						if ($is_path == 1) {
 							$south = 10;
 						} else {
@@ -799,19 +803,30 @@
 	
 		addToDebugLog("doFight(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Enemy ID: " . $enemy_id . "; Grid ID: " . $grid_id . "; Player ID: " . $player_id . "; Journey ID: " . $journey_id . ", INFO");			
 		
-		// Load Character Details
+		// Load Character Basic Info
 		$character_basic_info = getAllCharacterMainInfo($character_id);
 		$character_name = trim($character_basic_info[0][2]); 		// 2	Name
 		$character_role = $character_basic_info[0][3]; 				// 3	Role
 		$character_level = $character_basic_info[0][4]; 			// 4	Level
 		$character_status = $character_basic_info[0][7]; 			// 7	Status
+		
+		// Load Character Detailed Info
 		$character_detailed_info = getAllCharacterDetailedInfo($character_id);
 		$character_hp = $character_detailed_info[0][2]; 			// 2	HP
 		$character_atk = $character_detailed_info[0][3];			// 3	ATK
 		$character_ac = $character_detailed_info[0][4];				// 4	AC
+		
+		// Equipment Boosts
 		$character_boosts = getCharacterBoosts($character_id);
 		$character_ac_boost = $character_boosts[0];					// 0	AC Boost
 		$character_atk_boost = $character_boosts[1];				// 1	ATK Boost
+		
+		// Effects Boosts
+		$effect_boosts = getEffectBoosts($character_id);
+		$effect_ac_boost = $effect_boosts[0]; 
+		$effect_atk_boost = $effect_boosts[1];
+		$effect_hp_boost = $effect_boosts[2];
+		$effect_str_boost = $effect_boosts[3];
 		
 		// Load Enemy Details
 		$enemy_info = getEnemyInfo($enemy_id);
@@ -827,7 +842,9 @@
 		echo "<table cellpadding=3 cellspacing=0 border=1 width=1200px align=center>";
 		echo "<tr><td>";
 		echo "<td align=center><h2>" . $character_name . ", Level " . $character_level . " " . $character_role . "</h2>";
-		echo "(HP: " . $character_hp . ", ATK: " . $character_atk . " + " . $character_atk_boost . ", AC: " . $character_ac . " + " . $character_ac_boost . ")";
+		$total_ac_boost = $character_ac_boost + $effect_ac_boost;
+		$total_atk_boost = $character_atk_boost + $effect_atk_boost;
+		echo "(HP: " . $character_hp . " + " . $effect_hp_boost . ", ATK: " . $character_atk . " + " . $total_atk_boost . ", AC: " . $character_ac . " + " . $total_ac_boost . ")";
 		echo "<td align=center><h2>" . $enemy_name . "</h2>";
 		echo "(HP: " . $enemy_hp . ", ATK: " . $enemy_atk . ", AC: " . $enemy_ac . ")</tr>";
 		
@@ -839,7 +856,7 @@
 			addToDebugLog("doFight(), Round: " . $round . ", INFO");
 
 			// Character attacks first
-			$character_attack = rand(0, $character_atk) + $character_atk_boost;
+			$character_attack = rand(0, $character_atk) + $character_atk_boost + $effect_atk_boost;
 			addToDebugLog("doFight(), Character Attack: " . $character_attack . ", INFO");
 			$enemy_defend = rand(0, $enemy_ac);
 			addToDebugLog("doFight(), Enemy Defend: " . $enemy_defend . ", INFO");
@@ -848,7 +865,7 @@
 			
 			if ($character_attack > $enemy_defend) { // Hit
 				addToDebugLog("doFight(), Character hits Enemy, INFO");
-				$enemy_damage = rand(1, ($character_atk + $character_atk_boost)/2);
+				$enemy_damage = rand(1, ($character_atk + $character_atk_boost + $effect_atk_boost)/2);
 				addToDebugLog("doFight(), Enemy takes damage: " . $enemy_damage . ", INFO");
 				$enemy_hp = $enemy_hp - $enemy_damage;
 				addToDebugLog("doFight(), Enemy HP reduced to: " . $enemy_hp . ", INFO");
@@ -863,7 +880,7 @@
 				
 				$enemy_attack = rand(0, $enemy_atk-5);
 				addToDebugLog("doFight(), Enemy Attack: " . $enemy_attack . ", INFO");
-				$character_defend = rand(0, $character_ac + $character_ac_boost) ;
+				$character_defend = rand(0, $character_ac + $character_ac_boost + $effect_ac_boost);
 				addToDebugLog("doFight(),  Character Defend: " . $character_defend . ", INFO");
 				
 				echo "<td width=700px>" . $enemy_name . " attacks " . $character_name . " (" . $enemy_attack . " vs " . $character_defend . ")";
@@ -872,7 +889,7 @@
 					addToDebugLog("doFight(),  Enemy hits Character, INFO");
 					$character_damage = rand(ceil($enemy_attack/4), $enemy_attack/2);
 					addToDebugLog("doFight(), Character takes damage: " . $character_damage . ", INFO");
-					$character_hp = $character_hp - $character_damage;
+					$character_hp = $character_hp - $character_damage + $effect_hp_boost;
 					addToDebugLog("doFight(), Character HP reduced to: " . $character_hp . ", INFO");
 					echo ", and hits for " . $character_damage . " points of damage!<br/>" . $character_name . " now has " . $character_hp . "HP";
 				} else {
@@ -927,6 +944,9 @@
 			} else {
 				addToDebugLog("doFight(), Character record not updated, ERROR");
 			}	
+			
+			// Delete character effects
+			deleteAllEffects($character_id);
 			
 			// Create Descendent
 			$new_character_id = createCharacter($player_id, $character_id);
@@ -1020,10 +1040,10 @@
 		$result = search($sql);
 		$rows = count($result);
 		
-		echo "<h3>Stores</h3>";
-		
-		
 		if ($rows > 0) {
+
+			echo "<h3>Stores</h3>";
+			
 			for ($j = 0; $j < $rows; $j++) {
 				
 				// Get Grid coordinates
@@ -1032,10 +1052,7 @@
 				echo "<a href='store.php?journey_id=" . $journey_id . "&character_id=" . $result[$j][4] . "&player_id=" . $player_id . "&store_id=" . $result[$j][0] . "'>" . $result[$j][1] . "</a> (" . $coords[0][0] . "," . $coords[0][1] . ")<br/>";
 				
 			}
-		} else {
-			echo "There are no stores.";
 		}
-		
 	}
 	
 	function enemyList($character_id, $journey_id, $player_id) {
@@ -1048,9 +1065,10 @@
 		$result = search($sql);
 		$rows = count($result);
 		
-		echo "<h3>Enemies</h3>";
-		
 		if ($rows > 0) {
+
+			echo "<h3>Enemies</h3>";
+			
 			for ($j = 0; $j < $rows; $j++) {
 					
 				// Get Grid coordinates
@@ -1060,10 +1078,7 @@
 				echo "<a href='battle.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&enemy_id=" . $result[$j][0] . "&grid_id=" . $result[$j][4] . "'>" . $result[$j][1] . " (" . $coords[0][0] . "," . $coords[0][1] . ")</a><br/>";
 					
 			}		
-		} else {
-			echo "There are no unbeaten enemies.";
 		}
-		
 	}
 	
 ?>

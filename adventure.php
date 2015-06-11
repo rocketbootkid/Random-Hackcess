@@ -16,8 +16,6 @@
 	include 'functions/store_functions.php';
 	include 'functions/effects_functions.php';
 	
-	
-	
 	// ************************************************************************************
 	// Move to new Grid
 	// ************************************************************************************
@@ -54,11 +52,12 @@
 			echo "Select | <a href='player.php'>Player</a> | ";
 			echo "<a href='character.php?player_id=" . $player_id . "'>Character</a> | ";
 			echo "<a href='journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'>Journey</a><p>";
-			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a><p>";
 			echo "<a href='journey_map.php?journey_id=" . $journey_id . "' target='_blank'>View Entire Journey Map</a>";
 		
 			// Lists the stores available on the map
 			storeList($journey_id, $player_id);
+			
+			echo "<p><a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a>";
 			
 			// Lists the unbeaten enemies on the map
 			enemyList($character_id, $journey_id, $player_id);
@@ -96,7 +95,7 @@
 		
 		echo "</tr></table>";
 		
-		outputQueryCount();
+		//outputQueryCount();
 		//outputQueryList();
 		
 		outputDebugLog();

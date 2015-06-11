@@ -13,6 +13,7 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 	include 'functions/store_functions.php';
+	include 'functions/effects_functions.php';
 
 	addToDebugLog("fight.php, page, INFO");
 	

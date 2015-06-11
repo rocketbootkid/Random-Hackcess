@@ -1,18 +1,24 @@
-<html><head><title>Random Hackcess Function List></title></head><body style='font-family: monospace;'><table cellpadding=3 cellspacing=0 border=1 width=100%><tr bgcolor=#999><td align=center colspan=3><h1>Function List</h1></tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/debug_functions.php, Lines: 72<h3><tr><td> addToDebugLog<td>$text 
+<html><head><title>Random Hackcess Function List></title></head><body style='font-family: monospace;'><table cellpadding=3 cellspacing=0 border=1 width=100%><tr bgcolor=#999><td align=center colspan=3><h1>Function List</h1></tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/debug_functions.php, Lines: 100<h3><tr><td> addToDebugLog<td>$text 
 <td><i>No comment found.</i></tr><tr><td> outputDebugLog<td> 
 <td><i>No comment found.</i></tr><tr><td> outputQueryCount<td> 
 <td><i>No comment found.</i></tr><tr><td> outputQueryList<td> 
-<td><i>No comment found.</i></tr><tr bgcolor=#ddd><td colspan=3>4 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/effects_functions.php, Lines: 133<h3><tr><td> createPositiveEffect<td>$store_id 
+<td><i>No comment found.</i></tr><tr bgcolor=#ddd><td colspan=3>4 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/effects_functions.php, Lines: 273<h3><tr><td> createPositiveEffect<td>$store_id 
 <td><i>		Creates a new positive effect potion in a store
 </i></tr><tr><td> listCharacterEffects<td>$character_id 
 <td><i>		This function lists all ongoing effects for the supplied character
 </i></tr><tr><td> manageEffects<td>$character_id 
 <td><i>		This function will manage the ongoing effects affecting a character
+</i></tr><tr><td> deleteAllEffects<td>$character_id 
+<td><i>		This function will delete all ongoing effects for a character
 </i></tr><tr><td> removeEffect<td>$effect_id 
 <td><i>		This function removes all effects for the supplied character
-</i></tr><tr><td> startEffect<td> 
+</i></tr><tr><td> startEffect<td>$item_id 
 <td><i>		This function will start new effects affecting the player, either when purchased or inflicted.
-</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/grid_functions.php, Lines: 1077<h3><tr><td> getPlayerCurrentGridCoordinates<td>$character_id, $journey_id 
+</i></tr><tr><td> getEquipmentDetails<td>$item_id 
+<td><i>		This function returns details for the piece of equipment
+</i></tr><tr><td> getEffectBoosts<td>$character_id 
+<td><i>		This function will return the total stat boosts from ongoing effects
+</i></tr><tr bgcolor=#ddd><td colspan=3>8 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/grid_functions.php, Lines: 1084<h3><tr><td> getPlayerCurrentGridCoordinates<td>$character_id, $journey_id 
 <td><i>		Returns the grid coordinates for current character / journey
 </i></tr><tr><td> drawGrid<td>$grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id 
 <td><i>		Draws the adventure grid
@@ -26,7 +32,7 @@
 <td><i>		Draws the controls grid
 </i></tr><tr><td> getCharacterCurrentGrid<td>$character_id, $journey_id 
 <td><i>		Returns the grid id for current character / journey
-</i></tr><tr><td> move<td>$journey_id, $character_id, $direction, $player_id 		
+</i></tr><tr><td> move<td>$journey_id, $character_id, $direction, $player_id 
 <td><i>		Moves the player to a new grid
 </i></tr><tr><td> jump<td>$journey_id, $character_id, $grid_id, $player_id 
 <td><i>		Fast-travels the player to a new grid
@@ -68,7 +74,7 @@
 <td><i>		Does MySQL INSERT and UPDATE operations, returning a boolean flag
 </i></tr><tr><td> delete<td>$dml 
 <td><i>		Does MySQL DELETE operations, returning a boolean flag
-</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/player_functions.php, Lines: 1353<h3><tr><td> characterFightCount<td>$character_id 
+</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/player_functions.php, Lines: 1471<h3><tr><td> characterFightCount<td>$character_id 
 <td><i>		This function displays the combat history for the selected character
 </i></tr><tr><td> playerSelect<td> 
 <td><i>		Displays details for all players
@@ -150,7 +156,9 @@
 <td><i>		This function returns the summary for the supplied item_id
 </i></tr><tr><td> showCharacterHistory<td>$character_id 
 <td><i>		This function displays the combat history for the selected character
-</i></tr><tr bgcolor=#ddd><td colspan=3>41 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/store_functions.php, Lines: 519<h3><tr><td> buyItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
+</i></tr><tr><td> updateTitle<td>$character_id 
+<td><i>		This function wil update the title for the selected character if necessary
+</i></tr><tr bgcolor=#ddd><td colspan=3>42 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/store_functions.php, Lines: 587<h3><tr><td> buyItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
 <td><i>		Buys an item from the store
 </i></tr><tr><td> characterEquipment<td>$character_id, $player_id, $journey_id, $store_id 
 <td><i>		This function lists the equipment held by each player
@@ -162,6 +170,8 @@
 <td><i>		This function returns a random adjective for store items.
 </i></tr><tr><td> getStoreContentsBySlot<td>$store_id, $journey_id, $character_id, $player_id, $slot 
 <td><i>		Lists items in the store for the provided slot
+</i></tr><tr><td> getStoreContentPotions<td>$store_id, $journey_id, $character_id, $player_id 
+<td><i>		Lists potions in the store
 </i></tr><tr><td> getStoreName<td>$store_id 
 <td><i>		This function returns the store name for the provided store id
 </i></tr><tr><td> generateStore<td>$grid_id, $journey_id, $character_id 
@@ -174,4 +184,4 @@
 <td><i>		Sells an item from the characters equipment
 </i></tr><tr><td> storeEquipment<td>$store_id, $journey_id, $character_id, $player_id 
 <td><i>		Creates and returns a store name
-</i></tr><tr bgcolor=#ddd><td colspan=3>12 functions found.</tr></body></html>
+</i></tr><tr bgcolor=#ddd><td colspan=3>13 functions found.</tr></body></html>

@@ -323,6 +323,8 @@
 			addToDebugLog("changeJourney(), Character record not updated, ERROR");
 		}
 
+		outputDebugLog();
+		
 		// Navigate to page
 		echo "<script>window.location.href = 'journey.php?player_id=" . $player_id . "&character_id=" . $character_id . "'</script>";		
 		
@@ -457,16 +459,30 @@
 		echo "<tr><td colspan=4 align=center><b>" . $name . ", Level " . $level . " " . $role . "</tr>";
 		echo "<tr bgcolor=#ddd><td align=center><td align=center>Value<td><td>Item</tr>";
 		
+		// Get Character AC / ATK Boosts from Equipment
+		$equipment_boosts = getCharacterBoosts($character_id);
+		$eqp_ac_boost = $equipment_boosts[0];
+		$eqp_atk_boost = $equipment_boosts[1];
+		
+		// Get effect boosts
+		$effect_boosts = getEffectBoosts($character_id);
+		
+		$total_atk_boost = $eqp_atk_boost + $effect_boosts["atk"];
+		$total_ac_boost = $eqp_ac_boost + $effect_boosts["ac"];
+		
 		// Get Character Details
 		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
 		$result = search($sql);
 
-		echo "<tr><td align=right>HP<td align=center>" . $result[0][13] . "<td align=right>Head | <td>" . getItemNameById($result[0][8]) . "</tr>";
-		echo "<tr><td align=right>ATK<td align=center>" . $result[0][3] . "<td align=right>Chest | <td>" . getItemNameById($result[0][9]) . "</tr>";
-		echo "<tr><td align=right>AC<td align=center>" . $result[0][4] . "<td align=right>Legs | <td>" . getItemNameById($result[0][10]) . "</tr>";
+		echo "<tr><td align=right>HP<td align=center>" . $result[0][13];
+		if ($effect_boosts["hp"] != 0) { echo " (+" . $effect_boosts["hp"] . ")"; }
+		echo "<td align=right>Head | <td>" . getItemNameById($result[0][8]) . "</tr>";
+		echo "<tr><td align=right>ATK<td align=center>" . $result[0][3] . " (+" . $total_atk_boost . ")<td align=right>Chest | <td>" . getItemNameById($result[0][9]) . "</tr>";
+		echo "<tr><td align=right>AC<td align=center>" . $result[0][4] . " (+" . $total_ac_boost . ")<td align=right>Legs | <td>" . getItemNameById($result[0][10]) . "</tr>";
 		echo "<tr><td align=right>Gold<td align=center>" . $result[0][5] . "<td align=right>Shield | <td>" . getItemNameById($result[0][11]) . "</tr>";
-		echo "<tr><td align=right>STR<td align=center>" . $result[0][7] . "<td align=right>Weapon | <td>" . getItemNameById($result[0][12]) . "</tr>";
-		
+		echo "<tr><td align=right>STR<td align=center>" . $result[0][7];
+		if ($effect_boosts["str"] != 0) { echo " (+" . $effect_boosts["str"] . ")"; }
+		echo "<td align=right>Weapon | <td>" . getItemNameById($result[0][12]) . "</tr>";
 		echo "</table>";
 		
 	}		
@@ -903,6 +919,9 @@
 		$total_attack_boost = $boosts[1];
 		addToDebugLog("displayBattleStats(), Boosts: AC: " . $total_ac_boost . "; ATK: " . $total_attack_boost . ", INFO");
 		
+		// Get boosts from Effects
+		$effect_boosts = getEffectBoosts($character_basic_info[0][0]);
+		
 		// Get equipment names
 		$head = getItemNameById($character_detailed_info[0][8]);
 		$chest = getItemNameById($character_detailed_info[0][9]);
@@ -912,10 +931,60 @@
 		
 		echo "<table cellpadding=3 cellspacing=0 border=1 style='margin-left: auto; margin-right: auto;'>";
 		echo "\n<tr>\n\t<td colspan=4 align=center width=600px><h2>" . trim($character_basic_info[0][2]) . "</h2>Level " . $character_basic_info[0][4] . " " . trim($character_basic_info[0][3]) . "\n\t<td valign=center align=center><h2>VS</h2>\n\t<td colspan=2 align=center valign=top width=300px><h2>" . $enemy_info[0][0] . "</h2>\n</tr>"; // Display character / enemy names
-		echo "\n<tr>\n\t<td align=right width=50px>Head\n\t<td width=150px>" . $head . "\n\t<td align=center width=50px>" . $character_detailed_info[0][2] . "\n\t<td width=250px align=right>" . barGraph($character_detailed_info[0][13], 'char') . "\n\t<td align=center>HP\n\t<td>" . barGraph($enemy_info[0][3], 'enemy') . "<td align=center>" . $enemy_info[0][3] . "\n</tr>";
-		echo "\n<tr>\n\t<td align=right>Chest\n\t<td>" . $chest . "\n\t<td align=center>" . $character_detailed_info[0][4] . " (+" . $total_ac_boost . ")\n\t<td align=right>" . barGraph($character_detailed_info[0][4] + $total_ac_boost, 'char') . "\n\t<td align=center>AC\n\t<td>" . barGraph($enemy_info[0][2], 'enemy') . "\n\t<td align=center>" . $enemy_info[0][2] . "\n</tr>";
-		echo "\n<tr>\n\t<td align=right>Legs\n\t<td>" . $legs . "\n\t<td align=center>" . $character_detailed_info[0][3] . " (+" . $total_attack_boost . ")\n\t<td align=right>" . barGraph($character_detailed_info[0][3] + $total_attack_boost, 'char') . "\n\t<td align=center>ATK\n\t<td>" . barGraph($enemy_info[0][1], 'enemy') . "\n\t<td align=center>" . $enemy_info[0][1] . "\n</tr>";
-		echo "\n<tr>\n\t<td align=right>Shield\n\t<td>" . $shield . "\n\t<td align=right colspan=2>" . $character_detailed_info[0][7] . "\n\t<td align=center>STR\n\t<td colspan=2>\n</tr>";
+		
+		// Head / HP
+		echo "\n<tr>\n\t<td align=right width=50px>Head\n\t<td width=150px>" . $head;
+		if ($effect_boosts[2] > 0) {
+			echo "\n\t<td align=center width=50px>" . $character_detailed_info[0][2] . " (+" . $effect_boosts[2] . ")";
+			$total = $effect_boosts[2] + $character_detailed_info[0][13];
+			echo "\n\t<td width=250px align=right>" . barGraph($total, 'char');
+		} else {
+			echo "\n\t<td align=center width=50px>" . $character_detailed_info[0][2];
+			echo "\n\t<td width=250px align=right>" . barGraph($character_detailed_info[0][13], 'char');
+		}
+		echo "\n\t<td align=center>HP\n\t<td>" . barGraph($enemy_info[0][3], 'enemy');
+		echo "<td align=center>" . $enemy_info[0][3] . "\n</tr>";
+		
+		// Chest / AC
+		echo "\n<tr>\n\t<td align=right>Chest\n\t<td>" . $chest;
+		echo "\n\t<td align=center>" . $character_detailed_info[0][4];
+		if ($effect_boosts[0] > 0) {
+			$total = $effect_boosts[0] + $total_ac_boost;
+			echo " (+" . $total . ")";
+			echo "\n\t<td align=right>" . barGraph($character_detailed_info[0][4] + $total, 'char');
+		} else {
+			echo " (+" . $total_ac_boost . ")";
+			echo "\n\t<td align=right>" . barGraph($character_detailed_info[0][4] + $total_ac_boost, 'char');
+		}
+		echo "\n\t<td align=center>AC\n\t<td>" . barGraph($enemy_info[0][2], 'enemy');
+		echo "\n\t<td align=center>" . $enemy_info[0][2] . "\n</tr>";
+		
+		// Legs / ATK
+		echo "\n<tr>\n\t<td align=right>Legs\n\t<td>" . $legs;
+		echo "\n\t<td align=center>" . $character_detailed_info[0][3];
+		if ($effect_boosts[1] > 0) {
+			$total = $effect_boosts[1] + $total_atk_boost;
+			echo " (+" . $total . ")";
+			echo "\n\t<td align=right>" . barGraph($character_detailed_info[0][3] + $total, 'char');
+		} else {
+			echo " (+" . $total_attack_boost . ")";
+			echo "\n\t<td align=right>" . barGraph($character_detailed_info[0][3] + $total_attack_boost, 'char');
+		}
+		echo "\n\t<td align=center>ATK\n\t<td>" . barGraph($enemy_info[0][1], 'enemy');
+		echo "\n\t<td align=center>" . $enemy_info[0][1] . "\n</tr>";
+		
+		// Shield / STR
+		echo "\n<tr>\n\t<td align=right>Shield\n\t<td>" . $shield;
+		if ($effect_boosts[3] > 0) {
+			$total = $character_detailed_info[0][7] + $effect_boosts[3]; 
+			echo "\n\t<td align=right colspan=2>" . $total;
+		} else {
+			echo "\n\t<td align=right colspan=2>" . $character_detailed_info[0][7];
+		}
+		
+		echo "\n\t<td align=center>STR\n\t<td colspan=2>\n</tr>";
+		
+		// XP
 		echo "\n<tr>\n\t<td align=right>Weapon\n\t<td>" . $weapon . "\n\t<td align=right colspan=2>" . $character_detailed_info[0][6] . "\n\t<td align=center>XP\n\t<td colspan=2>\n</tr>";
 		echo "</table>";
 		
@@ -950,7 +1019,7 @@
 		
 		addToDebugLog("getCharacterBoosts(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
-		$sql = "SELECT ac_boost, attack_boost, slot, equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		$sql = "SELECT ac_boost, attack_boost, slot, equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%';";
 		$result = search($sql);
 		$rows = count($result);
 		$total_attack_boost = 0;
@@ -969,7 +1038,7 @@
 				}			
 			}
 		}
-		addToDebugLog("getCharacterBoosts(), AC Boost: " . $total_ac_boost . ", Attack Boost: " . $total_attack_boost . ", INFO");
+		addToDebugLog("getCharacterBoosts(), AC Boost: " . $total_ac_boost . "; Attack Boost: " . $total_attack_boost . ", INFO");
 		$details = array();
 		$details[0] = $total_ac_boost;
 		$details[1] = $total_attack_boost;
@@ -1063,18 +1132,21 @@
 		$result = search($sql);
 		$rows = count($result);
 		
-		echo "<tr><td colspan=5 bgcolor=#ddd align=center>Potions</tr>";
+		if ($rows > 0) {
 		
-		for ($p = 0; $p < $rows; $p++) {
-				
-			echo "<tr><td>" . $result[$p][1]; // Item
-			echo "<td align=center>-"; // Weight
-				
-			// Write action: Drink
-			echo "<td align=center>";
-			echo "<a href='equipment.php?item_id=" . $result[$p][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&action=drink'>Drink</a>";
-			echo "</tr>";
-				
+			echo "<tr><td colspan=5 bgcolor=#ddd align=center>Potions</tr>";
+			
+			for ($p = 0; $p < $rows; $p++) {
+					
+				echo "<tr><td>" . $result[$p][1]; // Item
+				echo "<td align=center>-"; // Weight
+					
+				// Write action: Drink
+				echo "<td align=center>";
+				echo "<a href='equipment.php?item_id=" . $result[$p][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&action=drink'>Drink</a>";
+				echo "</tr>";
+					
+			}
 		}
 		
 		echo "<tr bgcolor=#ddd><td align=right>Total Weight<td align=center>" . $weight_total . "<td></tr>";

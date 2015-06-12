@@ -920,7 +920,7 @@
 		addToDebugLog("displayBattleStats(), Boosts: AC: " . $total_ac_boost . "; ATK: " . $total_attack_boost . ", INFO");
 		
 		// Get boosts from Effects
-		$effect_boosts = getEffectBoosts($character_basic_info[0][0]);
+		$effect_boosts = getEffectBoosts($character_basic_info[0][0]); // 0 AC, 1 ATK, 2 HP, 3 STR 
 		
 		// Get equipment names
 		$head = getItemNameById($character_detailed_info[0][8]);
@@ -934,8 +934,8 @@
 		
 		// Head / HP
 		echo "\n<tr>\n\t<td align=right width=50px>Head\n\t<td width=150px>" . $head;
-		if ($effect_boosts[2] > 0) {
-			echo "\n\t<td align=center width=50px>" . $character_detailed_info[0][2] . " (+" . $effect_boosts[2] . ")";
+		if ($effect_boosts["hp"] > 0) {
+			echo "\n\t<td align=center width=50px>" . $character_detailed_info[0][2] . " (+" . $effect_boosts["hp"] . ")";
 			$total = $effect_boosts[2] + $character_detailed_info[0][13];
 			echo "\n\t<td width=250px align=right>" . barGraph($total, 'char');
 		} else {
@@ -948,8 +948,8 @@
 		// Chest / AC
 		echo "\n<tr>\n\t<td align=right>Chest\n\t<td>" . $chest;
 		echo "\n\t<td align=center>" . $character_detailed_info[0][4];
-		if ($effect_boosts[0] > 0) {
-			$total = $effect_boosts[0] + $total_ac_boost;
+		if ($effect_boosts["ac"] > 0) {
+			$total = $effect_boosts["ac"] + $total_ac_boost;
 			echo " (+" . $total . ")";
 			echo "\n\t<td align=right>" . barGraph($character_detailed_info[0][4] + $total, 'char');
 		} else {
@@ -962,8 +962,8 @@
 		// Legs / ATK
 		echo "\n<tr>\n\t<td align=right>Legs\n\t<td>" . $legs;
 		echo "\n\t<td align=center>" . $character_detailed_info[0][3];
-		if ($effect_boosts[1] > 0) {
-			$total = $effect_boosts[1] + $total_atk_boost;
+		if ($effect_boosts["atk"] > 0) {
+			$total = $effect_boosts["atk"] + $total_atk_boost;
 			echo " (+" . $total . ")";
 			echo "\n\t<td align=right>" . barGraph($character_detailed_info[0][3] + $total, 'char');
 		} else {
@@ -975,8 +975,8 @@
 		
 		// Shield / STR
 		echo "\n<tr>\n\t<td align=right>Shield\n\t<td>" . $shield;
-		if ($effect_boosts[3] > 0) {
-			$total = $character_detailed_info[0][7] + $effect_boosts[3]; 
+		if ($effect_boosts["str"] > 0) {
+			$total = $character_detailed_info[0][7] + $effect_boosts["str"]; 
 			echo "\n\t<td align=right colspan=2>" . $total;
 		} else {
 			echo "\n\t<td align=right colspan=2>" . $character_detailed_info[0][7];
@@ -1152,7 +1152,8 @@
 		echo "<tr bgcolor=#ddd><td align=right>Total Weight<td align=center>" . $weight_total . "<td></tr>";
 		
 		// Get character strength
-		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
+		$effects = getEffectBoosts($character_id);
+		$character_strength = getCharacterDetailsInfo($character_id, 'strength') + $effects["str"];
 		echo "<tr bgcolor=#ddd><td align=right>Strength<td align=center>" . $character_strength . "<td></tr>";
 		
 		echo "</table>";
@@ -1464,6 +1465,29 @@
 		
 		} else {
 			addToDebugLog("updateTitle(), No need to update title, INFO");
+		}
+		
+	}
+	
+	function isCharacterOverloaded($character_id) {
+		
+		// This function determines if the character is overencumbered
+		
+		addToDebugLog("manageEquipment(), Function Entry - supplied parameters: Character ID: " . $charcter_id . ", INFO");
+		
+		// Get total weight of player equipment
+		$sql = "SELECT sum(weight) FROM hackcess.character_equipment WHERE character_id = " . $character_id . ";";
+		$result = search($sql);
+		$equipment_weight = $result[0][0];
+		
+		// Get total strength, including boosts
+		$effects = getEffectBoosts($character_id);
+		$character_strength = getCharacterDetailsInfo($character_id, 'strength') + $effects["str"];
+		
+		if ($equipment_weight > $character_strength) {
+			return 1; // Overencumbered
+		} else {
+			return 0; // OK
 		}
 		
 	}

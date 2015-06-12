@@ -324,7 +324,7 @@
 		
 		addToDebugLog("getStoreContentPotions(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . ", INFO");
 		
-		$row_limit = 3;
+		$row_limit = 5;
 		
 		$sql = "SELECT * FROM hackcess.store_contents WHERE store_id  = " . $store_id . " AND item_slot LIKE 'potion%' ORDER BY item_cost DESC LIMIT " . $row_limit . ";";
 		$result = search($sql);
@@ -450,7 +450,7 @@
 		}
 
 		// Potions
-		$num_items = rand(1, 3);
+		$num_items = rand(1, 5);
 		for ($item = 0; $item < $num_items; $item++) {
 			createPositiveEffect($store_id);
 		}	
@@ -562,7 +562,7 @@
 	
 	function storeEquipment($store_id, $journey_id, $character_id, $player_id) {
 	
-		// Creates and returns a store name
+		// Lists the items for sale in the store
 	
 		addToDebugLog("manageEquipment(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Store ID: " . $store_id . ", INFO");
 	
@@ -583,5 +583,18 @@
 		echo "</table>";
 	
 	}
+
+	function getStoreDetails($store_id, $attribute) {
+		
+		// Creates and returns a store name
+		
+		addToDebugLog("getStoreDetails(), Function Entry - Store ID: " . $store_id . ", INFO");
+		
+		$sql = "SELECT " . $attribute . " FROM hackcess.store WHERE store_id = " . $store_id . ";";
+		$result = search($sql);
+		
+		return $result[0][0];	
+		
+	}
 	
-?>
+	?>

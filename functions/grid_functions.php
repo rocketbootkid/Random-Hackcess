@@ -581,14 +581,14 @@
 		
 		echo "<table cellpadding=2 cellspacing=0 border=0 width=100%>";
 		echo "<tr><td colspan=3 align=center><b>" . $journey_name . "</tr>";
-		echo "<tr bgcolor=#ddd><td align=center width=50px>Entry<td align=center width=50px>Grid<td>Entry</tr>";
+		echo "<tr bgcolor=#ddd><td>Entry</tr>";
 		
 		// Display the N latest journal entries for this journey
-		$sql = "SELECT journal_id, grid_id, journal_details FROM hackcess.journal WHERE journey_id = " . $journey_id . " ORDER BY journal_id DESC LIMIT " . $entries . ";";
+		$sql = "SELECT journal_details FROM hackcess.journal WHERE journey_id = " . $journey_id . " ORDER BY journal_id DESC LIMIT " . $entries . ";";
 		$result = search($sql);
 
 		for ($j = 0; $j < 5; $j++) {
-			echo "<tr><td align=center>" . $result[$j][0] . "<td align=center>" . $result[$j][1] . "<td>" . $result[$j][2] . "</tr>";
+			echo "<tr><td>" . $result[$j][0] . "</tr>";
 		}
 		
 		echo "</table>";
@@ -823,10 +823,10 @@
 		
 		// Effects Boosts
 		$effect_boosts = getEffectBoosts($character_id);
-		$effect_ac_boost = $effect_boosts[0]; 
-		$effect_atk_boost = $effect_boosts[1];
-		$effect_hp_boost = $effect_boosts[2];
-		$effect_str_boost = $effect_boosts[3];
+		$effect_ac_boost = $effect_boosts["ac"]; 
+		$effect_atk_boost = $effect_boosts["atk"];
+		$effect_hp_boost = $effect_boosts["hp"];
+		$effect_str_boost = $effect_boosts["str"];
 		
 		// Load Enemy Details
 		$enemy_info = getEnemyInfo($enemy_id);
@@ -844,7 +844,14 @@
 		echo "<td align=center><h2>" . $character_name . ", Level " . $character_level . " " . $character_role . "</h2>";
 		$total_ac_boost = $character_ac_boost + $effect_ac_boost;
 		$total_atk_boost = $character_atk_boost + $effect_atk_boost;
-		echo "(HP: " . $character_hp . " + " . $effect_hp_boost . ", ATK: " . $character_atk . " + " . $total_atk_boost . ", AC: " . $character_ac . " + " . $total_ac_boost . ")";
+		echo "(HP: " . $character_hp;
+		if ($effect_hp_boost > 0) {
+			echo " + " . $effect_hp_boost;
+		}
+		echo ", ATK: " . $character_atk;
+		echo " + " . $total_atk_boost;
+		echo ", AC: " . $character_ac;
+		echo " + " . $total_ac_boost . ")";
 		echo "<td align=center><h2>" . $enemy_name . "</h2>";
 		echo "(HP: " . $enemy_hp . ", ATK: " . $enemy_atk . ", AC: " . $enemy_ac . ")</tr>";
 		
@@ -945,6 +952,16 @@
 				addToDebugLog("doFight(), Character record not updated, ERROR");
 			}	
 			
+			// Create journal entry
+			$details = "Fought and lost to " . $enemy_name;
+			$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", '" . $details . "');";
+			$result_m = insert($dml);
+			if ($result_m == TRUE) {
+				addToDebugLog("doFight(), Journal entry added, INFO");
+			} else {
+				addToDebugLog("doFight(), Journal entry not added, ERROR");
+			}
+			
 			// Delete character effects
 			deleteAllEffects($character_id);
 			
@@ -959,8 +976,8 @@
 			$best_item_id = getBestItem($character_id);
 			
 			// Update new character with fraction of predecessor gold and xp
-			$new_gold = round($gold/5, 0);
-			$new_xp = round($xp/5, 0);
+			$new_gold = round($gold*(rand(10, 50)/100), 0); // random between 10 and 50%
+			$new_xp = round($xp*(rand(10, 30)/100), 0); // random between 10 and 30%
 			$dml = "UPDATE hackcess.character_details SET gold = " . $new_gold . ", xp = " . $new_xp . " WHERE character_id = " . $new_character_id . ";";
 			$result = insert($dml);
 			if ($result == TRUE) {
@@ -983,7 +1000,7 @@
 			
 			// Display details of new Character
 			$new_character_name = getCharacterDetails($new_character_id, "character_name");
-			echo "<tr><td colspan=3>" . $character_name . " might feast with the gods, but their child, " . trim($new_character_name) . ", shall continue the fight! ";
+			echo "<tr><td colspan=3 align=center>" . $character_name . " might feast with the gods, but their child, " . trim($new_character_name) . ", shall continue the fight!<br/>";
 			
 			echo trim($new_character_name) . " inherits " . $new_gold . " gold from their ancestor, as well as " . $character_name . "'s " . $item_summary;
 			
@@ -998,7 +1015,17 @@
 				addToDebugLog("doFight(), Enemy record updated, INFO");
 			} else {
 				addToDebugLog("doFight(), Enemy record not updated, ERROR");
-			}				
+			}	
+
+			// Create journal entry
+			$details = "Fought and beat " . $enemy_name . " in " . $round . " rounds.";
+			$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", '" . $details . "');";
+			$result_m = insert($dml);
+			if ($result_m == TRUE) {
+				addToDebugLog("doFight(), Journal entry added, INFO");
+			} else {
+				addToDebugLog("doFight(), Journal entry not added, ERROR");
+			}
 			
 			// Give Gold / XP
 			$dml = "UPDATE hackcess.character_details SET gold = gold + " . $enemy_gold . ", xp = xp + " . $enemy_xp . " WHERE character_id = " . $character_id . ";";
@@ -1010,20 +1037,35 @@
 			}			
 			
 			// Give random item if player has enough strength left
-			$character_strength = getCharacterDetailsInfo($character_id, 'strength');
+			$effect_boosts = getEffectBoosts($character_id);
+			$character_strength = getCharacterDetailsInfo($character_id, 'strength') + $effect_boosts["str"];
 			$equipment_weight = equipmentWeight($character_id);
 
 			if ($equipment_weight < $character_strength) {
 				$details = createRandomItem($character_id, $character_ac, $character_atk);
-				$details = $details . ", which " . $character_name . " picks up.";
+				$details = $details . ", which " . $character_name . " picks up.<br/>";
 			} else {
-				$details = "piece of equipment which " . $character_name . " can't pick up as  they're carrying too much equipment.";
+				$details = "piece of equipment which " . $character_name . " can't pick up as they're carrying too much equipment.<br/>";
 			}
 			
+			// Randomly drop potion
+			$potion_name = randomPotionDrop($character_id);
+			
+			// Determine if enemy leaves a lasting effect
+			$effect_id = createNegativeEffect($character_id);
+			
 			// Output details
-			echo "<tr><td colspan=3 align=center>" . $enemy_name . " drops " . $enemy_gold . " gold and a " . $details . " " . $character_name . " also gains " . $enemy_xp . "XP.<p>";
+			echo "<tr><td colspan=3 align=center>" . $enemy_name . " drops " . $enemy_gold . " gold and a " . $details;
+			if ($potion_name != "") { // Drop potions
+				echo "They also drop a " . $potion_name . ". ";
+			}
+			echo $character_name . " also gains " . $enemy_xp . "XP.<br/>";
+			if ($effect_id > 0) { // Curses / Negative Effects
+				$effect_details = getEffectDetails($effect_id); // 2 Name, 3 Affects, 4 Amount, 5 duration
+				echo "With their dying breath, " . $enemy_name . " hits you with a " . $effect_details[0][2] . " curse, resulting in a " . $effect_details[0][4] . " to " . strtoupper($effect_details[0][3]) . " for " . $effect_details[0][5] . " turns.<p>";
+			}
 			echo "<a href='adventure.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Back to Adventure</a> | "; // Back to Adventure
-			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Show Equipment</a>"; // Show Equipment screen
+			echo "<a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>Show Equipment</a><p> "; // Show Equipment screen
 			echo "</tr><t/table>";
 		
 		}

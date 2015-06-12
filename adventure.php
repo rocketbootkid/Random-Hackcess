@@ -57,7 +57,7 @@
 			// Lists the stores available on the map
 			storeList($journey_id, $player_id);
 			
-			echo "<p><a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Player Equipment</a>";
+			echo "<p><a href='equipment.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "'>View Character Equipment</a>";
 			
 			// Lists the unbeaten enemies on the map
 			enemyList($character_id, $journey_id, $player_id);

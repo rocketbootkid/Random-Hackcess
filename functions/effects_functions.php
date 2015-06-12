@@ -68,6 +68,76 @@
 		
 	}
 	
+	function createNegativeEffect($character_id) {
+	
+		// Creates a new positive effect potion in a store
+	
+		addToDebugLog("createNegativeEffect(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
+
+		srand(make_seed());
+		$negative_effect = rand(0, 12); // Determine if a negative effect begins.
+		
+		if ($negative_effect == 6) {
+		
+			srand(make_seed());
+			$item_choice = rand(0, 3);
+		
+			switch ($item_choice) {
+				case 0: // Affects ATK
+					srand(make_seed());
+					$level = rand(1, 3);
+					$effect_name = "Clumsy Lvl " . $level;
+					$affects = "atk";
+					$amount = 0 - $level;
+					$duration = 10;
+					break;
+				case 1: // Affects HP
+					srand(make_seed());
+					$level = rand(1, 3);
+					$effect_name = "Weakened Lvl " . $level;
+					$affects = "hp";
+					$amount = 0 - $level;
+					$duration = 10;
+					break;
+				case 2: // Affects AC
+					srand(make_seed());
+					$level = rand(1, 3);
+					$effect_name = "Off-guard Lvl " . $level;
+					$affects = "ac";
+					$amount = 0 - $level;
+					$duration = 10;
+					break;
+				case 3: // Affects STR
+					srand(make_seed());
+					$level = rand(1, 3);
+					$effect_name = "Weakened Potion Lvl " . $level;
+					$affects = "str";
+					$amount = 0 - $level;
+					$duration = 10;
+					break;
+			}
+			
+			// Create journal entry
+			$details = "Fought and beat " . $enemy_name . " in " . $round . " rounds.";
+			$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", '" . $details . "');";
+			$result_m = insert($dml);
+			if ($result_m == TRUE) {
+				addToDebugLog("doFight(), Journal entry added, INFO");
+			} else {
+				addToDebugLog("doFight(), Journal entry not added, ERROR");
+			}
+			
+			// Get effect id to return
+			$sql = "SELECT effect_id FROM hackcess.effects WHERE character_id = " . $character_id . " ORDER BY effect_id DESC LIMIT 1;";
+			$result = search($sql);
+			$rows = count($result);
+			
+			return $result[0][0];
+		
+		}
+	
+	}
+	
 	function listCharacterEffects($character_id) {
 	
 		// This function lists all ongoing effects for the supplied character
@@ -82,8 +152,8 @@
 			echo "<h3>Ongoing Effects</h3>";
 			
 			for ($e = 0; $e < $rows; $e++) {
-				echo "+" . $result[$e][4] . " to " . strtoupper($result[$e][3]) . " for " . $result[$e][5] . " more moves.<br/>";
-				// e.g. Poisoned: -5 to HP for 15 moves.
+				if ($result[$e][4] > 0) { echo "+"; }
+				echo $result[$e][4] . " to " . strtoupper($result[$e][3]) . " for " . $result[$e][5] . " more moves.<br/>";
 			}
 		}
 	}
@@ -251,7 +321,7 @@
 					case "hp": // HP
 						$hp_boost = $hp_boost + $result[$e][1];
 						break;					
-					case "ac": // STR
+					case "str": // STR
 						$str_boost = $str_boost + $result[$e][1];
 						break;						
 				}
@@ -268,6 +338,91 @@
 			return 0;
 		}
 		
+	}
+	
+	function getEffectDetails($effect_id) {
+		
+		// This function will return details about the effect.
+		
+		addToDebugLog("startEffect(), Function Entry - supplied parameters: Effect ID: " . $effect_id . ", INFO");
+		
+		// Get effect id to return
+		$sql = "SELECT * FROM hackcess.effects WHERE effect_id = " . $effect_id . ";";
+		$result = search($sql);
+		$rows = count($result);
+			
+		return $result;		
+
+	}
+	
+	function randomPotionDrop($character_id) {
+	
+		// Creates and returns a store name
+	
+		addToDebugLog("randomPotionDrop(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . "; Store ID: " . $store_id . ", INFO");
+	
+		srand(make_seed());
+		$drop_potion = rand(0, 10);
+		
+		if ($drop_potion == 5) {
+		
+			srand(make_seed());
+			$item_choice = rand(0, 3);
+			
+			switch ($item_choice) {
+				case 0: // ATTACK
+					srand(make_seed());
+					$level = rand(1, 3);
+					$item_name = "Attack Potion Lvl " . $level;
+					$item_ac_boost = 0;
+					$item_attack_boost = 5;
+					$item_weight = 0;
+					$item_slot = "potion_attack";
+					break;
+				case 1: // HP
+					srand(make_seed());
+					$level = rand(1, 3);
+					$item_name = "Health Potion Lvl " . $level;
+					$item_ac_boost = 0;
+					$item_attack_boost = 0;
+					$item_weight = 0;
+					$item_slot = "potion_hp";
+					break;
+				case 2: // AC
+					srand(make_seed());
+					$level = rand(1, 3);
+					$item_name = "Defence Potion Lvl " . $level;
+					$item_ac_boost = 5;
+					$item_attack_boost = 0;
+					$item_weight = 0;
+					$item_slot = "potion_ac";
+					break;
+				case 3: // Strength
+					srand(make_seed());
+					$level = rand(1, 3);
+					$item_name = "Strength Potion Lvl " . $level;
+					$item_ac_boost = 0;
+					$item_attack_boost = 0;
+					$item_weight = 0;
+					$item_slot = "potion_strength";
+					break;
+			}	
+			
+			// Add potion to character equipment
+			$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $item_name . "', " . $item_ac_boost . ", " . $item_attack_boost . ", " . $item_weight . ", '" . $item_slot . "', " . $character_id . ");";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("randomPotionDrop(), Item added to player inventory, INFO");
+			} else {
+				addToDebugLog("randomPotionDrop(), Item not added to player inventory, ERROR");
+			}
+			
+			return $item_name;
+					
+		} else {
+			return "";
+		}
+	
 	}
 	
 ?>

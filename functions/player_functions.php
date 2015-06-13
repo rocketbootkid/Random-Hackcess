@@ -1492,4 +1492,15 @@
 		
 	}
 	
+	function allTilesArray() {
+		addToDebugLog("allTilesArray(), Function Entry");
+		$sql = "SELECT * FROM hackcess.grid";
+		$result = search($sql);
+		$returnArray = []
+		foreach ($result as &$i) {
+			$returnArray[] = $i;
+		}
+		return $returnArray
+	}
+	
 ?>

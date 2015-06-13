@@ -42,7 +42,7 @@ CREATE TABLE `character` (
   `status` varchar(45) default NULL COMMENT 'Alive | Dead | Retired',
   `generation` int(11) default NULL,
   `parent_id` int(11) default NULL,
-  PRIMARY KEY  (`character_id`),
+  PRIMARY KEY  (`character_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 

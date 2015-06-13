@@ -117,14 +117,13 @@
 					break;
 			}
 			
-			// Create journal entry
-			$details = "Fought and beat " . $enemy_name . " in " . $round . " rounds.";
-			$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", '" . $details . "');";
-			$result_m = insert($dml);
-			if ($result_m == TRUE) {
-				addToDebugLog("doFight(), Journal entry added, INFO");
+			// Add effect to character
+			$dml = "INSERT INTO hackcess.effects (character_id, effect_name, affects, amount, duration) VALUES (" . $character_id . ", '" . $effect_name . "', '" . $affects . "', " . $amount . ", " . $duration . ");";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("createNegativeEffect(), New effect added, INFO");
 			} else {
-				addToDebugLog("doFight(), Journal entry not added, ERROR");
+				addToDebugLog("createNegativeEffect(), New effect not added, ERROR");
 			}
 			
 			// Get effect id to return

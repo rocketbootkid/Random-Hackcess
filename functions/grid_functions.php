@@ -117,7 +117,7 @@
 		for ($y = 0; $y < $rows; $y++) {
 		
 			$current_y = $start_y - $y;
-			addToDebugLog("drawGrid(), Current Y: " . $current_y . ", INFO");
+			addToDebugLog("drawEntireJourney(), Current Y: " . $current_y . ", INFO");
 			if ($current_y <= 50 && $current_y > 0) {
 				echo "<tr height=25px>";
 			}
@@ -834,7 +834,7 @@
 		$enemy_atk = $enemy_info[0][1];// 1	ATK
 		$enemy_ac = $enemy_info[0][2];// 2	AC
 		$enemy_hp = $enemy_info[0][3];// 3	HP
-		$enemy_gold = ($enemy_atk + $enemy_ac + $enemy_hp);
+		$enemy_gold = round(($enemy_atk + $enemy_ac + $enemy_hp)*(rand(50, 75)/100), 0);
 		$enemy_xp = ($enemy_atk + $enemy_ac + $enemy_hp) * 2;
 
 		echo "<h1 align=center>The fight is over!</h1>";
@@ -1123,4 +1123,70 @@
 		}
 	}
 	
-?>
+	function gridHeatMap() {
+	
+		// Displays a count for each grid on the map
+	
+		addToDebugLog("gridHeatMap(), Function Entry - no parameters, INFO");
+	
+		echo dechex(255);
+		
+		echo "<table cellpadding=0 cellspacing=0 border=1>";
+	
+		$rows = 50;
+		$cols = 50;
+	
+		$start_y = 50;
+		$start_x = 0;
+	
+		// Get total journeys to know what the max is
+		$sql = "SELECT count(*) FROM hackcess.journey;";
+		$result = search($sql);
+		$total_journies = $result[0][0];		
+		
+		for ($y = 0; $y < $rows; $y++) {
+	
+			$current_y = $start_y - $y;
+			if ($current_y <= 50 && $current_y > 0) {
+				echo "<tr height=30px>";
+			}
+	
+			for ($x = 1; $x <= $cols; $x++) {
+				$current_x = $start_x + $x;
+				
+				// Get count of grids
+				$sql = "SELECT count(*) FROM hackcess.grid WHERE grid_x = " . $current_x . " AND grid_y = " . $current_y . ";";
+				$result = search($sql);
+				$count = $result[0][0];
+				if ($count == 0) {
+					$color = "#fff";
+				} else {
+					// 0-128 goes from #000000 to #ff0000
+					// 129-255 goes from #ff0000 to #ffffff
+					// http://www.w3schools.com/tags/ref_colorpicker.asp
+					
+					$color_dec = round(($count / $total_journies) * 255, 0);
+					
+					if ($color_dec > 128) {
+						$color_hex = str_pad(dechex($color_dec), 2, "0");
+						$color = "#" . $color_hex . "0000";
+					} else {
+						$color_hex = str_pad(dechex(255-$color_dec), 2, "0");
+						$color = "#ff" . $color_hex . $color_hex;
+					}
+				}
+					
+				echo "<td class='" . $class . "' bgcolor=" . $color . " width=30px title='" . $count . ": " . $color . " (" . $current_x . "," . $current_y . ")' style='text-align: center; vertical-align: middle;'>";
+				if ($count > 0) {
+					echo $count;
+				}
+	
+			}
+			echo "</tr>";
+		}
+		echo "</table>";	
+		
+	}
+	
+
+	?>

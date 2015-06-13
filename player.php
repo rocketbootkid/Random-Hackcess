@@ -18,7 +18,8 @@
 	playerSelect();
 	
 	echo "<p><div style='text-align: center;'><a href='docs/doc_generator.php' target='_blank'>Generate Docs</a> | <a href='docs/api.html' target='_blank'>View Docs</a></div>";
-
+	echo "<h2 align=center>Meta</h2><div style='text-align: center;'><a href='meta/heat_map.php' target='_blank'>Grid Heat Map</a></div>";
+	
 	outputDebugLog();
 	
 ?>

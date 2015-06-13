@@ -1493,14 +1493,13 @@
 	}
 	
 	function allTilesArray() {
+		
+		// This function returns an array of all grids
+		
 		addToDebugLog("allTilesArray(), Function Entry");
-		$sql = "SELECT * FROM hackcess.grid";
+		$sql = "SELECT directions FROM hackcess.grid";
 		$result = search($sql);
-		$returnArray = []
-		foreach ($result as &$i) {
-			$returnArray[] = $i;
-		}
-		return $returnArray
+		return $result;
 	}
 	
 ?>

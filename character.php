@@ -12,6 +12,7 @@
 	include 'functions/mysql_functions.php';
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
+	include 'functions/trait_functions.php';
 
 	addToDebugLog("character.php, page, INFO");
 	

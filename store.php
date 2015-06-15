@@ -14,7 +14,8 @@
 	include 'functions/player_functions.php';
 	include 'functions/store_functions.php';
 	include 'functions/effects_functions.php';
-
+	include 'functions/trait_functions.php';
+	
 	addToDebugLog("store.php, page, INFO");
 	
 	$character_id = $_GET['character_id'];
@@ -67,10 +68,13 @@
 		
 		// Get character strength
 		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
-		addToDebugLog("store.php, Character Strength: " . $character_strength . ", INFO");
+		$effects = getEffectBoosts($character_id);
+		$traits = getTraitBoosts($character_id);
+		$total_strength = $character_strength + $effects["str"] + $traits["str"];
+		addToDebugLog("store.php, Character Strength: " . $total_strength . ", INFO");
 		
 		echo "<tr><td align=center colspan=2>";
-		if ($equipment_total_weight < $character_strength) {
+		if ($equipment_total_weight < $total_strength) {
 			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
 		} else {
 			echo "You are carrying too much weight. You must sell items to continue.";

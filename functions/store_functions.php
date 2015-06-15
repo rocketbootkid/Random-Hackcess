@@ -134,8 +134,12 @@
 		
 		// Get character strength		
 		$character_strength = getCharacterDetailsInfo($character_id, 'strength');
+		$effects = getEffectBoosts($character_id);
+		$traits = getTraitBoosts($character_id);
+		$total_strength = $character_strength + $effects["str"] + $traits["str"];
+		
 		echo "<tr><td align=right>Total Weight<td align=center>" . $weight_total;
-		echo "<td align=center>" . $character_strength . "<td align=left>Strength</tr>";
+		echo "<td align=center>" . $total_strength . "<td align=left>Strength</tr>";
 		
 		// Character Gold
 		$character_gold = getCharacterDetailsInfo($character_id,'gold');

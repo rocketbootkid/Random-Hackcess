@@ -828,6 +828,13 @@
 		$effect_hp_boost = $effect_boosts["hp"];
 		$effect_str_boost = $effect_boosts["str"];
 		
+		// Traits Boosts
+		$trait_boosts = getTraitBoosts($character_id);
+		$trait_ac_boost = $trait_boosts["ac"];
+		$trait_atk_boost = $trait_boosts["atk"];
+		$trait_hp_boost = $trait_boosts["hp"];
+		$trait_str_boost = $trait_boosts["str"];		
+		
 		// Load Enemy Details
 		$enemy_info = getEnemyInfo($enemy_id);
 		$enemy_name = $enemy_info[0][0];	// 0	Name
@@ -837,23 +844,29 @@
 		$enemy_gold = round(($enemy_atk + $enemy_ac + $enemy_hp)*(rand(50, 75)/100), 0);
 		$enemy_xp = ($enemy_atk + $enemy_ac + $enemy_hp) * 2;
 
-		echo "<h1 align=center>The fight is over!</h1>";
+		// Totals
+		$base_hp = $character_hp + $trait_hp_boost;
+		$total_hp_boost = $effect_hp_boost + $trait_hp_boost;
+		$base_ac = $character_ac + $trait_ac_boost;
+		$total_ac_boost = $character_ac_boost + $effect_ac_boost;
+		$base_atk = $character_atk + $trait_atk_boost;
+		$total_atk_boost = $character_atk_boost + $effect_atk_boost;
 		
+		echo "<h1 align=center>The fight is over!</h1>";
+
 		echo "<table cellpadding=3 cellspacing=0 border=1 width=1200px align=center>";
 		echo "<tr><td>";
 		echo "<td align=center><h2>" . $character_name . ", Level " . $character_level . " " . $character_role . "</h2>";
-		$total_ac_boost = $character_ac_boost + $effect_ac_boost;
-		$total_atk_boost = $character_atk_boost + $effect_atk_boost;
-		echo "(HP: " . $character_hp;
-		if ($effect_hp_boost > 0) {
-			echo " + " . $effect_hp_boost;
-		}
-		echo ", ATK: " . $character_atk;
-		echo " + " . $total_atk_boost;
-		echo ", AC: " . $character_ac;
-		echo " + " . $total_ac_boost . ")";
+			echo "(HP: " . $base_hp;
+			if ($total_hp_boost > 0) {
+				echo " + " . $total_hp_boost;
+			}
+			echo ", ATK: " . $base_atk;
+			echo " + " . $total_atk_boost;
+			echo ", AC: " . $base_ac;
+			echo " + " . $total_ac_boost . ")";
 		echo "<td align=center><h2>" . $enemy_name . "</h2>";
-		echo "(HP: " . $enemy_hp . ", ATK: " . $enemy_atk . ", AC: " . $enemy_ac . ")</tr>";
+			echo "(HP: " . $enemy_hp . ", ATK: " . $enemy_atk . ", AC: " . $enemy_ac . ")</tr>";
 		
 		// Run fight
 		$round = 0;
@@ -863,7 +876,7 @@
 			addToDebugLog("doFight(), Round: " . $round . ", INFO");
 
 			// Character attacks first
-			$character_attack = rand(0, $character_atk) + $character_atk_boost + $effect_atk_boost;
+			$character_attack = rand(0, $character_atk) + $total_atk_boost;
 			addToDebugLog("doFight(), Character Attack: " . $character_attack . ", INFO");
 			$enemy_defend = rand(0, $enemy_ac);
 			addToDebugLog("doFight(), Enemy Defend: " . $enemy_defend . ", INFO");
@@ -872,7 +885,7 @@
 			
 			if ($character_attack > $enemy_defend) { // Hit
 				addToDebugLog("doFight(), Character hits Enemy, INFO");
-				$enemy_damage = rand(1, ($character_atk + $character_atk_boost + $effect_atk_boost)/2);
+				$enemy_damage = rand(1, (ceil($character_atk + $total_atk_boost))/2);
 				addToDebugLog("doFight(), Enemy takes damage: " . $enemy_damage . ", INFO");
 				$enemy_hp = $enemy_hp - $enemy_damage;
 				addToDebugLog("doFight(), Enemy HP reduced to: " . $enemy_hp . ", INFO");
@@ -887,7 +900,7 @@
 				
 				$enemy_attack = rand(0, $enemy_atk-5);
 				addToDebugLog("doFight(), Enemy Attack: " . $enemy_attack . ", INFO");
-				$character_defend = rand(0, $character_ac + $character_ac_boost + $effect_ac_boost);
+				$character_defend = rand(0, $character_ac + $total_ac_boost);
 				addToDebugLog("doFight(),  Character Defend: " . $character_defend . ", INFO");
 				
 				echo "<td width=700px>" . $enemy_name . " attacks " . $character_name . " (" . $enemy_attack . " vs " . $character_defend . ")";
@@ -896,7 +909,7 @@
 					addToDebugLog("doFight(),  Enemy hits Character, INFO");
 					$character_damage = rand(ceil($enemy_attack/4), $enemy_attack/2);
 					addToDebugLog("doFight(), Character takes damage: " . $character_damage . ", INFO");
-					$character_hp = $character_hp - $character_damage + $effect_hp_boost;
+					$character_hp = $character_hp - $character_damage + $total_hp_boost;
 					addToDebugLog("doFight(), Character HP reduced to: " . $character_hp . ", INFO");
 					echo ", and hits for " . $character_damage . " points of damage!<br/>" . $character_name . " now has " . $character_hp . "HP";
 				} else {
@@ -994,6 +1007,9 @@
 			} else {
 				addToDebugLog("doFight(), Character record not updated, ERROR");
 			}
+			
+			// Determine new character traits
+			selectCharacterTraits($new_character_id, $character_id);
 			
 			// Get summary of inherited weapon
 			$item_summary = getItemSummary($best_item_id);

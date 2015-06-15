@@ -15,6 +15,7 @@
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
 	include 'functions/effects_functions.php';
+	include 'functions/trait_functions.php';
 	
 	addToDebugLog("battle.php, page, INFO");
 	

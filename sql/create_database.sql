@@ -141,6 +141,14 @@ CREATE TABLE `effects` (
   PRIMARY KEY  (`effect_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `traits` (
+  `trait_id` int(11) NOT NULL auto_increment,
+  `character_id` int(11) default NULL,
+  `trait_type` varchar(45) default NULL,
+  `magnitude` int(11) default NULL,
+  PRIMARY KEY  (`trait_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE INDEX idx_gridid ON grid (grid_id);
 CREATE INDEX idx_gridx ON grid (grid_x);
 CREATE INDEX idx_gridy ON grid (grid_y);

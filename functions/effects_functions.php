@@ -302,12 +302,13 @@
 		$sql = "SELECT affects, amount FROM hackcess.effects WHERE character_id = " . $character_id . ";";
 		$result = search($sql);
 		$rows = count($result);
+		
+		$ac_boost = 0;
+		$atk_boost = 0;
+		$hp_boost = 0;
+		$str_boost = 0;
+		
 		if ($rows > 0) {
-			
-			$ac_boost = 0;
-			$atk_boost = 0;
-			$hp_boost = 0;
-			$str_boost = 0;
 			
 			for ($e = 0; $e < $rows; $e++) {
 				switch($result[$e][0]) {
@@ -334,6 +335,9 @@
 			
 			return $boosts;
 		} else {
+			
+			addToDebugLog("getEffectBoosts(), AC Boost: " . $ac_boost . "; ATK Boost: " . $atk_boost . "; HP Boost: " . $hp_boost . "; STR Boost: " . $str_boost . ", INFO");
+			
 			return 0;
 		}
 		

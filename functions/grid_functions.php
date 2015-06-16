@@ -250,6 +250,8 @@
 	function move($journey_id, $character_id, $direction, $player_id) {
 
 		// Moves the player to a new grid
+		
+		global $debug_enabled;
 	
 		addToDebugLog("move(), Function Entry - supplied parameters: Character ID: " . $character_id . "; Journey ID: " . $journey_id . "; Direction: " . $direction . ", INFO");	
 		
@@ -324,8 +326,9 @@
 			
 			// Determine if there's going to be a store here
 			srand(make_seed());
-			$isStore = rand(0, 50);
-			if ($isStore == 15) {
+			if ($debug_enabled == 1) { $max = 2; } else { $max = 50; }
+			$isStore = rand(0, $max);
+			if ($isStore == $max/2) {
 				addToDebugLog("move(), Generating a store at Grid ID " . $grid_id . ", INFO");
 				generateStore($grid_id, $journey_id, $character_id);
 			}
@@ -1054,7 +1057,7 @@
 			
 			// Give random item if player has enough strength left
 			$effect_boosts = getEffectBoosts($character_id);
-			$character_strength = getCharacterDetailsInfo($character_id, 'strength') + $effect_boosts["str"];
+			$character_strength = getCharacterDetailsInfo($character_id, 'strength') + $effect_boosts["str"] + $trait_str_boost;
 			$equipment_weight = equipmentWeight($character_id);
 
 			if ($equipment_weight < $character_strength) {

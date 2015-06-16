@@ -363,6 +363,50 @@
 		
 	}
 	
+	function getStoreContentPets($store_id, $journey_id, $character_id, $player_id) {
+	
+		// Lists potions in the store
+	
+		addToDebugLog("getStoreContentPets(), Function Entry - supplied parameters: Player ID: " . $player_id . "; Journey ID: " . $journey_id . "; Character ID: " . $charcter_id . ", INFO");
+	
+		$row_limit = 5;
+	
+		$sql = "SELECT * FROM hackcess.store_contents WHERE store_id  = " . $store_id . " AND item_slot LIKE 'pet%' ORDER BY item_cost DESC LIMIT " . $row_limit . ";";
+		$result = search($sql);
+		$rows = count($result);
+		if ($rows < $row_limit) {
+			$row_limit = $rows;
+		}
+	
+		if ($rows > 0) {
+	
+			// Get character gold
+			$character_gold = getCharacterDetailsInfo($character_id, 'gold');
+	
+			echo "<tr><td colspan=5 bgcolor=#ddd align=center>Pets</tr>";
+	
+			for ($i = 0; $i < $row_limit; $i++) {
+	
+				$level = ($result[$i][7] - 5000)/500;
+				$type = substr($result[$i][6], 4);
+				
+				echo "<tr><td>" . $result[$i][2] . ", Level " . $level . " " . ucfirst($type); // Item Name, Level and Type
+				echo "<td align=center>-"; // Weight
+				echo "<td align=center>" . $result[$i][7]; // Value
+				if ($result[$i][7] <= $character_gold) {
+					echo "<td align=center><a href='store.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "&store_id=" . $store_id . "&action=buy&item_id=" . $result[$i][0] . "'>Buy</a>"; // Action
+				} else {
+					echo "<td align=center>-";
+				}
+					
+				echo "</tr>";
+					
+			}
+	
+		}
+	
+	}
+	
 	function getStoreName($store_id) {
 	
 		// This function returns the store name for the provided store id
@@ -379,6 +423,8 @@
 	function generateStore($grid_id, $journey_id, $character_id) {
 		
 		// Creates and returns a store name
+		
+		global $debug_enabled;
 		
 		addToDebugLog("generateStore(), Function Entry - Parameters: Grid ID: " . $grid_id . "; Journey ID: " . $journey_id . "; Character ID: " . $character_id . ", INFO");
 		
@@ -424,40 +470,54 @@
 		addToDebugLog("generateStore(), Min AC: " . $min_ac . "; Min ATK: " . $min_atk . ", INFO");
 
 		// Head Items
+		srand(make_seed());
 		$num_items = rand(1, 3);
 		for ($item = 0; $item < $num_items; $item++) {
 			createStoreItem('head', $store_id, $min_ac);
 		}
 
 		// Chest Items
+		srand(make_seed());
 		$num_items = rand(1, 3);
 		for ($item = 0; $item < $num_items; $item++) {
 			createStoreItem('chest', $store_id, $min_ac);
 		}
 		
 		// Legs Items
+		srand(make_seed());
 		$num_items = rand(1, 3);
 		for ($item = 0; $item < $num_items; $item++) {
 			createStoreItem('legs', $store_id, $min_ac);
 		}
 		
 		// Shield Items
+		srand(make_seed());
 		$num_items = rand(1, 3);
 		for ($item = 0; $item < $num_items; $item++) {
 			createStoreItem('shield', $store_id, $min_ac);
 		}
 		
 		// Sword Items
+		srand(make_seed());
 		$num_items = rand(1, 3);
 		for ($item = 0; $item < $num_items; $item++) {
 			createStoreItem('weapon', $store_id, $min_atk);
 		}
 
 		// Potions
+		srand(make_seed());
 		$num_items = rand(1, 5);
 		for ($item = 0; $item < $num_items; $item++) {
 			createPositiveEffect($store_id);
-		}	
+		}
+
+		// Pets
+		srand(make_seed());
+		$num_items = rand(0, 2);
+		if ($debug_enabled == 1) { $num_items = 1; }
+		for ($item = 0; $item < $num_items; $item++) {
+			createNewPet($store_id);
+		}
 		
 	}
 
@@ -583,6 +643,7 @@
 		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'shield');
 		getStoreContentsBySlot($store_id, $journey_id, $character_id, $player_id, 'weapon');
 		getStoreContentPotions($store_id, $journey_id, $character_id, $player_id);
+		getStoreContentPets($store_id, $journey_id, $character_id, $player_id);
 	
 		echo "</table>";
 	

@@ -13,44 +13,50 @@
 			$result = search($sql);
 			$rows = count($result);
 			
-			// Choose which trait to keep
-			srand(make_seed());
-			$trait_select = rand(0, 1);
-			if ($trait_select == 0) {
-				$keep_trait_id = $result[0][0];
-				$mutate_trait_id = $result[1][0];
-			} else {
-				$keep_trait_id = $result[1][0];
-				$mutate_trait_id = $result[0][0];
-			}
+			if ($rows != 0) {
 			
-			// Copy selected trait; simply update the existing trait to apply to the new character
-			$dml = "UPDATE hackcess.traits SET character_id = " . $character_id . " WHERE trait_id = " . $keep_trait_id . ";";
-			$result = insert($dml);
-			if ($result == TRUE) {
-				addToDebugLog("selectCharacterTraits(), Trait updated, INFO");
-			} else {
-				addToDebugLog("selectCharacterTraits(), Trait not updated, ERROR");
-			}
-			
-			// Determine whether to strengthen or weaken the other stat
-			srand(make_seed());
-			$value_select = rand(0, 1);
-			if ($value_select == 0) { $magnitude = -1; } else { $magnitude = 1; }
-
-			// Get the magnitude of the trait
-			$sql = "SELECT magnitude FROM hackcess.traits WHERE trait_id = " . $mutate_trait_id . ";";
-			$result = search($sql);
-			if ($result[0][0] == 1 && $magnitude = -1) { $magnitude = -2; } // If mutation would zero the stat, ensure it flips to the opposite
-			if ($result[0][0] == -1 && $magnitude = 1) { $magnitude = 2; } // If mutation would zero the stat, ensure it flips to the opposite
-
-			// Mutate the other trait, and update it for the new character
-			$dml = "UPDATE hackcess.traits SET character_id = " . $character_id . ", magnitude = magnitude + " . $magnitude . " WHERE trait_id = " . $mutate_trait_id . ";";
-			$result = insert($dml);
-			if ($result == TRUE) {
-				addToDebugLog("selectCharacterTraits(), Trait updated, INFO");
-			} else {
-				addToDebugLog("selectCharacterTraits(), Trait not updated, ERROR");
+				// Choose which trait to keep
+				srand(make_seed());
+				$trait_select = rand(0, 1);
+				if ($trait_select == 0) {
+					$keep_trait_id = $result[0][0];
+					$mutate_trait_id = $result[1][0];
+				} else {
+					$keep_trait_id = $result[1][0];
+					$mutate_trait_id = $result[0][0];
+				}
+				
+				// Copy selected trait; simply update the existing trait to apply to the new character
+				$dml = "UPDATE hackcess.traits SET character_id = " . $character_id . " WHERE trait_id = " . $keep_trait_id . ";";
+				$result = insert($dml);
+				if ($result == TRUE) {
+					addToDebugLog("selectCharacterTraits(), Trait updated, INFO");
+				} else {
+					addToDebugLog("selectCharacterTraits(), Trait not updated, ERROR");
+				}
+				
+				// Determine whether to strengthen or weaken the other stat
+				srand(make_seed());
+				$value_select = rand(0, 1);
+				if ($value_select == 0) { $magnitude = -1; } else { $magnitude = 1; }
+	
+				// Get the magnitude of the trait
+				$sql = "SELECT magnitude FROM hackcess.traits WHERE trait_id = " . $mutate_trait_id . ";";
+				$result = search($sql);
+				if ($result[0][0] == 1 && $magnitude = -1) { $magnitude = -2; } // If mutation would zero the stat, ensure it flips to the opposite
+				if ($result[0][0] == -1 && $magnitude = 1) { $magnitude = 2; } // If mutation would zero the stat, ensure it flips to the opposite
+	
+				// Mutate the other trait, and update it for the new character
+				$dml = "UPDATE hackcess.traits SET character_id = " . $character_id . ", magnitude = magnitude + " . $magnitude . " WHERE trait_id = " . $mutate_trait_id . ";";
+				$result = insert($dml);
+				if ($result == TRUE) {
+					addToDebugLog("selectCharacterTraits(), Trait updated, INFO");
+				} else {
+					addToDebugLog("selectCharacterTraits(), Trait not updated, ERROR");
+				}
+				
+			} else { // Predecessor had no traits, so create them
+				createRandomTrait($character_id, 2);
 			}
 			
 		} else { // If there's no predecessor, create 2 new traits

@@ -12,10 +12,18 @@
 	include 'functions/mysql_functions.php';
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
+	include 'functions/pet_functions.php';
+	include 'functions/store_functions.php';
 
-	echo generateCharacterName();
+	echo "<h2>Name Generators</h2>";
 	
-	echo generateEnemyName();
+	echo "Character Name: " . generateCharacterName();
+	
+	echo "<P>Enemy Name: " . generateEnemyName();
+	
+	echo "<P>Pet Name: " . generatePetName();
+	
+	echo "<P>Store Name: " . generateStoreName();
 	
 ?>
 

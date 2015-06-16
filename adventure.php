@@ -16,6 +16,7 @@
 	include 'functions/store_functions.php';
 	include 'functions/effects_functions.php';
 	include 'functions/trait_functions.php';
+	include 'functions/pet_functions.php';
 	
 	// ************************************************************************************
 	// Move to new Grid
@@ -36,8 +37,7 @@
 		
 		$player_id = $_GET['player_id'];
 		$character_id = $_GET['character_id'];
-		$journey_id = $_GET['journey_id'];
-		
+		$journey_id = $_GET['journey_id'];		
 		
 		// Determine what grid square the current character / journey is on
 		$coordinates = getPlayerCurrentGridCoordinates($character_id, $journey_id);

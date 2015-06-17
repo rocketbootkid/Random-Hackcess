@@ -24,12 +24,32 @@
 		} else {
 			addToDebugLog("buyItem(), Character record not updated, ERROR");
 		}
+		
+		// If the item is a pet, determine the Level and attach to the name
+		if (substr($slot, 0, 3) == "pet") {
+			$level = ($cost - 5000) / 500;
+			$final_name = $name . "," . $level;
+		}
 	
 		// Add item to player equipment
-		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $name . "', " . $ac_boost . ", " . $atk_boost . ", " . $weight . ", '" . $slot . "', " . $character_id . ");";
+		$dml = "INSERT INTO hackcess.character_equipment (name, ac_boost, attack_boost, weight, slot, character_id) VALUES ('" . $final_name . "', " . $ac_boost . ", " . $atk_boost . ", " . $weight . ", '" . $slot . "', " . $character_id . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
 			addToDebugLog("buyItem(), Item added to player inventory, INFO");
+			
+			// Determine pet id
+			$sql = "SELECT pet_id FROM hackcess.pets WHERE pet_name LIKE '" . $name . "%';";
+			$result = search($sql);
+			$pet_id = $result[0][0];  
+			
+			// Assign pet to character
+			$dml = "UPDATE hackcess.pets SET character_id = " . $character_id . " WHERE pet_id = " . $pet_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("buyItem(), Character record updated, INFO");
+			} else {
+				addToDebugLog("buyItem(), Character record not updated, ERROR");
+			}			
 				
 			// Remove item from store
 			$dml = "DELETE FROM hackcess.store_contents WHERE contents_id = " . $item_id . ";";
@@ -64,7 +84,7 @@
 		echo "<tr><td colspan=5 align=center><h2>" . $character_name . "</h2></tr>";
 		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Value<td align=center>Actions</tr>";
 	
-		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%' ORDER BY slot ASC, ac_boost, attack_boost DESC;";
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%' AND slot NOT LIKE 'pet%' ORDER BY slot ASC, ac_boost, attack_boost DESC;";
 		$result = search($sql);
 		$rows = count($result);
 	
@@ -130,6 +150,32 @@
 			echo "<a href='store.php?slot=" . $result[$p][5] . "&item_id=" . $result[$p][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "&action=sell'>Sell</a>"; // $slot, $item_id, $character_id
 			echo "</tr>";			
 			
+		}
+
+		// Display Character pets
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot LIKE 'pet%';";
+		$result = search($sql);
+		$rows = count($result);
+		
+		echo "<tr><td colspan=5 bgcolor=#ddd align=center>Pets</tr>";
+		
+		for ($p = 0; $p < $rows; $p++) {
+				
+			$details = explode(',', $result[$p][1]);
+			$type = substr($result[$p][5], 4);
+			
+			echo "<tr><td>" . $details[0] . ", Lvl " . $details[1] . " " . ucfirst($type); // Item
+			echo "<td align=center>-"; // Weight
+		
+			//Value
+			$value = ($details[1] * 500) + 5000;
+			echo "<td align=center>" . $value;
+				
+			// Write actions Sell
+			echo "<td align=center>";
+			echo "<a href='store.php?slot=" . $result[$p][5] . "&item_id=" . $result[$p][0] . "&character_id=" . $character_id . "&player_id=" . $player_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "&action=sell'>Sell</a>"; // $slot, $item_id, $character_id
+			echo "</tr>";
+				
 		}
 		
 		// Get character strength		
@@ -390,7 +436,7 @@
 				$level = ($result[$i][7] - 5000)/500;
 				$type = substr($result[$i][6], 4);
 				
-				echo "<tr><td>" . $result[$i][2] . ", Level " . $level . " " . ucfirst($type); // Item Name, Level and Type
+				echo "<tr><td>" . $result[$i][2] . ", Lvl " . $level . " " . ucfirst($type); // Item Name, Level and Type
 				echo "<td align=center>-"; // Weight
 				echo "<td align=center>" . $result[$i][7]; // Value
 				if ($result[$i][7] <= $character_gold) {
@@ -583,11 +629,12 @@
 		if (substr($result[0][5], 0, 6) == 'potion') {
 			$name_elements = explode(' ', $name);
 			$cost = 100 * $name_elements[3];
+		} elseif (substr($result[0][5], 0, 3) == 'pet') {
+			$name_elements = explode(',', $name);
+			$cost = ($name_elements[1] * 500) + 5000;
 		} else {
 			$cost = 50 * ($ac_boost + $attack_boost);
 		}
-		
-		
 		
 		// Add value to player gold
 		$dml = "UPDATE hackcess.character_details SET gold = gold + " . $cost . " WHERE character_id = " . $character_id . ";";
@@ -599,11 +646,25 @@
 		}		
 		
 		// Add item to store
-		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $name . "', " . $ac_boost . ", " . $attack_boost . ", " . $weight . ", '" . $slot . "', " . $cost . ");";
+		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $name_elements[0] . "', " . $ac_boost . ", " . $attack_boost . ", " . $weight . ", '" . $slot . "', " . $cost . ");";
 		$result = insert($dml);		
 		if ($result == TRUE) {
 			addToDebugLog("sellItem(), Item added to store, INFO");
+
+			// Determine pet id
+			$sql = "SELECT pet_id FROM hackcess.pets WHERE pet_name = '" . $name_elements[0] . "';";
+			$result = search($sql);
+			$pet_id = $result[0][0];
 				
+			// Unassign pet from character
+			$dml = "UPDATE hackcess.pets SET character_id = 0 WHERE pet_id = " . $pet_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("buyItem(), Character record updated, INFO");
+			} else {
+				addToDebugLog("buyItem(), Character record not updated, ERROR");
+			}
+			
 			// Remove item from store
 			$dml = "DELETE FROM hackcess.character_equipment WHERE equipment_id = " . $item_id . ";";
 			$result = delete($dml);

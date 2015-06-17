@@ -149,6 +149,16 @@ CREATE TABLE `traits` (
   PRIMARY KEY  (`trait_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `pets` (
+  `pet_id` int(11) NOT NULL auto_increment,
+  `pet_name` varchar(20) default NULL,
+  `pet_level` int(11) default NULL,
+  `pet_type` varchar(10) default NULL,
+  `pet_xp` int(11) default NULL,
+  `character_id` int(11) default NULL,
+  PRIMARY KEY  (`pet_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE INDEX idx_gridid ON grid (grid_id);
 CREATE INDEX idx_gridx ON grid (grid_x);
 CREATE INDEX idx_gridy ON grid (grid_y);

@@ -30,7 +30,7 @@
 	if ($action == "sell") {
 		// Sell item
 		addToDebugLog("store.php, sell, INFO");
-		sellItem($store_id, $journey_id, $character_id, $player_id, $item_id);
+		sellItem($store_id, $journey_id, $character_id, $player_id, $item_id);	
 		
 	} elseif ($action == "buy") {
 		// Buy item
@@ -42,9 +42,10 @@
 		addToDebugLog("store.php, equip, INFO");
 		equip($_GET['slot'], $_GET['item_id'], $character_id);
 	
+		outputDebugLog();
+		
 		// Redirect back to page
 		echo "<script>window.location.href = 'store.php?player_id=" . $player_id . "&character_id=" . $character_id . "&journey_id=" . $journey_id . "&store_id=" . $store_id . "'</script>";
-		
 	
 	} else { // Display Store and Character items
 		
@@ -74,7 +75,7 @@
 		addToDebugLog("store.php, Character Strength: " . $total_strength . ", INFO");
 		
 		echo "<tr><td align=center colspan=2>";
-		if ($equipment_total_weight < $total_strength) {
+		if ($equipment_total_weight <= $total_strength) {
 			echo "<a href='adventure.php?journey_id=" . $journey_id . "&character_id=" . $character_id . "&player_id=" . $player_id . "'>Back to Adventure</a>";
 		} else {
 			echo "You are carrying too much weight. You must sell items to continue.";

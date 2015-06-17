@@ -30,16 +30,26 @@
 		// Generate Stats
 		srand(make_seed());
 		$pet_level = rand(1, 5);
+		$pet_xp = 1000 * $pet_level;
 		$cost = 5000 + ($pet_level * 500);
 		
 		// Add pet to store
 		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $pet_name . "', 0, 0, 0, '" . $pet_type  . "', " . $cost . ");";
 		$result = insert($dml);
 		if ($result == TRUE) {
-			addToDebugLog("createNewPet(), New item added, INFO");
+			addToDebugLog("createNewPet(), Pet added to store, INFO");
 		} else {
-			addToDebugLog("createNewPet(), New item not added, ERROR");
-		}	
+			addToDebugLog("createNewPet(), Pet not added to store, ERROR");
+		}
+		
+		// Add pet to pet database
+		$dml = "INSERT INTO hackcess.pets (pet_name, pet_level, pet_type, pet_xp) VALUES ('" . $pet_name . "', " . $pet_level . ", " . $pet_type . ", " . $pet_xp . ");";
+		$result = insert($dml);
+		if ($result == TRUE) {
+			addToDebugLog("createNewPet(), Pet record added, INFO");
+		} else {
+			addToDebugLog("createNewPet(), Pet record not added, ERROR");
+		}
 		
 	}
 
@@ -80,7 +90,39 @@
 		
 	}
 
+	function getPetBoost($character_id) {
+		
+		// Returns the boost provided by a pet
+		
+		addToDebugLog("getPetBoost(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");		
+		
+		$sql = "SELECT pet_level, pet_type FROM hackcess.pets WHERE character_id = " . $character_id . ";";
+		$result = search($sql);
+		
+		$pet_level = $result[0][0];
+		$pet_type = $result[0][1];
 
+		switch($pet_type) {
+			case "pet_wolf": // AC
+				$boost = "ac";
+				break;
+			case "pet_eagle": // ATK
+				$boost = "atk";
+				break;
+			case "pet_raven": // HP
+				$boost = "hp";
+				break;
+			case "pet_bear": // STR
+				$boost = "str";
+				break;
+		}
+		
+		return array(
+				"boost" => $boost,
+				"amount" => $level,
+				);
+		
+	}
 
 
 ?>

@@ -608,6 +608,26 @@
 			}
 			
 		}
+		
+		// if player has pet, update their XP
+		$sql = "SELECT count(*) FROM hackcess.pets WHERE character_id = " . $character_id . ";";
+		$result = search($sql);
+		
+		if ($result[0][0] != 0) {
+			// Update pet XP
+			$dml = "UPDATE hackcess.pets SET pet_xp = pet_xp + 10 " . $hp_alteration . " WHERE character_id = " . $character_id . ";";
+			$resultdml = insert($dml);
+			if ($resultdml == TRUE) {
+				addToDebugLog("updatePlayerOnMove(), Character details updated, INFO");
+			} else {
+				addToDebugLog("updatePlayerOnMove(), Character details not updated, ERROR");
+			}
+			
+			// If level increases about next level threshold, uplevel
+			
+			
+		}
+		
 	
 	}
 	
@@ -1070,7 +1090,7 @@
 		
 		addToDebugLog("getCharacterBoosts(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
-		$sql = "SELECT ac_boost, attack_boost, slot, equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%';";
+		$sql = "SELECT ac_boost, attack_boost, slot, equipment_id FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%' AND slot NOT LIKE 'pet%';";
 		$result = search($sql);
 		$rows = count($result);
 		$total_attack_boost = 0;

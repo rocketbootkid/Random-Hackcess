@@ -478,10 +478,14 @@
 		// Get traits boosts
 		$traits_boosts = getTraitBoosts($character_id);
 		
+		// Get pet boost
+		$pet_boosts = getPetBoost($character_id);
+		
 		addToDebugLog("displayPlayerInformation(), Equipment Boosts: AC Boost: " . $eqp_ac_boost . "; ATK Boost: " .  $eqp_atk_boost . ", INFO");
 		addToDebugLog("displayPlayerInformation(), Effect Boosts: AC Boost: " . $effect_boosts["ac"] . "; ATK Boost: " .  $effect_boosts["atk"] . "; HP Boost: " .  $effect_boosts["hp"] . "; STR Boost: " .  $effect_boosts["str"] . ", INFO");
 		addToDebugLog("displayPlayerInformation(), Trait Boosts: AC Boost: " . $traits_boosts["ac"] . "; ATK Boost: " .  $traits_boosts["atk"] . "; HP Boost: " .  $traits_boosts["hp"] . "; STR Boost: " .  $traits_boosts["str"] . ", INFO");
-		addToDebugLog("displayPlayerInformation(), Total Boosts: AC Boost: " . $total_ac_boost . "; ATK Boost: " .  $total_atk_boost . "; HP Boost: " .  $total_hp_boost . "; STR Boost: " .  $total_str_boost . ", INFO");
+		addToDebugLog("displayPlayerInformation(), Pet Boosts: Boost Stat: " . $pet_boosts["boost"] . "; Boost: " .  $pet_boosts["amount"] . ", INFO");
+		
 		
 		// Get Character Details
 		$sql = "SELECT * FROM hackcess.character_details WHERE character_id = " . $character_id . ";";
@@ -495,35 +499,52 @@
 		$base_hp = $result[0][13] + $traits_boosts["hp"];
 		$base_str = $result[0][7] + $traits_boosts["str"];
 		
+		$doesCharacterHavePet = doesCharacterHavePet($character_id);
+		
 		// First Line
-		echo "<tr><td align=right>HP<td align=center>" . $base_hp; // HP
+		echo "<tr><td align=right>HP |<td>" . $base_hp; // HP
 		if ($effect_boosts["hp"] != 0) { echo " (+" . $effect_boosts["hp"] . ")"; } // HP Effect Boost
+		if ($doesCharacterHavePet == 1 && $pet_boosts["boost"] == "hp") {
+			echo " (+" . $pet_boosts["amount"] . ")";
+		}
 		echo "<td align=right>Head | <td>" . getItemNameById($result[0][8]) . "</tr>"; // Head Slot
 		
 		// Second Line
-		echo "<tr><td align=right>ATK<td align=center>" . $base_atk . " (+" . $total_atk_boost . ")"; // ATK + ATK Boost
+		echo "<tr><td align=right>ATK |<td>" . $base_atk . " (+" . $total_atk_boost . ")"; // ATK + ATK Boost
+		if ($doesCharacterHavePet == 1 && $pet_boosts["boost"] == "atk") {
+			echo " (+" . $pet_boosts["amount"] . ")";
+		}
 		echo "<td align=right>Chest | <td>" . getItemNameById($result[0][9]) . "</tr>"; // Chest Slot
 		
 		// Third Line
-		echo "<tr><td align=right>AC<td align=center>" . $base_ac . " (+" . $total_ac_boost . ")"; // AC + AC Boost
+		echo "<tr><td align=right>AC |<td>" . $base_ac . " (+" . $total_ac_boost . ")"; // AC + AC Boost
+		if ($doesCharacterHavePet == 1 && $pet_boosts["boost"] == "ac") {
+			echo " (+" . $pet_boosts["amount"] . ")";
+		}
 		echo "<td align=right>Legs | <td>" . getItemNameById($result[0][10]) . "</tr>"; // Legs Slot
 				
 		// Fourth Line
-		echo "<tr><td align=right>Gold<td align=center>" . $result[0][5]; // Gold
-		echo "<td align=right>Shield | <td>" . getItemNameById($result[0][11]) . "</tr>"; // Shield Slot
-		
-		// Fifth Line
-		echo "<tr><td align=right>STR<td align=center>" . $base_str; // STR
-		if ($effect_boosts["str"] != 0) { // STR Effect Boost 
+		echo "<tr><td align=right>STR |<td>" . $base_str; // STR
+		if ($effect_boosts["str"] != 0) { // STR Effect Boost
 			if ($effect_boosts["str"] > 0) {
-				echo " (+" . $effect_boosts["str"] . ")"; 
+				echo " (+" . $effect_boosts["str"] . ")";
 			} else {
 				echo " (" . $effect_boosts["str"] . ")";
 			}
-		} 
+		}
+		if ($doesCharacterHavePet == 1 && $pet_boosts["boost"] == "str") {
+			echo " (+" . $pet_boosts["amount"] . ")";
+		}
+
+		echo "<td align=right>Shield | <td>" . getItemNameById($result[0][11]) . "</tr>"; // Shield Slot
+		
+		// Fifth Line
+		echo "<tr><td align=right>Gold |<td>" . $result[0][5]; // Gold
 		echo "<td align=right>Weapon | <td>" . getItemNameById($result[0][12]) . "</tr>"; // Weapon Slot
 		
 		echo "</table>";
+
+		addToDebugLog("displayPlayerInformation(), Total Boosts: AC Boost: " . $total_ac_boost . "; ATK Boost: " .  $total_atk_boost . "; HP Boost: " .  $total_hp_boost . "; STR Boost: " .  $total_str_boost . ", INFO");
 		
 	}		
 
@@ -602,32 +623,59 @@
 			$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", '" . $details . "');";
 			$result = insert($dml);
 			if ($result == TRUE) {
-				addToDebugLog("move(), New grid generated, INFO");
+				addToDebugLog("move(), Journal entry added, INFO");
 			} else {
-				addToDebugLog("move(), New grid not generated, ERROR");
+				addToDebugLog("move(), Journal entry not added, ERROR");
 			}
 			
 		}
 		
 		// if player has pet, update their XP
-		$sql = "SELECT count(*) FROM hackcess.pets WHERE character_id = " . $character_id . ";";
-		$result = search($sql);
-		
-		if ($result[0][0] != 0) {
+		$pet_id = doesCharacterHavePet($character_id);	
+		if ($pet_id > 0) {
 			// Update pet XP
-			$dml = "UPDATE hackcess.pets SET pet_xp = pet_xp + 10 " . $hp_alteration . " WHERE character_id = " . $character_id . ";";
+			$dml = "UPDATE hackcess.pets SET pet_xp = pet_xp + 5 " . $hp_alteration . " WHERE pet_id = " . $pet_id . " AND character_id = " . $character_id . ";";
 			$resultdml = insert($dml);
 			if ($resultdml == TRUE) {
-				addToDebugLog("updatePlayerOnMove(), Character details updated, INFO");
+				addToDebugLog("updatePlayerOnMove(), Pet XP updated, INFO");
 			} else {
-				addToDebugLog("updatePlayerOnMove(), Character details not updated, ERROR");
+				addToDebugLog("updatePlayerOnMove(), Pet XP not updated, ERROR");
 			}
 			
 			// If level increases about next level threshold, uplevel
 			
+			// Get pet current level / xp
+			$pet_level = getPetDetails($pet_id, "pet_level");
+			$pet_xp = getPetDetails($pet_id, "pet_xp");
+			$pet_name = getPetDetails($pet_id, "pet_name");
 			
-		}
-		
+			$new_level = $pet_xp/$pet_level;
+			if ($new_level > 1000) {
+				
+				// Increase level
+				$dml = "UPDATE hackcess.pets SET pet_level = pet_level + 1 WHERE pet_id = " . $pet_id . " AND character_id = " . $character_id . ";";
+				$resultdml = insert($dml);
+				if ($resultdml == TRUE) {
+					addToDebugLog("updatePlayerOnMove(), Pet level updated, INFO");
+				} else {
+					addToDebugLog("updatePlayerOnMove(), Pet level not updated, ERROR");
+				}
+				
+				$pet_level = getPetDetails($pet_id, "pet_level");
+				
+				//	Add journal entry
+				$details = "LEVEL UP! " . $pet_name . " is now Level " . $pet_level;
+				$dml = "INSERT INTO hackcess.journal (character_id, journey_id, grid_id, journal_details) VALUES (" . $character_id . ", " . $journey_id . ", " . $grid_id . ", '" . $details . "');";
+				$result = insert($dml);
+				if ($result == TRUE) {
+					addToDebugLog("move(), Journal entry added, INFO");
+				} else {
+					addToDebugLog("move(), Journal entry not added, ERROR");
+				}
+				
+			}
+			
+		}	
 	
 	}
 	
@@ -1000,6 +1048,10 @@
 		$total_base_str = $character_detailed_info[0][7] + $trait_boosts["str"];
 		$total_str = $total_base_str + $effect_boosts["str"];
 		
+		// Get boost from Pet
+		$pet_boost = getPetBoost($character_basic_info[0][0]); // 0 boost, 1 amount
+		addToDebugLog("displayBattleStats(), Pet Boost Type: " . $pet_boost["boost"] . "; Amount: " . $pet_boost["amount"] . ", INFO");
+		${'total_' . $pet_boost["boost"]} = ${'total_' . $pet_boost["boost"]} + $pet_boost["amount"];  // Increase the correct grand total with the pet boost
 		
 		// Get equipment names
 		$head = getItemNameById($character_detailed_info[0][8]);
@@ -1009,15 +1061,19 @@
 		$weapon = getItemNameById($character_detailed_info[0][12]);
 		
 		echo "<table cellpadding=3 cellspacing=0 border=1 style='margin-left: auto; margin-right: auto;'>";
-		echo "\n<tr>\n\t<td colspan=4 align=center width=600px><h2>" . trim($character_basic_info[0][2]) . "</h2>Level " . $character_basic_info[0][4] . " " . trim($character_basic_info[0][3]) . "\n\t<td valign=center align=center><h2>VS</h2>\n\t<td colspan=2 align=center valign=top width=300px><h2>" . $enemy_info[0][0] . "</h2>\n</tr>"; // Display character / enemy names
+		echo "\n<tr>\n\t<td colspan=4 align=center width=600px><h2>" . trim($character_basic_info[0][2]) . "</h2>Level " . $character_basic_info[0][4] . " " . trim($character_basic_info[0][3]);
+		echo ", and " . listCharacterPets($character_basic_info[0][0]);
+		echo "\n\t<td valign=center align=center><h2>VS</h2>\n\t<td colspan=2 align=center valign=top width=300px><h2>" . $enemy_info[0][0] . "</h2>\n</tr>"; // Display character / enemy names
 		
 		// Head / HP
 		echo "\n<tr>\n\t<td align=right width=50px>Head\n\t<td width=150px>" . $head;
 		if ($effect_boosts["hp"] > 0) {
 			echo "\n\t<td align=center width=50px>" . $total_base_hp . " (+" . $effect_boosts["hp"] . ")";
+			if ($pet_boost["boost"] == "hp") { echo " (+" . $pet_boost["amount"] . ")"; }
 			echo "\n\t<td width=250px align=right>" . barGraph($total_hp, 'char');
 		} else {
-			echo "\n\t<td align=center width=50px>" . $total_base_hp ;
+			echo "\n\t<td align=center width=50px>" . $total_base_hp;
+			if ($pet_boost["boost"] == "hp") { echo " (+" . $pet_boost["amount"] . ")"; }
 			echo "\n\t<td width=250px align=right>" . barGraph($total_base_hp, 'char');
 		}
 		
@@ -1030,6 +1086,7 @@
 		echo "\n\t<td align=center>" . $total_base_ac; // Base AC
 		if ($total_boost_ac > 0) {
 			echo " (+" . $total_boost_ac . ")";
+			if ($pet_boost["boost"] == "ac") { echo " (+" . $pet_boost["amount"] . ")"; }
 			echo "\n\t<td align=right>" . barGraph($total_ac, 'char');
 		}
 		
@@ -1042,6 +1099,7 @@
 		echo "\n\t<td align=center>" . $total_base_atk; // Base ATK
 		if ($total_boost_atk > 0) {
 			echo " (+" . $total_boost_atk . ")";
+			if ($pet_boost["boost"] == "atk") { echo " (+" . $pet_boost["amount"] . ")"; }
 			echo "\n\t<td align=right>" . barGraph($total_atk, 'char');
 		}
 		
@@ -1052,6 +1110,7 @@
 		// Shield / STR
 		echo "\n<tr>\n\t<td align=right>Shield\n\t<td>" . $shield;
 		echo "\n\t<td align=right colspan=2>" . $total_str;
+		if ($pet_boost["boost"] == "str") { echo " (+" . $pet_boost["amount"] . ")"; }
 		
 		echo "\n\t<td align=center>STR\n\t<td colspan=2>\n</tr>";
 		
@@ -1158,7 +1217,7 @@
 		echo "<table cellpadding=3 cellspacing=0 border=1 align=center>";
 		echo "<tr bgcolor=#bbb><td>Item<td align=center>Weight<td align=center>Actions</tr>";
 
-		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%' ORDER BY slot ASC, ac_boost, attack_boost DESC;";
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot NOT LIKE 'potion%' AND slot NOT LIKE 'pet%' ORDER BY slot ASC, ac_boost, attack_boost DESC;";
 		$result = search($sql);
 		$rows = count($result);
 
@@ -1218,6 +1277,25 @@
 				echo "</tr>";
 					
 			}
+		}
+
+			// Display Character pets
+		$sql = "SELECT * FROM hackcess.character_equipment WHERE character_id = " . $character_id . " AND slot LIKE 'pet%';";
+		$result = search($sql);
+		$rows = count($result);
+		
+		echo "<tr><td colspan=5 bgcolor=#ddd align=center>Pets</tr>";
+		
+		for ($p = 0; $p < $rows; $p++) {
+				
+			$details = explode(',', $result[$p][1]);
+			$type = substr($result[$p][5], 4);
+			
+			echo "<tr><td>" . $details[0] . ", Lvl " . $details[1] . " " . ucfirst($type); // Item
+			echo "<td align=center>-"; // Weight
+			echo "<td align=center>-";
+			echo "</tr>";
+				
 		}
 		
 		echo "<tr bgcolor=#ddd><td align=right>Total Weight<td align=center>" . $weight_total . "<td></tr>";

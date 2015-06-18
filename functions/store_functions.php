@@ -10,6 +10,7 @@
 		$sql = "SELECT * FROM hackcess.store_contents WHERE contents_id = " . $item_id . ";";
 		$result = search($sql);
 		$name = $result[0][2];
+		$final_name = $result[0][2]; 
 		$ac_boost = $result[0][3];
 		$atk_boost = $result[0][4];
 		$weight = $result[0][5];
@@ -628,12 +629,15 @@
 		$slot = $result[0][5];
 		if (substr($result[0][5], 0, 6) == 'potion') {
 			$name_elements = explode(' ', $name);
+			$final_name = $name_elements[0];
 			$cost = 100 * $name_elements[3];
 		} elseif (substr($result[0][5], 0, 3) == 'pet') {
 			$name_elements = explode(',', $name);
+			$final_name = $name_elements[0];
 			$cost = ($name_elements[1] * 500) + 5000;
 		} else {
 			$cost = 50 * ($ac_boost + $attack_boost);
+			$final_name = $name;
 		}
 		
 		// Add value to player gold
@@ -646,7 +650,7 @@
 		}		
 		
 		// Add item to store
-		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $name_elements[0] . "', " . $ac_boost . ", " . $attack_boost . ", " . $weight . ", '" . $slot . "', " . $cost . ");";
+		$dml = "INSERT INTO hackcess.store_contents (store_id, item_name, item_ac_boost, item_attack_boost, item_weight, item_slot, item_cost) VALUES (" . $store_id . ", '" . $final_name . "', " . $ac_boost . ", " . $attack_boost . ", " . $weight . ", '" . $slot . "', " . $cost . ");";
 		$result = insert($dml);		
 		if ($result == TRUE) {
 			addToDebugLog("sellItem(), Item added to store, INFO");

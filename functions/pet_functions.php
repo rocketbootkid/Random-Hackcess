@@ -119,10 +119,73 @@
 		
 		return array(
 				"boost" => $boost,
-				"amount" => $level,
+				"amount" => $pet_level,
 				);
 		
 	}
+	
+	function listCharacterPets($character_id) {
+		
+		// Lists character's pet details
+		
+		addToDebugLog("getPetBoost(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");		
 
+		$sql = "SELECT * FROM hackcess.pets WHERE character_id = " . $character_id . ";";
+		$result = search($sql);
+		$rows = count($result);
+		
+		if ($rows > 0) {
+			
+			$type = explode("_", $result[0][3]);
+			switch ($result[0][3]) {
+				case "pet_wolf": // AC
+					$boost = "ac";
+					break;
+				case "pet_eagle": // ATK
+					$boost = "atk";
+					break;
+				case "pet_raven": // HP
+					$boost = "hp";
+					break;
+				case "pet_bear": // STR
+					$boost = "str";
+					break;
+			}
+			
+			return $result[0][1] . ", Lvl " . $result[0][2] . " " . ucfirst($type[1]) . " (+" . $result[0][2] . " " . strtoupper($boost) . "), " . $result[0][4] . "XP";
+			
+		}
+		
+	}
+	
+	function doesCharacterHavePet($character_id) {
+		
+		// Returns pet_id if character has a pet
+		
+		addToDebugLog("getPetBoost(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
+		
+		$sql = "SELECT pet_id FROM hackcess.pets WHERE character_id = " . $character_id . ";";
+		$result = search($sql);
+		$rows = count($result);
+		
+		if ($rows == 1) {
+			return $result[0][0]; // Pet_Id
+		} else {
+			return 0;
+		}
+		
+	}
 
+	function getPetDetails($pet_id, $attribute) {
+	
+		// Returns selected pet attribute
+	
+		addToDebugLog("getPetDetails(), Function Entry - supplied parameters: Pet ID: " . $pet_id . "; Attribute: " . $attribute . ", INFO");
+	
+		$sql = "SELECT " . $attribute . " FROM hackcess.pets WHERE pet_id = " . $pet_id . ";";
+		$result = search($sql);
+	
+		return $result[0][0];
+	
+	}
 ?>

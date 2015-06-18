@@ -836,7 +836,7 @@
 		$trait_ac_boost = $trait_boosts["ac"];
 		$trait_atk_boost = $trait_boosts["atk"];
 		$trait_hp_boost = $trait_boosts["hp"];
-		$trait_str_boost = $trait_boosts["str"];		
+		$trait_str_boost = $trait_boosts["str"];	
 		
 		// Load Enemy Details
 		$enemy_info = getEnemyInfo($enemy_id);
@@ -855,6 +855,11 @@
 		$base_atk = $character_atk + $trait_atk_boost;
 		$total_atk_boost = $character_atk_boost + $effect_atk_boost;
 		
+		// Get boost from Pet
+		$pet_boost = getPetBoost($character_basic_info[0][0]); // 0 boost, 1 amount
+		addToDebugLog("displayBattleStats(), Pet Boost Type: " . $pet_boost["boost"] . "; Amount: " . $pet_boost["amount"] . ", INFO");
+		${'total_' . $pet_boost["boost"] . '_boost'} = ${'total_' . $pet_boost["boost"] . '_boost'} + $pet_boost["amount"];  // Increase the correct grand total with the pet boost
+		
 		echo "<h1 align=center>The fight is over!</h1>";
 
 		echo "<table cellpadding=3 cellspacing=0 border=1 width=1200px align=center>";
@@ -868,6 +873,7 @@
 			echo " + " . $total_atk_boost;
 			echo ", AC: " . $base_ac;
 			echo " + " . $total_ac_boost . ")";
+			echo " + Pet (" . strtoupper($pet_boost["boost"]) . ": +" . $pet_boost["amount"] . ")";
 		echo "<td align=center><h2>" . $enemy_name . "</h2>";
 			echo "(HP: " . $enemy_hp . ", ATK: " . $enemy_atk . ", AC: " . $enemy_ac . ")</tr>";
 		
@@ -1054,6 +1060,17 @@
 			} else {
 				addToDebugLog("doFight(), Character record not updated, ERROR");
 			}			
+
+			// Update Pet XP
+			$pet_id = doesCharacterHavePet($character_id);
+			$pet_xp = $enemy_xp/2;
+			$dml = "UPDATE hackcess.pets SET pet_xp = pet_xp + " . $pet_xp . " WHERE pet_id = " . $pet_id . ";";
+			$result = insert($dml);
+			if ($result == TRUE) {
+				addToDebugLog("doFight(), Pet XP updated, INFO");
+			} else {
+				addToDebugLog("doFight(), Pet XP not updated, ERROR");
+			}
 			
 			// Give random item if player has enough strength left
 			$effect_boosts = getEffectBoosts($character_id);
@@ -1078,7 +1095,13 @@
 			if ($potion_name != "") { // Drop potions
 				echo "They also drop a " . $potion_name . ". ";
 			}
-			echo $character_name . " also gains " . $enemy_xp . "XP.<br/>";
+			echo $character_name . " also gains " . $enemy_xp . "XP."; // Character XP
+			if ($pet_id > 0) { // Pet XP
+				$pet_name = getPetDetails($pet_id, "pet_name");
+				echo " " . $pet_name . " gains " . $pet_xp . "XP.";
+			}
+			echo "<br/>";
+			
 			if ($effect_id > 0) { // Curses / Negative Effects
 				$effect_details = getEffectDetails($effect_id); // 2 Name, 3 Affects, 4 Amount, 5 duration
 				echo "With their dying breath, " . $enemy_name . " hits you with a " . $effect_details[0][2] . " curse, resulting in a " . $effect_details[0][4] . " to " . strtoupper($effect_details[0][3]) . " for " . $effect_details[0][5] . " turns.<p>";

@@ -65,6 +65,13 @@
 			
 			// List ongoing effects
 			listCharacterEffects($character_id);
+
+			// List ongoing effects
+			$pet = listCharacterPets($character_id);
+			if ($pet != "") {
+				echo "<h3>Pet</h3>";
+				echo $pet;
+			}
 			
 		echo "<td colspan=3 width=1000px>";
 			// Draws the grid for defined radius around the current location

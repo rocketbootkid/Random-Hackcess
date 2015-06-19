@@ -1,6 +1,6 @@
 <?php
 	
-	$debug_enabled = 1;
+	$debug_enabled = 0;
 	$debug_level = "INFO";
 	$debug_dirty_flag = 0;
 	$debug_to_file = 1;

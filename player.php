@@ -12,10 +12,18 @@
 	include 'functions/mysql_functions.php';
 	include 'functions/grid_functions.php';
 	include 'functions/player_functions.php';
-
+	include 'functions/stats_functions.php';
+	
 	addToDebugLog("player.php, page, INFO");
 	
 	playerSelect();
+	
+	// Stats
+	echo "<h2 align=center>Stats</h2>";
+	Wins();
+	Gold();
+	Level();
+	Journies();
 	
 	// Meta
 	echo "<h2 align=center>Meta</h2>";

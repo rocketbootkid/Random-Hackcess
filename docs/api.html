@@ -2,7 +2,7 @@
 <td><i>No comment found.</i></tr><tr><td> outputDebugLog<td> 
 <td><i>No comment found.</i></tr><tr><td> outputQueryCount<td> 
 <td><i>No comment found.</i></tr><tr><td> outputQueryList<td> 
-<td><i>No comment found.</i></tr><tr bgcolor=#ddd><td colspan=3>4 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/effects_functions.php, Lines: 428<h3><tr><td> createPositiveEffect<td>$store_id 
+<td><i>No comment found.</i></tr><tr bgcolor=#ddd><td colspan=3>4 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/effects_functions.php, Lines: 431<h3><tr><td> createPositiveEffect<td>$store_id 
 <td><i>		Creates a new positive effect potion in a store
 </i></tr><tr><td> createNegativeEffect<td>$character_id 
 <td><i>		Creates a new positive effect potion in a store
@@ -24,7 +24,7 @@
 <td><i>		This function will return details about the effect.
 </i></tr><tr><td> randomPotionDrop<td>$character_id 
 <td><i>		Creates and returns a store name
-</i></tr><tr bgcolor=#ddd><td colspan=3>11 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/grid_functions.php, Lines: 1126<h3><tr><td> getPlayerCurrentGridCoordinates<td>$character_id, $journey_id 
+</i></tr><tr bgcolor=#ddd><td colspan=3>11 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/grid_functions.php, Lines: 1234<h3><tr><td> getPlayerCurrentGridCoordinates<td>$character_id, $journey_id 
 <td><i>		Returns the grid coordinates for current character / journey
 </i></tr><tr><td> drawGrid<td>$grid_x, $grid_y, $radius_x, $radius_y, $journey_id, $character_id, $player_id 
 <td><i>		Draws the adventure grid
@@ -70,7 +70,9 @@
 <td><i>		Lists the stores on the current journey
 </i></tr><tr><td> enemyList<td>$character_id, $journey_id, $player_id 
 <td><i>		Lists the unbeaten enemies on the current journey
-</i></tr><tr bgcolor=#ddd><td colspan=3>23 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/mysql_functions.php, Lines: 143<h3><tr><td> connect<td> 
+</i></tr><tr><td> gridHeatMap<td> 
+<td><i>		Displays a count for each grid on the map
+</i></tr><tr bgcolor=#ddd><td colspan=3>24 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/mysql_functions.php, Lines: 143<h3><tr><td> connect<td> 
 <td><i>		Connects to MySQL
 </i></tr><tr><td> disconnect<td> 
 <td><i>		Disconnects from MySQL
@@ -80,7 +82,19 @@
 <td><i>		Does MySQL INSERT and UPDATE operations, returning a boolean flag
 </i></tr><tr><td> delete<td>$dml 
 <td><i>		Does MySQL DELETE operations, returning a boolean flag
-</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/player_functions.php, Lines: 1505<h3><tr><td> characterFightCount<td>$character_id 
+</i></tr><tr bgcolor=#ddd><td colspan=3>5 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/pet_functions.php, Lines: 191<h3><tr><td> createNewPet<td>$store_id 
+<td><i>		Creates a new pet
+</i></tr><tr><td> generatePetName<td> 
+<td><i>		Creates and returns a pet name
+</i></tr><tr><td> getPetBoost<td>$character_id 
+<td><i>		Returns the boost provided by a pet
+</i></tr><tr><td> listCharacterPets<td>$character_id 
+<td><i>		Lists character's pet details
+</i></tr><tr><td> doesCharacterHavePet<td>$character_id 
+<td><i>		Returns pet_id if character has a pet
+</i></tr><tr><td> getPetDetails<td>$pet_id, $attribute 
+<td><i>		Returns selected pet attribute
+</i></tr><tr bgcolor=#ddd><td colspan=3>6 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/player_functions.php, Lines: 1658<h3><tr><td> characterFightCount<td>$character_id 
 <td><i>		This function displays the combat history for the selected character
 </i></tr><tr><td> playerSelect<td> 
 <td><i>		Displays details for all players
@@ -168,7 +182,7 @@
 <td><i>		This function determines if the character is overencumbered
 </i></tr><tr><td> allTilesArray<td> 
 <td><i>		This function returns an array of all grids
-</i></tr><tr bgcolor=#ddd><td colspan=3>44 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/store_functions.php, Lines: 600<h3><tr><td> buyItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
+</i></tr><tr bgcolor=#ddd><td colspan=3>44 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/store_functions.php, Lines: 730<h3><tr><td> buyItem<td>$store_id, $journey_id, $character_id, $player_id, $item_id 
 <td><i>		Buys an item from the store
 </i></tr><tr><td> characterEquipment<td>$character_id, $player_id, $journey_id, $store_id 
 <td><i>		This function lists the equipment held by each player
@@ -181,6 +195,8 @@
 </i></tr><tr><td> getStoreContentsBySlot<td>$store_id, $journey_id, $character_id, $player_id, $slot 
 <td><i>		Lists items in the store for the provided slot
 </i></tr><tr><td> getStoreContentPotions<td>$store_id, $journey_id, $character_id, $player_id 
+<td><i>		Lists potions in the store
+</i></tr><tr><td> getStoreContentPets<td>$store_id, $journey_id, $character_id, $player_id 
 <td><i>		Lists potions in the store
 </i></tr><tr><td> getStoreName<td>$store_id 
 <td><i>		This function returns the store name for the provided store id
@@ -196,4 +212,16 @@
 <td><i>		Lists the items for sale in the store
 </i></tr><tr><td> getStoreDetails<td>$store_id, $attribute 
 <td><i>		Creates and returns a store name
-</i></tr><tr bgcolor=#ddd><td colspan=3>14 functions found.</tr></body></html>
+</i></tr><tr bgcolor=#ddd><td colspan=3>15 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/trait_functions.php, Lines: 172<h3><tr><td> selectCharacterTraits<td>$character_id, $predecessor_id 
+<td><i>		This function handles the traits a character inherits; one is copied, one is mutated
+</i></tr><tr><td> getAllTraitDetails<td>$trait_id 
+<td><i>		This function returns all details of a character trait
+</i></tr><tr><td> createRandomTrait<td>$character_id, $number 
+<td><i>		This function creates a number of random traits for a character
+</i></tr><tr><td> getTraitBoosts<td>$character_id 
+<td><i>		This function returns the traits boosts for the character
+</i></tr><tr bgcolor=#ddd><td colspan=3>4 functions found.</tr><tr bgcolor=#bbb><td colspan=3><h3>../functions/tree_functions.php, Lines: 58<h3><tr><td> buildFamilyTrees<td> 
+<td><i>		Creates a family tree table
+</i></tr><tr><td> getAverageRounds<td>$character_id 
+<td><i>		Returns the average number of rounds the character takes to win their fights
+</i></tr><tr bgcolor=#ddd><td colspan=3>2 functions found.</tr></body></html>

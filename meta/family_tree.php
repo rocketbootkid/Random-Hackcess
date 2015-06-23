@@ -18,7 +18,7 @@
 	
 	echo "<h2 align=center>Family Tree</h2>";
 	
-	getZerothGen();
+	buildFamilyTrees();
 	
 	outputDebugLog();
 	

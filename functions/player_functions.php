@@ -1070,15 +1070,15 @@
 		if ($effect_boosts["hp"] > 0) {
 			echo "\n\t<td align=center width=50px>" . $total_base_hp . " (+" . $effect_boosts["hp"] . ")";
 			if ($pet_boost["boost"] == "hp") { echo " (+" . $pet_boost["amount"] . ")"; }
-			echo "\n\t<td width=250px align=right>" . barGraph($total_hp, 'char');
+			echo "\n\t<td width=250px align=right>" . barGraph($total_hp, 'char', '', '');
 		} else {
 			echo "\n\t<td align=center width=50px>" . $total_base_hp;
 			if ($pet_boost["boost"] == "hp") { echo " (+" . $pet_boost["amount"] . ")"; }
-			echo "\n\t<td width=250px align=right>" . barGraph($total_base_hp, 'char');
+			echo "\n\t<td width=250px align=right>" . barGraph($total_base_hp, 'char', '', '');
 		}
 		
 		// Enemy HP
-		echo "\n\t<td align=center>HP\n\t<td>" . barGraph($enemy_info[0][3], 'enemy');
+		echo "\n\t<td align=center>HP\n\t<td>" . barGraph($enemy_info[0][3], 'enemy', '', '');
 		echo "<td align=center>" . $enemy_info[0][3] . "\n</tr>";
 		
 		// Chest / AC
@@ -1087,11 +1087,11 @@
 		if ($total_boost_ac > 0) {
 			echo " (+" . $total_boost_ac . ")";
 			if ($pet_boost["boost"] == "ac") { echo " (+" . $pet_boost["amount"] . ")"; }
-			echo "\n\t<td align=right>" . barGraph($total_ac, 'char');
+			echo "\n\t<td align=right>" . barGraph($total_ac, 'char', '', '');
 		}
 		
 		// Enemy AC
-		echo "\n\t<td align=center>AC\n\t<td>" . barGraph($enemy_info[0][2], 'enemy');
+		echo "\n\t<td align=center>AC\n\t<td>" . barGraph($enemy_info[0][2], 'enemy', '', '');
 		echo "\n\t<td align=center>" . $enemy_info[0][2] . "\n</tr>";
 		
 		// Legs / ATK
@@ -1100,11 +1100,11 @@
 		if ($total_boost_atk > 0) {
 			echo " (+" . $total_boost_atk . ")";
 			if ($pet_boost["boost"] == "atk") { echo " (+" . $pet_boost["amount"] . ")"; }
-			echo "\n\t<td align=right>" . barGraph($total_atk, 'char');
+			echo "\n\t<td align=right>" . barGraph($total_atk, 'char', '', '');
 		}
 		
 		// Enemy ATK
-		echo "\n\t<td align=center>ATK\n\t<td>" . barGraph($enemy_info[0][1], 'enemy');
+		echo "\n\t<td align=center>ATK\n\t<td>" . barGraph($enemy_info[0][1], 'enemy', '', '');
 		echo "\n\t<td align=center>" . $enemy_info[0][1] . "\n</tr>";
 		
 		// Shield / STR
@@ -1120,10 +1120,11 @@
 		
 	}
 	
-	function barGraph($value, $who) {
+	function barGraph($value, $who, $label, $position) {
 		
 		// Produces bar graph for the versus table
 		
+		$display_value = $value;
 		$width = $value * 5;
 		if ($value < 50) {
 			$width = $value;
@@ -1134,11 +1135,20 @@
 		if ($value < 20) {
 			$width = $value * 10;
 		}
+		if ($value > 1000) {
+			$width = $value / 10;
+		}
+		
+		if ($position == "before") {
+			$graph_label = $label . " " . $value;
+		} else {
+			$graph_label = $value . " " . $label;
+		}
 		
 		if ($who == "char") {
-			return "<table><tr><td>" . $value . "<td bgcolor='#0f0' height=20px width='" . $width . "px'></tr></table>";
+			return "<table><tr height=10px><td>" . $graph_label . "<td bgcolor='#0f0' height=20px width='" . $width . "px'></tr></table>";
 		} else {
-			return "<table><tr><td bgcolor='#f00' height=20px width='" . $width . "px'><td>" . $value . "</tr></table>";
+			return "<table><tr><td bgcolor='#f00' height=20px width='" . $width . "px'><td>" . $graph_label . "</tr></table>";
 		}
 	
 	}

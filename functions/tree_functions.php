@@ -1,8 +1,8 @@
 <?php
 
-	function getZerothGen() {
+	function buildFamilyTrees() {
 		
-		// Creates a new character
+		// Creates a family tree table
 		
 		addToDebugLog("getZerothGen(), Function Entry - no parameters, INFO");
 		
@@ -44,7 +44,7 @@
 	
 	function getAverageRounds($character_id) {
 		
-		// Creates a new character
+		// Returns the average number of rounds the character takes to win their fights
 		
 		addToDebugLog("getZerothGen(), Function Entry - supplied parameters: Character ID: " . $character_id . ", INFO");
 		
